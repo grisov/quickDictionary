@@ -3,6 +3,7 @@ import urllib.request as urllibRequest
 import threading
 from urllib.request import Request, urlopen
 from json import dumps, loads
+from .parser import to_html, to_text
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
