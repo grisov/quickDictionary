@@ -17,15 +17,15 @@ def getSelectedText():
         obj = treeInterceptor
     try:
         info = obj.makeTextInfo(POSITION_SELECTION)
-    except:
+    except (RuntimeError, NotImplementedError):
         info = None
     if not info or info.isCollapsed or info.text.isspace():
-        # user has pressed the shortcut key for translating selected text, but no text was actually selected.
+        # Translators: user has pressed the shortcut key for translating selected text, but no text was actually selected.
         try:
             text = api.getClipData()
         except:
             ui.message(_("There is no text on the clipboard"))
-            text = None
+            text = ''
         if text and isinstance(text, str) and not text.isspace():
             return text
         ui.message("There is no selected text")

@@ -1,16 +1,16 @@
+# encoding: utf-8
 import ssl
-import urllib.request as urllibRequest
 import threading
 from urllib.request import Request, urlopen
 from json import dumps, loads
-from .parser import to_html, to_text
+from .parser import Parser
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class Translation(object):
 
-    def __init__(self, word, lang='en-uk', token='', is_html=False):
+    def __init__(self, word, lang, token='', is_html=False):
         self._word = word
         self._lang = lang
         self._ui_lang = 'uk'
@@ -54,13 +54,13 @@ class Translation(object):
     def html(self):
         if not self._response:
             self.get_translation()
-        return to_html(self._response)
+        return Parser().to_html(self._response)
 
     @property
     def text(self):
         if not self._response:
             self.get_translation()
-        return to_text(self._response)
+        return Parser().to_text(self._response)
 
     def __repr__(self):
         return self.text
