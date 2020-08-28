@@ -1,0 +1,19 @@
+h1 {
+margin:0;
+font-family:Times New Roman, Verdena, Arial, Helvetica, sans-serif;
+font-size:24pt;
+font-weight:bold;
+text-decoration:none;
+text-align:left;
+}
+ul {
+list-style:square;
+}
+li {
+font-size:22pt;
+text-decoration:none;
+}
+p {
+font-size:20pt;
+text-decoration:none;
+}
