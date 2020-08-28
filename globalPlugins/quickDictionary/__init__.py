@@ -1,4 +1,4 @@
-﻿#-*- coding:utf-8 -*-
+#-*- coding:utf-8 -*-
 # Copyright (C) 2020 Olexandr Gryshchenko <grisov.dev@mailnull.com>
 #This file is covered by the GNU General Public License.
 #See the file COPYING for more details.
