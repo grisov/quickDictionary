@@ -3,8 +3,9 @@ import re
 
 class Parser(object):
 
-    def __init__(self):
-        self.html = None
+    def __init__(self, resp):
+        self.resp = resp
+        self.html = ''
 
     def attrs(self, resp):
         attrs = []
@@ -19,51 +20,51 @@ class Parser(object):
             return " (%s)" % ', '.join(attrs)
         return ''
 
-    def to_html(self, resp):
-        if not isinstance(resp, dict):
+    def to_html(self):
+        if not isinstance(self.resp, dict):
             return '<h1>%s</h1>' % _('Parsing error!')
-        code = list(resp)[0]
+        code = list(self.resp)[0]
         if str(code).isdigit():
-            return '<h1>%s: %d</h1>' % (resp[code], code)
+            return '<h1>%s: %d</h1>' % (self.resp[code], code)
         html = '<link rel="stylesheet" type="text/css" href="%s">\n' % os.path.join(os.path.dirname(__file__), 'style.css')
         for key in ['def', 'tr', 'mean', 'syn', 'ex']:
-            if key in resp:
+            if key in self.resp:
                 html += {
                     'mean': _('<p><i>Mean</i>: '),
                     'syn': _('<p><i>Synonyms</i>:\n'),
                     'ex': _('<p><i>Examples</i>:\n')
                     }.get(key, '')
                 if key == 'def':
-                    if not resp['def']:
+                    if not self.resp['def']:
                         html += '<h1>%s</h1>' % _('No results')
-                    for elem in resp['def']:
+                    for elem in self.resp['def']:
                         html += '<h1>' + elem['text'] + self.attrs(elem) + '</h1>\n'
-                        html += self.to_html(elem)
+                        html += Parser(elem).to_html()
                         html += '\n'
                 if key == 'tr':
                     html += '<ul>\n'
-                    for elem in resp['tr']:
+                    for elem in self.resp['tr']:
                         html += '<li><b>' + elem['text'] + '</b>' + self.attrs(elem) + '\n'
-                        html += self.to_html(elem)
+                        html += Parser(elem).to_html()
                         html += '</li>\n';
                     html += '</ul>\n'
                 if key == 'mean':
                     means = []
-                    for elem in resp['mean']:
+                    for elem in self.resp['mean']:
                         means.append(elem['text'] + self.attrs(elem) )
                     html += ', '.join(means) + '</p>\n'
                     del(means)
-                    html += self.to_html(elem)
+                    html += Parser(elem).to_html()
                 if key == 'syn':
                     syns = []
-                    for elem in resp['syn']:
+                    for elem in self.resp['syn']:
                         syns.append(elem['text'] + self.attrs(elem))
                     html += ', '.join(syns) + '</p>\n'
                     del(syns)
-                    html += self.to_html(elem)
+                    html += Parser(elem).to_html()
                 if key == 'ex':
                     exs = []
-                    for elem in resp['ex']:
+                    for elem in self.resp['ex']:
                         tmp = elem['text'] + self.attrs(elem)
                         if 'tr' in elem:
                             trs = []
@@ -77,10 +78,10 @@ class Parser(object):
         self.html = html
         return html
 
-    def to_text(self, resp):
+    def to_text(self):
         li = u"\u2022 "
-        h1 = "# "
-        text = self.html if self.html else self.to_html(resp).replace('<li>', li).replace('<h1>', h1)
+        h1 = "- "
+        text = self.html if self.html else self.to_html().replace('<li>', li).replace('<h1>', h1)
         text = re.sub(r'\<[^>]*\>', '', text)
         text = '\r\n'.join((s for s in text.split('\n') if s))
         return text if text else str(resp)

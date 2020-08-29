@@ -1,3 +1,4 @@
+import re
 import api
 import ui
 from textInfos import POSITION_SELECTION
@@ -32,6 +33,10 @@ def getSelectedText():
         beep(150, 100)
         return ''
     return info.text
+
+def clearText(text):
+    text = ''.join([s for s in text.strip() if s.isalpha() or s.isspace()])
+    return ' '.join(re.split('\s+', text))
 
 def langName(code):
     return getLanguageDescription(code)
