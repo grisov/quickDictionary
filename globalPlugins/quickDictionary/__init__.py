@@ -18,8 +18,8 @@ import api, ui, config
 from time import sleep
 from tones import beep
 from threading import Thread
-from .translator import Translator
-from .shared import copyToClipboard, getSelectedText, clearText, langName
+from .dictionary import Translator
+from .shared import copyToClipboard, getSelectedText, langName
 
 into = 'ru'
 token = 'dict.1.1.20160512T220906Z.4a4ee160a921aa01.a74981e0761f48a1309d4f903e540f1f3288f1a3'
@@ -54,29 +54,25 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     def target(self, lang):
         config.conf['quickdictionary']['into'] = lang
 
-    @script(description=_("Announces the translation of the current selected word or phrase, press twice to copy to clipboard"))
+    @script(description='%s: %s' % (_addonSummary, _("Announces the translation of the current selected word or phrase, press twice to copy to clipboard")))
     def script_translateAnnounce(self, gesture):
-        text = clearText(getSelectedText())
-        if not text:
-            ui.message('There is no selected text or text in the clipboard')
-            return
+        text = getSelectedText()
+        if not text: return
         if getLastScriptRepeatCount() == 0:
             Thread(target=self.translate, args=[text, False, False]).start()
         elif getLastScriptRepeatCount() >= 1:
             Thread(target=self.translate, args=[text, False, True]).start()
 
-    @script(description=_("Displays translation results in a window, press twice to copy to clipboard"))
+    @script(description='%s: %s' % (_addonSummary, _("Displays translation results in a window, press twice to copy to clipboard")))
     def script_translateBox(self, gesture):
-        text = clearText(getSelectedText())
-        if not text:
-            ui.message('There is no selected text or text in the clipboard')
-            return
+        text = getSelectedText()
+        if not text: return
         if getLastScriptRepeatCount() == 0:
             Thread(target=self.translate, args=[text, True, False]).start()
         elif getLastScriptRepeatCount() >= 1:
             Thread(target=self.translate, args=[text, False, True]).start()
 
-    @script(description=_("Change the order of the selected languages for translation, press twice to select other languages"))
+    @script(description='%s: %s' % (_addonSummary, _("Change the order of the selected languages for translation, press twice to select other languages")))
     def script_swapLanguages(self, gesture):
         if getLastScriptRepeatCount() == 0:
             self.source, self.target = self.target, self.source
@@ -90,16 +86,19 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         i=0
         while translator.is_alive():
             sleep(0.1)
+            if i == 10:
+                beep(500, 100)
+                i = 0
             i+=1
-        if i == 10:
-            beep(500, 100)
-            i = 0
+        translator.join()
         if isHtml:
             ui.browseableMessage(translator.translation, title='%s-%s' % (langName(translator.langFrom), langName(translator.langTo)), isHtml=isHtml)
-        elif copyToClip:
-            shared.copyToClipboard(translator.translation)
         else:
-            ui.message('%s-%s\r\n%s' % (langName(translator.langFrom), langName(translator.langTo), translator.translation))
+            text = '%s-%s\r\n%s' % (langName(translator.langFrom), langName(translator.langTo), translator.translation)
+            if copyToClip:
+                copyToClipboard(text)
+            else:
+                ui.message(text)
 
     __gestures = {
         "kb:NVDA+w": "translateAnnounce",

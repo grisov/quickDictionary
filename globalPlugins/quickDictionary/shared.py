@@ -20,19 +20,17 @@ def getSelectedText():
         info = obj.makeTextInfo(POSITION_SELECTION)
     except (RuntimeError, NotImplementedError):
         info = None
-    if not info or info.isCollapsed or info.text.isspace():
-        # Translators: user has pressed the shortcut key for translating selected text, but no text was actually selected.
+    if not info or info.isCollapsed or not clearText(info.text):
         try:
             text = api.getClipData()
         except:
-            ui.message(_("There is no text on the clipboard"))
             text = ''
-        if text and isinstance(text, str) and not text.isspace():
-            return text
-        ui.message("There is no selected text")
-        beep(150, 100)
-        return ''
-    return info.text
+        if not text or not isinstance(text, str) or not clearText(text):
+            # Translators: user has pressed the shortcut key for translating selected text, but no text was actually selected and clipboard is clear
+            ui.message(_("There is no selected text, the clipboard is also empty, or its content is not text!"))
+            return ''
+        return clearText(text)
+    return clearText(info.text)
 
 def clearText(text):
     text = ''.join([s for s in text.strip() if s.isalpha() or s.isspace()])
