@@ -1,25 +1,29 @@
-﻿#-*- coding:utf-8 -*-
+﻿# __init__.py
+# A part of NonVisual Desktop Access (NVDA)
+# This file is covered by the GNU General Public License.
+# See the file COPYING for more details.
 # Copyright (C) 2020 Olexandr Gryshchenko <grisov.dev@mailnull.com>
-#This file is covered by the GNU General Public License.
-#See the file COPYING for more details.
 
 import addonHandler
+addonHandler.initTranslation()
+
 import os
 _addonDir = os.path.join(os.path.dirname(__file__), "..", "..")
 if isinstance(_addonDir, bytes):
     _addonDir = _addonDir.decode("mbcs")
 _curAddon = addonHandler.Addon(_addonDir)
 _addonSummary = _curAddon.manifest['summary']
-addonHandler.initTranslation()
 
 import globalPluginHandler
 from scriptHandler import script, getLastScriptRepeatCount
 import api, ui, config
+import gui, wx
 from time import sleep
 from tones import beep
 from threading import Thread
 from .dictionary import Translator
-from .shared import copyToClipboard, getSelectedText, langName
+from .shared import copyToClipboard, getSelectedText
+from .languages import langs
 
 into = 'ru'
 token = 'dict.1.1.20160512T220906Z.4a4ee160a921aa01.a74981e0761f48a1309d4f903e540f1f3288f1a3'
@@ -75,10 +79,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     @script(description='%s: %s' % (_addonSummary, _("Change the order of the selected languages for translation, press twice to select other languages")))
     def script_swapLanguages(self, gesture):
         if getLastScriptRepeatCount() == 0:
-            self.source, self.target = self.target, self.source
-            ui.message('%s-%s' % (langName(self.source), langName(self.target)))
+            if langs.isAvailable(self.target, self.source):
+                self.source, self.target = self.target, self.source
+                ui.message('%s-%s' % (langs.langName(self.source), langs.langName(self.target)))
+            else:
+                ui.message(_('Swap languages is not available for this pair') + ': %s - %s' % (langs.langName(self.source), langs.langName(self.target)))
         elif getLastScriptRepeatCount() >= 1:
-            ui.message('Select languages from list')
+            pass
 
     def translate(self, text, isHtml=False, copyToClip=False):
         translator = Translator(self.source, self.target, text, 'uk', isHtml)
@@ -92,9 +99,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             i+=1
         translator.join()
         if isHtml:
-            ui.browseableMessage(translator.translation, title='%s-%s' % (langName(translator.langFrom), langName(translator.langTo)), isHtml=isHtml)
+            ui.browseableMessage(translator.translation, title='%s-%s' % (langs.langName(translator.langFrom), langs.langName(translator.langTo)), isHtml=isHtml)
         else:
-            text = '%s-%s\r\n%s' % (langName(translator.langFrom), langName(translator.langTo), translator.translation)
+            text = '%s-%s\r\n%s' % (langs.langName(translator.langFrom), langs.langName(translator.langTo), translator.translation)
             if copyToClip:
                 copyToClipboard(text)
             else:

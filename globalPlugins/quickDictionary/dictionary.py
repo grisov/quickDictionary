@@ -1,3 +1,6 @@
+import addonHandler
+addonHandler.initTranslation()
+
 import os
 import re
 import ssl

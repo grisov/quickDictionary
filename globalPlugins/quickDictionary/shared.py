@@ -1,8 +1,10 @@
+import addonHandler
+addonHandler.initTranslation()
+
 import re
 import api
 import ui
 from textInfos import POSITION_SELECTION
-from languageHandler import getLanguageDescription
 from tones import beep
 
 def copyToClipboard(object):
@@ -35,6 +37,3 @@ def getSelectedText():
 def clearText(text):
     text = ''.join([s for s in text.strip() if s.isalpha() or s.isspace()])
     return ' '.join(re.split('\s+', text))
-
-def langName(code):
-    return getLanguageDescription(code)
