@@ -24,6 +24,7 @@ from threading import Thread
 from .dictionary import Translator
 from .shared import copyToClipboard, getSelectedText
 from .languages import langs
+from .settings import QuickDictionarySettingsPanel
 
 into = 'uk'
 token = 'dict.1.1.20160512T220906Z.4a4ee160a921aa01.a74981e0761f48a1309d4f903e540f1f3288f1a3'
@@ -41,6 +42,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
     def __init__(self, *args, **kwargs):
         super(GlobalPlugin, self).__init__(*args, **kwargs)
+        gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(QuickDictionarySettingsPanel)
 
     @property
     def source(self):
@@ -65,7 +67,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             pass
 
     def showSettings(self):
-        pass
+        wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, QuickDictionarySettingsPanel)
+
     @script(description='%s: %s' % (_addonSummary, _("Announces the translation of the current selected word or phrase, press twice to copy to clipboard")))
     def script_translateAnnounce(self, gesture):
         text = getSelectedText()

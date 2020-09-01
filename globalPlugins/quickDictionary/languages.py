@@ -34,6 +34,7 @@ class Languages(object):
             yield Language(lang, self.names)
 
     def intoList(self, lng):
+        if not lng: return []
         for lang in self.langs:
             l = lang.split('-')
             if l[0]==lng:
