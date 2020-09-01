@@ -1,3 +1,4 @@
+#dictionary.py
 import addonHandler
 addonHandler.initTranslation()
 

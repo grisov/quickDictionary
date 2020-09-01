@@ -1,7 +1,26 @@
+#languages.py
 import addonHandler
 addonHandler.initTranslation()
 
 from languageHandler import getLanguageDescription
+
+
+class Language(object):
+
+    def __init__(self, code, langNames):
+        self.lang = code
+        self.names = langNames
+
+    @property
+    def code(self):
+        return self.lang
+
+    @property
+    def name(self):
+        name = getLanguageDescription(self.lang)
+        if not name:
+            name = self.names.get(self.lang, None)
+        return name if name else self.lang
 
 
 class Languages(object):
@@ -11,19 +30,20 @@ class Languages(object):
         self.names = langNames
 
     def fromList(self):
-        return list({c.split('-')[0]: c for c in self.langs})
+        for lang in list({c.split('-')[0]: c for c in self.langs}):
+            yield Language(lang, self.names)
 
-    def intoList(self, lang):
-        return [c.split('-')[1] for c in self.langs if c.split('-')[0]==lang]
+    def intoList(self, lng):
+        for lang in self.langs:
+            l = lang.split('-')
+            if l[0]==lng:
+                yield Language(l[1], self.names)
 
     def isAvailable(self, source, target):
         return "%s-%s" % (source, target) in self.langs
 
-    def langName(self, lang):
-        name = getLanguageDescription(lang)
-        if not name:
-            name = self.names.get(lang, None)
-        return name if name else lang
+    def __getitem__(self, lang):
+        return Language(lang, self.names)
 
 
 langNames = {

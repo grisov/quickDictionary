@@ -1,4 +1,4 @@
-﻿# __init__.py
+﻿#__init__.py
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -25,7 +25,7 @@ from .dictionary import Translator
 from .shared import copyToClipboard, getSelectedText
 from .languages import langs
 
-into = 'ru'
+into = 'uk'
 token = 'dict.1.1.20160512T220906Z.4a4ee160a921aa01.a74981e0761f48a1309d4f903e540f1f3288f1a3'
 
 confspec = {
@@ -58,6 +58,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     def target(self, lang):
         config.conf['quickdictionary']['into'] = lang
 
+    def terminate(self):
+        try:
+            gui.settingsDialogs.NVDASettingsDialog.categoryClasses.remove(QuickDictionarySettingsPanel)
+        except IndexError:
+            pass
+
+    def showSettings(self):
+        pass
     @script(description='%s: %s' % (_addonSummary, _("Announces the translation of the current selected word or phrase, press twice to copy to clipboard")))
     def script_translateAnnounce(self, gesture):
         text = getSelectedText()
@@ -81,11 +89,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         if getLastScriptRepeatCount() == 0:
             if langs.isAvailable(self.target, self.source):
                 self.source, self.target = self.target, self.source
-                ui.message('%s-%s' % (langs.langName(self.source), langs.langName(self.target)))
+                ui.message('%s-%s' % (langs[self.source].name, langs[self.target].name))
             else:
-                ui.message(_('Swap languages is not available for this pair') + ': %s - %s' % (langs.langName(self.source), langs.langName(self.target)))
+                ui.message(_('Swap languages is not available for this pair') + ': %s - %s' % (langs[self.source].name, langs[self.target].name))
         elif getLastScriptRepeatCount() >= 1:
-            pass
+            self.showSettings()
 
     def translate(self, text, isHtml=False, copyToClip=False):
         translator = Translator(self.source, self.target, text, 'uk', isHtml)
@@ -99,9 +107,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             i+=1
         translator.join()
         if isHtml:
-            ui.browseableMessage(translator.translation, title='%s-%s' % (langs.langName(translator.langFrom), langs.langName(translator.langTo)), isHtml=isHtml)
+            ui.browseableMessage(translator.translation, title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name), isHtml=isHtml)
         else:
-            text = '%s-%s\r\n%s' % (langs.langName(translator.langFrom), langs.langName(translator.langTo), translator.translation)
+            text = '%s-%s\r\n%s' % (langs[translator.langFrom].name, langs[translator.langTo].name, translator.translation)
             if copyToClip:
                 copyToClipboard(text)
             else:

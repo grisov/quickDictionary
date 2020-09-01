@@ -1,3 +1,4 @@
+#shared.py
 import addonHandler
 addonHandler.initTranslation()
 
