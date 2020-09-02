@@ -26,15 +26,7 @@ from .shared import copyToClipboard, getSelectedText
 from .languages import langs
 from .settings import QuickDictionarySettingsPanel
 
-into = 'uk'
-token = 'dict.1.1.20160512T220906Z.4a4ee160a921aa01.a74981e0761f48a1309d4f903e540f1f3288f1a3'
-
-confspec = {
-    "from": "string(default=en)",
-    "into": "string(default=%s)" % into,
-    "token": "string(default=%s)" % token
-}
-config.conf.spec["quickdictionary"] = confspec
+TOKEN = 'dict.1.1.20160512T220906Z.4a4ee160a921aa01.a74981e0761f48a1309d4f903e540f1f3288f1a3'
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
@@ -42,6 +34,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
     def __init__(self, *args, **kwargs):
         super(GlobalPlugin, self).__init__(*args, **kwargs)
+        confspec = {
+            "from": "string(default=%s)" % langs.defaultFrom,
+            "into": "string(default=%s)" % langs.defaultInto,
+            "token": "string(default=%s)" % TOKEN
+        }
+        config.conf.spec["quickdictionary"] = confspec
         gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(QuickDictionarySettingsPanel)
 
     @property

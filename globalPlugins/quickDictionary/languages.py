@@ -3,6 +3,7 @@ import addonHandler
 addonHandler.initTranslation()
 
 from languageHandler import getLanguageDescription
+from locale import getdefaultlocale
 
 
 class Language(object):
@@ -42,6 +43,15 @@ class Languages(object):
 
     def isAvailable(self, source, target):
         return "%s-%s" % (source, target) in self.langs
+
+    @property
+    def defaultFrom(self):
+        return 'en' if next(filter(lambda l: l.code=='en', self.fromList()), None) else self.langs[0].split('-')[0]
+
+    @property
+    def defaultInto(self):
+        localeLang = getdefaultlocale()[0].split('_')[0]
+        return localeLang if next(filter(lambda l: l.code==localeLang, self.intoList(self.defaultFrom)), None) else [l for l in self.intoList(self.defaultFrom)][0].code
 
     def __getitem__(self, lang):
         return Language(lang, self.names)
