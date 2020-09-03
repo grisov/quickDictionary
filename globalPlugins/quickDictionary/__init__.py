@@ -12,6 +12,7 @@ _addonDir = os.path.join(os.path.dirname(__file__), "..", "..")
 if isinstance(_addonDir, bytes):
     _addonDir = _addonDir.decode("mbcs")
 _curAddon = addonHandler.Addon(_addonDir)
+_addonName = _curAddon.manifest['name']
 _addonSummary = _curAddon.manifest['summary']
 
 import globalPluginHandler
@@ -40,36 +41,36 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             "token": "string(default=%s)" % TOKEN,
             "mirror": "boolean(default=false)"
         }
-        config.conf.spec["quickdictionary"] = confspec
+        config.conf.spec[_addonName] = confspec
         gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(QuickDictionarySettingsPanel)
 
     @property
     def source(self):
-        return config.conf['quickdictionary']['from']
+        return config.conf[_addonName]['from']
 
     @source.setter
     def source(self, lang):
-        config.conf['quickdictionary']['from'] = lang
+        config.conf[_addonName]['from'] = lang
 
     @property
     def target(self):
-        return config.conf['quickdictionary']['into']
+        return config.conf[_addonName]['into']
 
     @target.setter
     def target(self, lang):
-        config.conf['quickdictionary']['into'] = lang
+        config.conf[_addonName]['into'] = lang
 
     @property
     def token(self):
-        return config.conf['quickdictionary']['token']
+        return config.conf[_addonName]['token']
 
     @property
     def mirror(self):
-        return config.conf['quickdictionary']['mirror']
+        return config.conf[_addonName]['mirror']
 
     @mirror.setter
     def mirror(self, mirror):
-        config.conf['quickdictionary']['mirror'] = bool(mirror)
+        config.conf[_addonName]['mirror'] = bool(mirror)
 
     @property
     def ui(self):

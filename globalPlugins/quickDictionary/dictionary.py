@@ -59,7 +59,8 @@ class Translator(threading.Thread):
         lang = '%s-%s' % (self.langFrom, self.langTo)
         urlTemplate = "{server}/api/v1/dicservice.json/lookup?{key}lang={lang}&text={text}{ui}"
         for server in servers:
-            url = urlTemplate.format(server=server, lang=lang, text=self.text,
+            url = urlTemplate.format(server=server, lang=lang,
+                text=self.text.encode('utf-8'),#***
                 key = 'key=%s&' % self.token if self.token else '',
                 ui = '&ui=%s' % self.uiLang if self.uiLang else '')
             rq = Request(url, method='GET', headers=headers)

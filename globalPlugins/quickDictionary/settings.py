@@ -5,7 +5,7 @@ addonHandler.initTranslation()
 import gui
 import wx
 import config
-from . import _addonSummary
+from . import _addonName, _addonSummary
 from .languages import langs
 
 
@@ -35,17 +35,17 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         intoSizer.Add(self._intoChoice)
         self.widgetMaker(self._fromChoice, sorted(langs.fromList(), key=lambda l: l.name))
         self._fromChoice.Bind(wx.EVT_CHOICE, self.onSelectFrom)
-        self.widgetMaker(self._intoChoice, langs.intoList(config.conf['quickdictionary']['from']))
+        self.widgetMaker(self._intoChoice, langs.intoList(config.conf[_addonName]['from']))
         sizer.Add(fromSizer)
         sizer.Add(intoSizer)
-        langFrom = self._fromChoice.FindString(langs[config.conf['quickdictionary']['from']].name)
-        langTo = self._intoChoice.FindString(langs[config.conf['quickdictionary']['into']].name)
+        langFrom = self._fromChoice.FindString(langs[config.conf[_addonName]['from']].name)
+        langTo = self._intoChoice.FindString(langs[config.conf[_addonName]['into']].name)
         self._fromChoice.Select(langFrom)
         self._intoChoice.Select(langTo)
 
         # Translators: A setting in addon settings dialog.
         self.useMirrorChk = wx.CheckBox(self, label=_("Use mirror server"))
-        self.useMirrorChk.SetValue(config.conf['quickdictionary']['mirror'])
+        self.useMirrorChk.SetValue(config.conf[_addonName]['mirror'])
         sizer.Add(self.useMirrorChk)
 
     def widgetMaker(self, widget, languages):
@@ -63,6 +63,6 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
     def onSave(self):
         fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
         intoLang = self._intoChoice.GetClientData(self._intoChoice.GetSelection()).code
-        config.conf['quickdictionary']['from'] = fromLang
-        config.conf['quickdictionary']['into'] = intoLang
-        config.conf['quickdictionary']['mirror'] = self.useMirrorChk.GetValue()
+        config.conf[_addonName]['from'] = fromLang
+        config.conf[_addonName]['into'] = intoLang
+        config.conf[_addonName]['mirror'] = self.useMirrorChk.GetValue()
