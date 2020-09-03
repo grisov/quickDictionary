@@ -43,6 +43,11 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         self._fromChoice.Select(langFrom)
         self._intoChoice.Select(langTo)
 
+        # Translators: A setting in addon settings dialog.
+        self.useMirrorChk = wx.CheckBox(self, label=_("Use mirror server"))
+        self.useMirrorChk.SetValue(config.conf['quickdictionary']['mirror'])
+        sizer.Add(self.useMirrorChk)
+
     def widgetMaker(self, widget, languages):
         for lang in languages:
             widget.Append(lang.name, lang)
@@ -60,3 +65,4 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         intoLang = self._intoChoice.GetClientData(self._intoChoice.GetSelection()).code
         config.conf['quickdictionary']['from'] = fromLang
         config.conf['quickdictionary']['into'] = intoLang
+        config.conf['quickdictionary']['mirror'] = self.useMirrorChk.GetValue()

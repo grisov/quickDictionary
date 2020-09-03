@@ -37,7 +37,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         confspec = {
             "from": "string(default=%s)" % langs.defaultFrom,
             "into": "string(default=%s)" % langs.defaultInto,
-            "token": "string(default=%s)" % TOKEN
+            "token": "string(default=%s)" % TOKEN,
+            "mirror": "boolean(default=false)"
         }
         config.conf.spec["quickdictionary"] = confspec
         gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(QuickDictionarySettingsPanel)
@@ -61,6 +62,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     @property
     def token(self):
         return config.conf['quickdictionary']['token']
+
+    @property
+    def mirror(self):
+        return config.conf['quickdictionary']['mirror']
+
+    @mirror.setter
+    def mirror(self, mirror):
+        config.conf['quickdictionary']['mirror'] = bool(mirror)
 
     @property
     def ui(self):
@@ -105,7 +114,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             self.showSettings()
 
     def translate(self, text, isHtml=False, copyToClip=False):
-        translator = Translator(self.source, self.target, text, self.ui, self.token, False, isHtml)
+        translator = Translator(self.source, self.target, text, self.ui, self.token, self.mirror, isHtml)
         translator.start()
         i=0
         while translator.is_alive():

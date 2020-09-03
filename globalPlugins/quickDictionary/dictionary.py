@@ -64,7 +64,7 @@ class Translator(threading.Thread):
                 ui = '&ui=%s' % self.uiLang if self.uiLang else '')
             rq = Request(url, method='GET', headers=headers)
             try:
-                resp = urlopen(rq)
+                resp = urlopen(rq, timeout=8)
             except Exception as e:
                 self._translation = 'Error: %s [%s]' % (str(e), server)
                 continue
