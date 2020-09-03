@@ -50,8 +50,11 @@ class Languages(object):
 
     @property
     def defaultInto(self):
-        localeLang = getdefaultlocale()[0].split('_')[0]
-        return localeLang if next(filter(lambda l: l.code==localeLang, self.intoList(self.defaultFrom)), None) else [l for l in self.intoList(self.defaultFrom)][0].code
+        return self.locale if next(filter(lambda l: l.code==self.locale, self.intoList(self.defaultFrom)), None) else [l for l in self.intoList(self.defaultFrom)][0].code
+
+    @property
+    def locale(self):
+        return getdefaultlocale()[0].split('_')[0]
 
     def __getitem__(self, lang):
         return Language(lang, self.names)

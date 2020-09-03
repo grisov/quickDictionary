@@ -58,6 +58,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     def target(self, lang):
         config.conf['quickdictionary']['into'] = lang
 
+    @property
+    def token(self):
+        return config.conf['quickdictionary']['token']
+
+    @property
+    def ui(self):
+        return langs.locale
+
     def terminate(self):
         try:
             gui.settingsDialogs.NVDASettingsDialog.categoryClasses.remove(QuickDictionarySettingsPanel)
@@ -97,7 +105,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             self.showSettings()
 
     def translate(self, text, isHtml=False, copyToClip=False):
-        translator = Translator(self.source, self.target, text, 'uk', isHtml)
+        translator = Translator(self.source, self.target, text, self.ui, self.token, False, isHtml)
         translator.start()
         i=0
         while translator.is_alive():

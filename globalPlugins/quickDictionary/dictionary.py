@@ -15,13 +15,15 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 class Translator(threading.Thread):
 
-    def __init__(self, langFrom, langTo, text, uiLang, isHtml=False, *args, **kwargs):
+    def __init__(self, langFrom, langTo, text, uiLang=None, token=None, mirror=False, isHtml=False, *args, **kwargs):
         super(Translator, self).__init__(*args, **kwargs)
         self._stopEvent = threading.Event()
         self._langFrom = langFrom
         self._langTo = langTo
         self._text = text
         self._uiLang = uiLang
+        self._token = token
+        self._mirror = mirror
         self._isHtml = isHtml
         self._translation = ''
 
@@ -29,6 +31,8 @@ class Translator(threading.Thread):
     langTo = lambda self: self._langTo
     text = lambda self: self._text
     uiLang = lambda self: self._uiLang
+    token = lambda self: self._token
+    mirror = lambda self: self._mirror
     isHtml = lambda self: self._isHtml
     translation = lambda self: self._translation
 
@@ -36,6 +40,8 @@ class Translator(threading.Thread):
     langTo = property(langTo)
     text = property(text)
     uiLang = property(uiLang)
+    token = property(token)
+    mirror = property(mirror)
     isHtml = property(isHtml)
     translation = property(translation)
 
@@ -43,27 +49,32 @@ class Translator(threading.Thread):
         self._stopEvent.set()
 
     def run(self):
-        data = {
-            'text': self.text,
-            'lang': '%s-%s' % (self.langFrom, self.langTo)}
-        if config.conf['quickdictionary']['token']:
-            data['key'] = config.conf['quickdictionary']['token']
-        data = bytes(str(dumps(data)), encoding='utf-8')
         headers = {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla 5.0'}
-        url = 'https://info.alwaysdata.net/v1/proxy'
-        rq = Request(url, data=data, method='POST', headers=headers)
-        try:
-            resp = urlopen(rq)
-        except Exception as e:
-            self._translation = 'Error: ' + str(e)
+            'User-Agent': 'Mozilla 5.0'}
+        directUrl = 'https://dictionary.yandex.net'
+        mirrorUrl = 'https://info.alwaysdata.net'
+        servers = [mirrorUrl]
+        if not self.mirror:
+            servers.insert(0, directUrl)
+        lang = '%s-%s' % (self.langFrom, self.langTo)
+        urlTemplate = "{server}/api/v1/dicservice.json/lookup?{key}lang={lang}&text={text}{ui}"
+        for server in servers:
+            url = urlTemplate.format(server=server, lang=lang, text=self.text,
+                key = 'key=%s&' % self.token if self.token else '',
+                ui = '&ui=%s' % self.uiLang if self.uiLang else '')
+            rq = Request(url, method='GET', headers=headers)
+            try:
+                resp = urlopen(rq)
+            except Exception as e:
+                self._translation = 'Error: %s [%s]' % (str(e), server)
+                continue
+            if resp.status!=200:
+                self._translation = 'Error: incorrect response code %d from the server %s' % (resp.status, server)
+                continue
+            text = loads(resp.read().decode())
+            parser = Parser(text)
+            self._translation = parser.to_html() if self.isHtml else parser.to_text()
             return
-        text = loads(resp.read().decode())['answer']
-        if isinstance(text, str):
-            text = loads(text)
-        parser = Parser(text)
-        self._translation = parser.to_html() if self.isHtml else parser.to_text()
 
 
 class Parser(object):
