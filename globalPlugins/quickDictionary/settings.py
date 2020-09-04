@@ -44,6 +44,10 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         self._intoChoice.Select(langTo)
 
         # Translators: A setting in addon settings dialog.
+        self.autoSwapChk = wx.CheckBox(self, label=_("Auto-swap languages"))
+        self.autoSwapChk.SetValue(config.conf[_addonName]['autoswap'])
+        sizer.Add(self.autoSwapChk)
+        # Translators: A setting in addon settings dialog.
         self.useMirrorChk = wx.CheckBox(self, label=_("Use mirror server"))
         self.useMirrorChk.SetValue(config.conf[_addonName]['mirror'])
         sizer.Add(self.useMirrorChk)
@@ -65,4 +69,5 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         intoLang = self._intoChoice.GetClientData(self._intoChoice.GetSelection()).code
         config.conf[_addonName]['from'] = fromLang
         config.conf[_addonName]['into'] = intoLang
+        config.conf[_addonName]['autoswap'] = self.autoSwapChk.GetValue()
         config.conf[_addonName]['mirror'] = self.useMirrorChk.GetValue()

@@ -7,34 +7,35 @@ import re
 import ssl
 import threading
 from urllib.request import Request, urlopen
-from json import dumps, loads
+from urllib.parse import quote as urlencode
+from json import loads
 import config
+from . import _addonName
+from .languages import langs
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class Translator(threading.Thread):
 
-    def __init__(self, langFrom, langTo, text, uiLang=None, token=None, mirror=False, isHtml=False, *args, **kwargs):
+    def __init__(self, langFrom, langTo, text, *args, **kwargs):
         super(Translator, self).__init__(*args, **kwargs)
         self._stopEvent = threading.Event()
         self._langFrom = langFrom
         self._langTo = langTo
         self._text = text
-        self._uiLang = uiLang
-        self._token = token
-        self._mirror = mirror
-        self._isHtml = isHtml
-        self._translation = ''
+        self._style = '<link rel="stylesheet" type="text/css" href="%s">' % os.path.join(os.path.dirname(__file__), 'style.css')
+        self._html = ''
+        self._plaintext = ''
 
     langFrom = lambda self: self._langFrom
     langTo = lambda self: self._langTo
     text = lambda self: self._text
-    uiLang = lambda self: self._uiLang
-    token = lambda self: self._token
-    mirror = lambda self: self._mirror
-    isHtml = lambda self: self._isHtml
-    translation = lambda self: self._translation
+    uiLang = lambda self: langs.locale
+    token = lambda self: config.conf[_addonName]['token']
+    mirror = lambda self: config.conf[_addonName]['mirror']
+    html = lambda self: self._html
+    plaintext = lambda self: self._plaintext
 
     langFrom = property(langFrom)
     langTo = property(langTo)
@@ -42,8 +43,8 @@ class Translator(threading.Thread):
     uiLang = property(uiLang)
     token = property(token)
     mirror = property(mirror)
-    isHtml = property(isHtml)
-    translation = property(translation)
+    html = property(html)
+    plaintext = property(plaintext)
 
     def stop(self):
         self._stopEvent.set()
@@ -60,21 +61,22 @@ class Translator(threading.Thread):
         urlTemplate = "{server}/api/v1/dicservice.json/lookup?{key}lang={lang}&text={text}{ui}"
         for server in servers:
             url = urlTemplate.format(server=server, lang=lang,
-                text=self.text.encode('utf-8'),#***
+                text=urlencode(self.text),
                 key = 'key=%s&' % self.token if self.token else '',
                 ui = '&ui=%s' % self.uiLang if self.uiLang else '')
             rq = Request(url, method='GET', headers=headers)
             try:
                 resp = urlopen(rq, timeout=8)
             except Exception as e:
-                self._translation = 'Error: %s [%s]' % (str(e), server)
+                self._html = 'Error: %s [%s]' % (str(e), server)
                 continue
             if resp.status!=200:
-                self._translation = 'Error: incorrect response code %d from the server %s' % (resp.status, server)
+                self._html = 'Error: incorrect response code %d from the server %s' % (resp.status, server)
                 continue
-            text = loads(resp.read().decode())
-            parser = Parser(text)
-            self._translation = parser.to_html() if self.isHtml else parser.to_text()
+            parser = Parser(loads(resp.read().decode()))
+            html = parser.to_html()
+            self._html = '%s\r\n%s' % (self._style, html) if html else html
+            self._plaintext = parser.to_text()
             return
 
 
@@ -98,12 +100,11 @@ class Parser(object):
         return ''
 
     def to_html(self):
-        if not isinstance(self.resp, dict):
-            return '<h1>%s</h1>' % _('Parsing error!')
-        code = list(self.resp)[0]
-        if str(code).isdigit():
-            return '<h1>%s: %d</h1>' % (self.resp[code], code)
-        html = '<link rel="stylesheet" type="text/css" href="%s">\n' % os.path.join(os.path.dirname(__file__), 'style.css')
+        if not isinstance(self.resp, dict): # incorrect response
+            return ''
+        if self.resp.get('message', None): # Error message
+            return '<h1>%s</h1>' % self.resp['message']
+        html = ''
         for key in ['def', 'tr', 'mean', 'syn', 'ex']:
             if key in self.resp:
                 html += {
@@ -113,7 +114,7 @@ class Parser(object):
                     }.get(key, '')
                 if key == 'def':
                     if not self.resp['def']:
-                        html += '<h1>%s</h1>' % _('No results')
+                        return ''
                     for elem in self.resp['def']:
                         html += '<h1>' + elem['text'] + self.attrs(elem) + '</h1>\n'
                         html += Parser(elem).to_html()
@@ -153,12 +154,13 @@ class Parser(object):
                     html += ',\n'.join(exs) + '</p>'
                     del(exs)
         self.html = html
-        return html
+        return self.html
 
     def to_text(self):
         li = u"\u2022 "
         h1 = "- "
-        text = self.html if self.html else self.to_html().replace('<li>', li).replace('<h1>', h1)
+        text = self.html if self.html else self.to_html()
+        text = text.replace('<li>', li).replace('<h1>', h1)
         text = re.sub(r'\<[^>]*\>', '', text)
         text = '\r\n'.join((s for s in text.split('\n') if s))
-        return text if text else str(resp)
+        return text

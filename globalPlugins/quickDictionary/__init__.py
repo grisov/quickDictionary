@@ -38,6 +38,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         confspec = {
             "from": "string(default=%s)" % langs.defaultFrom,
             "into": "string(default=%s)" % langs.defaultInto,
+            "autoswap": "boolean(default=true)",
             "token": "string(default=%s)" % TOKEN,
             "mirror": "boolean(default=false)"
         }
@@ -61,20 +62,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         config.conf[_addonName]['into'] = lang
 
     @property
-    def token(self):
-        return config.conf[_addonName]['token']
-
-    @property
-    def mirror(self):
-        return config.conf[_addonName]['mirror']
-
-    @mirror.setter
-    def mirror(self, mirror):
-        config.conf[_addonName]['mirror'] = bool(mirror)
-
-    @property
-    def ui(self):
-        return langs.locale
+    def isAutoSwap(self):
+        return config.conf[_addonName]['autoswap']
 
     def terminate(self):
         try:
@@ -115,20 +104,30 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             self.showSettings()
 
     def translate(self, text, isHtml=False, copyToClip=False):
-        translator = Translator(self.source, self.target, text, self.ui, self.token, self.mirror, isHtml)
-        translator.start()
-        i=0
-        while translator.is_alive():
-            sleep(0.1)
-            if i == 10:
-                beep(500, 100)
-                i = 0
-            i+=1
-        translator.join()
-        if isHtml:
-            ui.browseableMessage(translator.translation, title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name), isHtml=isHtml)
+        pairs = [(self.source, self.target)]
+        if self.isAutoSwap:
+            pairs.append((self.target, self.source))
+        for lFrom, lInto in pairs:
+            translator = Translator(lFrom, lInto, text)
+            translator.start()
+            i=0
+            while translator.is_alive():
+                sleep(0.1)
+                if i == 10:
+                    beep(500, 100)
+                    i = 0
+                i+=1
+            translator.join()
+            if translator.plaintext:
+                break
         else:
-            text = '%s-%s\r\n%s' % (langs[translator.langFrom].name, langs[translator.langTo].name, translator.translation)
+            if not translator.plaintext:
+                ui.message(_('No results'))
+                return
+        if isHtml:
+            ui.browseableMessage(translator.html, title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name), isHtml=isHtml)
+        else:
+            text = '%s-%s\r\n%s' % (langs[translator.langFrom].name, langs[translator.langTo].name, translator.plaintext)
             if copyToClip:
                 copyToClipboard(text)
             else:
