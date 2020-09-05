@@ -39,6 +39,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             "from": "string(default=%s)" % langs.defaultFrom,
             "into": "string(default=%s)" % langs.defaultInto,
             "autoswap": "boolean(default=true)",
+            "copytoclip": "boolean(default=true)",
             "token": "string(default=%s)" % TOKEN,
             "mirror": "boolean(default=false)"
         }
@@ -60,6 +61,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     @target.setter
     def target(self, lang):
         config.conf[_addonName]['into'] = lang
+
+    @property
+    def isCopyToClipboard(self):
+        return config.conf[_addonName]['copytoclip']
 
     @property
     def isAutoSwap(self):
@@ -127,11 +132,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         if isHtml:
             ui.browseableMessage(translator.html, title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name), isHtml=isHtml)
         else:
-            text = '%s-%s\r\n%s' % (langs[translator.langFrom].name, langs[translator.langTo].name, translator.plaintext)
-            if copyToClip:
-                copyToClipboard(text)
-            else:
-                ui.message(text)
+            ui.message(
+                '%s-%s\r\n%s' % (langs[translator.langFrom].name, langs[translator.langTo].name, translator.plaintext))
+        if copyToClip or self.isCopyToClipboard:
+            copyToClipboard(translator.plaintext)
 
     __gestures = {
         "kb:NVDA+w": "translateAnnounce",

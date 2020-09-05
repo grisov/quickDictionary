@@ -42,7 +42,10 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         langTo = self._intoChoice.FindString(langs[config.conf[_addonName]['into']].name)
         self._fromChoice.Select(langFrom)
         self._intoChoice.Select(langTo)
-
+        # Translators: A setting in addon settings dialog.
+        self.copyToClipboardChk = wx.CheckBox(self, label=_("Copy translation result to clipboard"))
+        self.copyToClipboardChk.SetValue(config.conf[_addonName]['copytoclip'])
+        sizer.Add(self.copyToClipboardChk)
         # Translators: A setting in addon settings dialog.
         self.autoSwapChk = wx.CheckBox(self, label=_("Auto-swap languages"))
         self.autoSwapChk.SetValue(config.conf[_addonName]['autoswap'])
