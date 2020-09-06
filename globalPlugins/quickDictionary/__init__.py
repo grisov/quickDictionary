@@ -25,9 +25,7 @@ from threading import Thread
 from .dictionary import Translator
 from .shared import copyToClipboard, getSelectedText
 from .languages import langs
-from .settings import QuickDictionarySettingsPanel
-
-TOKEN = 'dict.1.1.20160512T220906Z.4a4ee160a921aa01.a74981e0761f48a1309d4f903e540f1f3288f1a3'
+from .settings import QuickDictionarySettingsPanel, TOKEN
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
@@ -132,8 +130,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         if isHtml:
             ui.browseableMessage(translator.html, title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name), isHtml=isHtml)
         else:
-            ui.message(
-                '%s-%s\r\n%s' % (langs[translator.langFrom].name, langs[translator.langTo].name, translator.plaintext))
+            ui.message('%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name))
+            ui.message(translator.plaintext)
         if copyToClip or self.isCopyToClipboard:
             copyToClipboard(translator.plaintext)
 

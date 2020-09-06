@@ -8,6 +8,8 @@ import config
 from . import _addonName, _addonSummary
 from .languages import langs
 
+TOKEN = 'dict.1.1.20160512T220906Z.4a4ee160a921aa01.a74981e0761f48a1309d4f903e540f1f3288f1a3'
+
 
 class QuickDictionarySettingsPanel(gui.SettingsPanel):
     # Translators: name of the settings dialog.
@@ -43,17 +45,36 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         self._fromChoice.Select(langFrom)
         self._intoChoice.Select(langTo)
         # Translators: A setting in addon settings dialog.
-        self.copyToClipboardChk = wx.CheckBox(self, label=_("Copy translation result to clipboard"))
-        self.copyToClipboardChk.SetValue(config.conf[_addonName]['copytoclip'])
-        sizer.Add(self.copyToClipboardChk)
+        self._copyToClipboardChk = wx.CheckBox(self, label=_("Copy translation result to clipboard"))
+        self._copyToClipboardChk.SetValue(config.conf[_addonName]['copytoclip'])
+        sizer.Add(self._copyToClipboardChk)
         # Translators: A setting in addon settings dialog.
-        self.autoSwapChk = wx.CheckBox(self, label=_("Auto-swap languages"))
-        self.autoSwapChk.SetValue(config.conf[_addonName]['autoswap'])
-        sizer.Add(self.autoSwapChk)
+        self._autoSwapChk = wx.CheckBox(self, label=_("Auto-swap languages"))
+        self._autoSwapChk.SetValue(config.conf[_addonName]['autoswap'])
+        sizer.Add(self._autoSwapChk)
+
+        serverSizer = wx.BoxSizer(wx.VERTICAL)
         # Translators: A setting in addon settings dialog.
-        self.useMirrorChk = wx.CheckBox(self, label=_("Use mirror server"))
-        self.useMirrorChk.SetValue(config.conf[_addonName]['mirror'])
-        sizer.Add(self.useMirrorChk)
+        serverLabel = wx.StaticText(self, label=_("Server settings:"))
+        serverSizer.Add(serverLabel)
+        # Translators: A setting in addon settings dialog.
+        self._useMirrorChk = wx.CheckBox(self, label=_("Use mirror server"))
+        self._useMirrorChk.SetValue(config.conf[_addonName]['mirror'])
+        serverSizer.Add(self._useMirrorChk)
+        tokenSizer = wx.BoxSizer(wx.VERTICAL)
+        # Translators: A setting in addon settings dialog.
+        tokenLabel = wx.StaticText(self, label=_("Dictionary Access Token:"))
+        tokenSizer.Add(tokenLabel)
+        self._tokenInput = wx.TextCtrl(self, style=wx.TE_LEFT)
+        tokenSizer.Add(self._tokenInput)
+        url = 'https://yandex.com/dev/dictionary/keys/get/'
+        # Translators: A setting in addon settings dialog.
+        self._linkHref = wx.adv.HyperlinkCtrl(self, -1, label=_("Register your own access token"), url=url, style=wx.adv.HL_CONTEXTMENU | wx.adv.HL_DEFAULT_STYLE | wx.adv.HL_ALIGN_RIGHT)
+        self._linkHref.Update()
+        self._tokenInput.SetValue(config.conf[_addonName]['token'])
+        tokenSizer.Add(self._linkHref)
+        serverSizer.Add(tokenSizer)
+        sizer.Add(serverSizer)
 
     def widgetMaker(self, widget, languages):
         for lang in languages:
@@ -68,9 +89,12 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         self._fromChoice.SetFocus()
 
     def onSave(self):
+        """Update Configuration"""
         fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
         intoLang = self._intoChoice.GetClientData(self._intoChoice.GetSelection()).code
         config.conf[_addonName]['from'] = fromLang
         config.conf[_addonName]['into'] = intoLang
-        config.conf[_addonName]['autoswap'] = self.autoSwapChk.GetValue()
-        config.conf[_addonName]['mirror'] = self.useMirrorChk.GetValue()
+        config.conf[_addonName]['copytoclip'] = self._copyToClipboardChk.GetValue()
+        config.conf[_addonName]['autoswap'] = self._autoSwapChk.GetValue()
+        config.conf[_addonName]['mirror'] = self._useMirrorChk.GetValue()
+        config.conf[_addonName]['token'] = self._tokenInput.GetValue()
