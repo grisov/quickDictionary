@@ -75,6 +75,8 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         tokenSizer.Add(self._linkHref)
         serverSizer.Add(tokenSizer)
         sizer.Add(serverSizer)
+        if self._tokenInput.GetValue() != TOKEN:
+            tokenSizer.Hide(self._linkHref)
 
     def widgetMaker(self, widget, languages):
         for lang in languages:
@@ -97,4 +99,5 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         config.conf[_addonName]['copytoclip'] = self._copyToClipboardChk.GetValue()
         config.conf[_addonName]['autoswap'] = self._autoSwapChk.GetValue()
         config.conf[_addonName]['mirror'] = self._useMirrorChk.GetValue()
-        config.conf[_addonName]['token'] = self._tokenInput.GetValue()
+        accessToken = self._tokenInput.GetValue()
+        config.conf[_addonName]['token'] = accessToken if accessToken else TOKEN
