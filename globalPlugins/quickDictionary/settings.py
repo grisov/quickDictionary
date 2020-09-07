@@ -52,15 +52,10 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         self._autoSwapChk = wx.CheckBox(self, label=_("Auto-swap languages"))
         self._autoSwapChk.SetValue(config.conf[_addonName]['autoswap'])
         sizer.Add(self._autoSwapChk)
-
-        serverSizer = wx.BoxSizer(wx.VERTICAL)
-        # Translators: A setting in addon settings dialog.
-        serverLabel = wx.StaticText(self, label=_("Server settings:"))
-        serverSizer.Add(serverLabel)
         # Translators: A setting in addon settings dialog.
         self._useMirrorChk = wx.CheckBox(self, label=_("Use mirror server"))
         self._useMirrorChk.SetValue(config.conf[_addonName]['mirror'])
-        serverSizer.Add(self._useMirrorChk)
+        sizer.Add(self._useMirrorChk)
         tokenSizer = wx.BoxSizer(wx.VERTICAL)
         # Translators: A setting in addon settings dialog.
         tokenLabel = wx.StaticText(self, label=_("Dictionary Access Token:"))
@@ -73,8 +68,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         self._linkHref.Update()
         self._tokenInput.SetValue(config.conf[_addonName]['token'])
         tokenSizer.Add(self._linkHref)
-        serverSizer.Add(tokenSizer)
-        sizer.Add(serverSizer)
+        sizer.Add(tokenSizer)
         if self._tokenInput.GetValue() != TOKEN:
             tokenSizer.Hide(self._linkHref)
 
