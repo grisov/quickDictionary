@@ -31,7 +31,7 @@ class Translator(threading.Thread):
     langFrom = lambda self: self._langFrom
     langTo = lambda self: self._langTo
     text = lambda self: self._text
-    uiLang = lambda self: langs.locale
+    uiLang = lambda self: self._langTo or langs.locale
     token = lambda self: config.conf[_addonName]['token']
     mirror = lambda self: config.conf[_addonName]['mirror']
     html = lambda self: self._html
@@ -62,8 +62,8 @@ class Translator(threading.Thread):
         for server in servers:
             url = urlTemplate.format(server=server, lang=lang,
                 text=urlencode(self.text),
-                key = 'key=%s&' % self.token if self.token else '',
-                ui = '&ui=%s' % self.uiLang if self.uiLang else '')
+                key = 'key=%s&' % self.token or '',
+                ui = '&ui=%s' % self.uiLang or '')
             rq = Request(url, method='GET', headers=headers)
             try:
                 resp = urlopen(rq, timeout=8)

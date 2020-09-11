@@ -17,13 +17,14 @@ _addonSummary = _curAddon.manifest['summary']
 
 import globalPluginHandler
 from scriptHandler import script, getLastScriptRepeatCount
+from queueHandler import queueFunction, eventQueue
 import api, ui, config
 import gui, wx
 from time import sleep
 from tones import beep
 from threading import Thread
 from .dictionary import Translator
-from .shared import copyToClipboard, getSelectedText, finally_
+from .shared import copyToClipboard, getSelectedText, messageWithLangDetection, finally_
 from .languages import langs
 from .settings import QuickDictionarySettingsPanel, TOKEN
 
@@ -89,7 +90,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         self.bindGestures(self.__gestures)
 
     def script_error(self, gesture):
-        beep(150, 100)
+        beep(100, 100)
 
     def script_addonLayer(self, gesture):
         # A run-time binding will occur from which we can perform various layered translation commands.
@@ -99,7 +100,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             return
         self.bindGestures(self.__addonGestures)
         self._toggleGestures = True
-        beep(100, 10)
+        beep(200, 10)
 
     @script(description=_("Announces the translation of the current selected word or phrase [D] or [NVDA+D]"))
     def script_dictionaryAnnounce(self, gesture):
@@ -167,7 +168,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             ui.browseableMessage(translator.html, title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name), isHtml=isHtml)
         else:
             ui.message('%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name))
-            ui.message(translator.plaintext)
+            queueFunction(eventQueue, messageWithLangDetection,
+                {'text': translator.plaintext, 'lang': langs[translator.langTo].code})
         if copyToClip or self.isCopyToClipboard:
             copyToClipboard(translator.plaintext)
 

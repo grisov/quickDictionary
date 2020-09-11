@@ -5,9 +5,13 @@ addonHandler.initTranslation()
 import re
 import api
 import ui
+import braille
+from speech import LangChangeCommand, speak
 from textInfos import POSITION_SELECTION
 from tones import beep
 from functools import wraps
+import config
+
 
 def copyToClipboard(object):
     if api.copyToClip(object):
@@ -40,7 +44,7 @@ def clearText(text):
     text = ''.join([s for s in text.strip() if s.isalpha() or s.isspace()])
     return ' '.join(re.split('\s+', text))
 
-# Below toggle code came from Tyler Spivey's code, with enhancements by Joseph Lee.
+# Below toggle code came from Tyler Spivey's code, with enhancements by Joseph Lee (from Instant Translate add-on)
 def finally_(func, final):
     """Calls final after func, even if it fails."""
     def wrap(f):
@@ -52,3 +56,14 @@ def finally_(func, final):
                 final()
         return new
     return wrap(final)
+
+# below function is taken from Instant Translate add-on
+def messageWithLangDetection(msg):
+    if config.conf['speech']['autoLanguageSwitching']:
+        speechSequence=[]
+        speechSequence.append(LangChangeCommand(msg['lang']))
+        speechSequence.append(msg['text'])
+        speak(speechSequence)
+        braille.handler.message(msg['text'])
+    else:
+        ui.message(msg['text'])
