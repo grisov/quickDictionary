@@ -7,8 +7,7 @@ import wx
 import config
 from . import _addonName, _addonSummary
 from .languages import langs
-
-TOKEN = 'dict.1.1.20160512T220906Z.4a4ee160a921aa01.a74981e0761f48a1309d4f903e540f1f3288f1a3'
+from .secret import APIKEY as TOKEN
 
 
 class QuickDictionarySettingsPanel(gui.SettingsPanel):

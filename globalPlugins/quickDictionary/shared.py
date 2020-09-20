@@ -8,10 +8,26 @@ import ui
 import braille
 from speech import LangChangeCommand, speak
 from textInfos import POSITION_SELECTION
+from time import sleep
 from tones import beep
-from functools import wraps
+from functools import lru_cache, wraps
 import config
+from .dictionary import Translator
 
+
+@lru_cache(maxsize=100)
+def translateWithCaching(langFrom, langInto, text):
+    translator = Translator(langFrom, langInto, text)
+    translator.start()
+    i=0
+    while translator.is_alive():
+        sleep(0.1)
+        if i == 10:
+            beep(500, 100)
+            i = 0
+        i+=1
+    translator.join()
+    return translator
 
 def copyToClipboard(object):
     if api.copyToClip(object):

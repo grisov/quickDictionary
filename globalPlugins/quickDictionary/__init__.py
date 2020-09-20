@@ -16,17 +16,16 @@ _addonName = _curAddon.manifest['name']
 _addonSummary = _curAddon.manifest['summary']
 
 import globalPluginHandler
-from scriptHandler import script, getLastScriptRepeatCount
+from scriptHandler import script
 from queueHandler import queueFunction, eventQueue
 import api, ui, config
 import gui, wx
-from time import sleep
 from tones import beep
 from threading import Thread
-from .dictionary import Translator
-from .shared import copyToClipboard, getSelectedText, messageWithLangDetection, finally_
+from .shared import copyToClipboard, getSelectedText, translateWithCaching, messageWithLangDetection, finally_
 from .languages import langs
-from .settings import QuickDictionarySettingsPanel, TOKEN
+from .settings import QuickDictionarySettingsPanel
+from .secret import APIKEY as TOKEN
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
@@ -37,8 +36,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         confspec = {
             "from": "string(default=%s)" % langs.defaultFrom,
             "into": "string(default=%s)" % langs.defaultInto,
-            "autoswap": "boolean(default=true)",
-            "copytoclip": "boolean(default=true)",
+            "autoswap": "boolean(default=false)",
+            "copytoclip": "boolean(default=false)",
             "token": "string(default=%s)" % TOKEN,
             "mirror": "boolean(default=false)"
         }
@@ -148,16 +147,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         if self.isAutoSwap:
             pairs.append((self.target, self.source))
         for lFrom, lInto in pairs:
-            translator = Translator(lFrom, lInto, text)
-            translator.start()
-            i=0
-            while translator.is_alive():
-                sleep(0.1)
-                if i == 10:
-                    beep(500, 100)
-                    i = 0
-                i+=1
-            translator.join()
+            translator = translateWithCaching(lFrom, lInto, text)
             if translator.plaintext:
                 break
         else:
@@ -169,7 +159,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         else:
             ui.message('%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name))
             queueFunction(eventQueue, messageWithLangDetection,
-                {'text': translator.plaintext, 'lang': langs[translator.langTo].code})
+                {'text': translator.plaintext, 'lang': translator.langTo})
         if copyToClip or self.isCopyToClipboard:
             copyToClipboard(translator.plaintext)
 
