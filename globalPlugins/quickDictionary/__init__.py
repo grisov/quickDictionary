@@ -106,13 +106,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     def script_dictionaryAnnounce(self, gesture):
         text = getSelectedText()
         if not text: return
-        Thread(target=self.translate, args=[text, False, False]).start()
+        Thread(target=self.translate, args=[text, False]).start()
 
     @script(description=_("Displays dictionary results in a separate window [W]"))
     def script_dictionaryBox(self, gesture):
         text = getSelectedText()
         if not text: return
-        Thread(target=self.translate, args=[text, True, False]).start()
+        Thread(target=self.translate, args=[text, True]).start()
 
     @script(description=_("It announces the current source and target languages [A]"))
     def script_announceLanguages(self, gesture):
@@ -127,14 +127,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             ui.message('%s - %s' % (self.source, self.target))
             text = getSelectedText()
             if not text: return
-            Thread(target=self.translate, args=[text, False, False]).start()
+            Thread(target=self.translate, args=[text, False]).start()
         else:
             ui.message(_('Swap languages is not available for this pair') + ': %s - %s' % (langs[self.source].name, langs[self.target].name))
 
     @script(description=_("Copy last dictionary result to the clipboard [C]"))
     def script_copyLastResult(self, gesture):
-        if self._lastTranslator:
-            ui.message(self._lastTranslator.plaintext)
+        if not self._lastTranslator:
+            ui.message(_("There is no dictionary queries"))
+            return
+        copyToClipboard(self._lastTranslator.plaintext)
+        ui.message('%s-%s' % (langs[self._lastTranslator.langFrom].name, langs[self._lastTranslator.langTo].name))
+        ui.message(self._lastTranslator.plaintext)
 
     @script(description=_("Announce help message [H]"))
     def script_announceHelp(self, gesture):
@@ -154,11 +158,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             _("H - announce this help message.")]:
             ui.message(message)
 
-    @script(description=_("Displays the add-on settings window [O]"))
+    @script(description=_("Displays the add-on settings dialog [O]"))
     def script_showSettings(self, gesture):
+        """Displays the add-on settings dialog"""
         wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, QuickDictionarySettingsPanel)
 
-    def translate(self, text, isHtml=False, copyToClip=False):
+    def translate(self, text, isHtml=False):
         pairs = [(self.source, self.target)]
         if self.isAutoSwap:
             pairs.append((self.target, self.source))
@@ -177,7 +182,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             ui.message('%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name))
             queueFunction(eventQueue, messageWithLangDetection,
                 {'text': translator.plaintext, 'lang': translator.langTo})
-        if copyToClip or self.isCopyToClipboard:
+        if self.isCopyToClipboard:
             copyToClipboard(translator.plaintext)
 
     __addonGestures = {
