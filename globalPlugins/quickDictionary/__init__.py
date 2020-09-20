@@ -2,7 +2,7 @@
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020 Olexandr Gryshchenko <grisov.dev@mailnull.com>
+# Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 import addonHandler
 addonHandler.initTranslation()
@@ -44,6 +44,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         config.conf.spec[_addonName] = confspec
         gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(QuickDictionarySettingsPanel)
         self._toggleGestures = False
+        self._lastTranslator = None
 
     @property
     def source(self):
@@ -132,11 +133,26 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
     @script(description=_("Copy last dictionary result to the clipboard [C]"))
     def script_copyLastResult(self, gesture):
-        pass
+        if self._lastTranslator:
+            ui.message(self._lastTranslator.plaintext)
 
     @script(description=_("Announce help message [H]"))
     def script_announceHelp(self, gesture):
-        ui.message(_("D or NVDA+D - translates selected/clipboard word or phrase, W - displays dictionary results in a separate window, A - announces current source and target languages, S - swaps source and target languages, C - copies last result to clipboard, O - open dictionary settings dialog, H - displays this message."))
+        for message in [
+            _("NVDA + D - switch to add-on control mode,"),
+            _("to get a quick translation of a word or phrase - press NVDA + D twice;"),
+            _("NVDA + Alt + D - swap languages and get quick translation;"),
+            _("NVDA + Windows + D - quick access to add-on settings."),
+            "...",
+            _("In add-on control mode:"),
+            _("D - translation of a word or phrase (the same as NVDA+D twice);"),
+            _("W - show translation in a separate browseable window;"),
+            _("A - anounce the current pair of languages ??for translation;"),
+            _("S - swap languages and get quick translation (same as NVDA + Alt + D);"),
+            _("C - copy last translation result to the clipboard;"),
+            _("O - open dictionary add-on settings dialog (same as NVDA + Windows + D);"),
+            _("H - announce this help message.")]:
+            ui.message(message)
 
     @script(description=_("Displays the add-on settings window [O]"))
     def script_showSettings(self, gesture):
@@ -154,6 +170,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             if not translator.plaintext:
                 ui.message(_('No results'))
                 return
+        self._lastTranslator = translator
         if isHtml:
             ui.browseableMessage(translator.html, title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name), isHtml=isHtml)
         else:
