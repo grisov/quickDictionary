@@ -1,6 +1,10 @@
 #dictionary.py
 import addonHandler
-addonHandler.initTranslation()
+from logHandler import log
+try:
+    addonHandler.initTranslation()
+except addonHandler.AddonError:
+    log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
 
 import os
 import re
@@ -17,8 +21,17 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class Translator(threading.Thread):
+    """Provides interaction with the online dictionary service."""
 
-    def __init__(self, langFrom, langTo, text, *args, **kwargs):
+    def __init__(self, langFrom:str, langTo:str, text:str, *args, **kwargs):
+        """Initialization of the source and target language, as well as the word or phrase to search in the dictionary.
+        @param langFrom: source language
+        @type langFrom: str
+        @param langTo: target language
+        @type langTo: str
+        @param text: a word or phrase to look up in a dictionary
+        @type text: str
+        """
         super(Translator, self).__init__(*args, **kwargs)
         self._stopEvent = threading.Event()
         self._langFrom = langFrom
@@ -28,6 +41,7 @@ class Translator(threading.Thread):
         self._html = ''
         self._plaintext = ''
 
+    # The list of getters defining parameters for working with the dictionary
     langFrom = lambda self: self._langFrom
     langTo = lambda self: self._langTo
     text = lambda self: self._text
@@ -37,6 +51,7 @@ class Translator(threading.Thread):
     html = lambda self: self._html
     plaintext = lambda self: self._plaintext
 
+    # Define class properties
     langFrom = property(langFrom)
     langTo = property(langTo)
     text = property(text)
@@ -46,10 +61,14 @@ class Translator(threading.Thread):
     html = property(html)
     plaintext = property(plaintext)
 
-    def stop(self):
+    def _stop(self, *args, **kwargs):
+        """Executed when a process terminates in a thread."""
+        super(Translator, self)._stop(*args, **kwargs)
         self._stopEvent.set()
 
     def run(self):
+        """Query the remote dictionary and save the processed response.
+        Should run in a separate thread to avoid blocking."""
         headers = {
             'User-Agent': 'Mozilla 5.0'}
         directUrl = 'https://dictionary.yandex.net'
@@ -68,6 +87,7 @@ class Translator(threading.Thread):
             try:
                 resp = urlopen(rq, timeout=8)
             except Exception as e:
+                log.exception(e)
                 self._html = 'Error: %s [%s]' % (str(e), server)
                 continue
             if resp.status!=200:
@@ -81,18 +101,30 @@ class Translator(threading.Thread):
 
 
 class Parser(object):
+    """Converts the response from the server into a human-readable formats."""
 
-    def __init__(self, resp):
+    def __init__(self, resp:dict):
+        """Initializing input values.
+        @param resp: response from server converted to dict format
+        @type resp: dict
+        """
         self.resp = resp
         self.html = ''
 
-    def attrs(self, resp):
+    def attrs(self, resp:dict) -> str:
+        """Convert to string a sequence of attributes from fields:
+        part of speech, number and gender.
+        @param resp: part of the response from server converted to dict format
+        @type resp: dict
+        """
         attrs = []
         for key in ["pos", "asp", "num", "gen"]:
             if key in resp:
                 field = {
-                    'num': _('<i>number</i>: '),
-                    'gen': _('<i>gender</i>: ')
+                    # Translators: Field name in a dictionary entry
+                    'num': "<i>%s</i>: " % _("number"),
+                    # Translators: Field name in a dictionary entry
+                    'gen': "<i>%s</i>: " % _("gender")
                     }.get(key, '') + resp[key]
                 attrs.append(field)
         if attrs:
@@ -100,6 +132,7 @@ class Parser(object):
         return ''
 
     def to_html(self):
+        """Convert data received from a remote dictionary to HTML format."""
         if not isinstance(self.resp, dict): # incorrect response
             return ''
         if self.resp.get('message', None): # Error message
@@ -108,9 +141,12 @@ class Parser(object):
         for key in ['def', 'tr', 'mean', 'syn', 'ex']:
             if key in self.resp:
                 html += {
-                    'mean': _('<p><i>Mean</i>: '),
-                    'syn': _('<p><i>Synonyms</i>:\n'),
-                    'ex': _('<p><i>Examples</i>:\n')
+                    # Translators: Field name in a dictionary entry
+                    'mean': "<p><i>%s</i>: " % _("Mean"),
+                    # Translators: Field name in a dictionary entry
+                    'syn': "<p><i>%s</i>:\n" % _("Synonyms"),
+                    # Translators: Field name in a dictionary entry
+                    'ex': "<p><i>%s</i>:\n" % _("Examples")
                     }.get(key, '')
                 if key == 'def':
                     if not self.resp['def']:
@@ -157,9 +193,10 @@ class Parser(object):
         return self.html
 
     def to_text(self):
-        li = u"\u2022 "
+        """Convert a dictionary response from HTML format to plain text."""
+        li = u"\u2022 " # marker character code
         h1 = "- "
-        text = self.html if self.html else self.to_html()
+        text = self.html or self.to_html()
         text = text.replace('<li>', li).replace('<h1>', h1)
         text = re.sub(r'\<[^>]*\>', '', text)
         text = '\r\n'.join((s for s in text.split('\n') if s))

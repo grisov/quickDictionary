@@ -1,6 +1,10 @@
 #shared.py
 import addonHandler
-addonHandler.initTranslation()
+from logHandler import log
+try:
+    addonHandler.initTranslation()
+except addonHandler.AddonError:
+    log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
 
 import re
 import api
@@ -16,7 +20,19 @@ from .dictionary import Translator
 
 
 @lru_cache(maxsize=100)
-def translateWithCaching(langFrom, langInto, text):
+def translateWithCaching(langFrom: str, langInto: str, text: str) -> Translator:
+    """Call the request procedure to the remote server on a separate thread.
+    Wait for the request to complete and return a prepared response.
+    All function values are cached to reduce the number of requests to the server.
+    @param langFrom: source language
+    @type langFrom: str
+    @param langInto: target language
+    @type langInto: str
+    @param text: word or phrase to translate
+    @type text: str
+    @return: object containing the prepared response from the remote dictionary
+    @rtype: Translator
+    """
     translator = Translator(langFrom, langInto, text)
     translator.start()
     i=0
@@ -29,13 +45,21 @@ def translateWithCaching(langFrom, langInto, text):
     translator.join()
     return translator
 
-def copyToClipboard(object):
-    if api.copyToClip(object):
+def copyToClipboard(text: str):
+    if api.copyToClip(text):
+        # Translators: Message if the text was successfully copied to the clipboard
         ui.message(_("Copied to clipboard."))
     else:
-        ui.message(_("Copy faildd."))
+        # Translators: Message if the text could not be copied to the clipboard
+        ui.message(_("Copy failed."))
 
-def getSelectedText():
+def getSelectedText() -> str:
+    """Retrieve the selected text.
+    If the selected text is missing - extract the text from the clipboard.
+    If the clipboard is empty or contains no text data - announce a warning.
+    @return: selected text, text from the clipboard, or an empty string
+    @rtype: str
+    """
     obj = api.getFocusObject()
     treeInterceptor = obj.treeInterceptor
     if hasattr(treeInterceptor, 'TextInfo') and not treeInterceptor.passThrough:
@@ -47,7 +71,7 @@ def getSelectedText():
     if not info or info.isCollapsed or not clearText(info.text):
         try:
             text = api.getClipData()
-        except:
+        except Exception:
             text = ''
         if not text or not isinstance(text, str) or not clearText(text):
             # Translators: user has pressed the shortcut key for translating selected text, but no text was actually selected and clipboard is clear
@@ -56,7 +80,13 @@ def getSelectedText():
         return clearText(text)
     return clearText(info.text)
 
-def clearText(text):
+def clearText(text: str) -> str:
+    """Retrieve only text information from a string, containing only letters and whitespace.
+    @param text: incoming text string to be cleared of unnecessary characters
+    @type text: str
+    @return: text string stripped of unnecessary characters
+    @rtype: str
+    """
     text = ''.join([s for s in text.strip() if s.isalpha() or s.isspace()])
     return ' '.join(re.split('\s+', text))
 
@@ -74,7 +104,12 @@ def finally_(func, final):
     return wrap(final)
 
 # below function is taken from Instant Translate add-on
-def messageWithLangDetection(msg):
+def messageWithLangDetection(msg: dict):
+    """Pronounce text in a given language,
+    if enabled the setting for auto-switching languages of the synthesizer.
+    @param msg: language code and text to be spoken in the specified language
+    @type msg: dict -> {'lang': str, 'text': str}
+    """
     if config.conf['speech']['autoLanguageSwitching']:
         speechSequence=[]
         speechSequence.append(LangChangeCommand(msg['lang']))

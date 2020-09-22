@@ -1,6 +1,10 @@
 #settings.py
 import addonHandler
-addonHandler.initTranslation()
+from logHandler import log
+try:
+    addonHandler.initTranslation()
+except addonHandler.AddonError:
+    log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
 
 import gui
 import wx
@@ -11,15 +15,20 @@ from .secret import APIKEY as TOKEN
 
 
 class QuickDictionarySettingsPanel(gui.SettingsPanel):
-    # Translators: name of the settings dialog.
+    """Add-on settings panel object"""
     title = _addonSummary
 
     def __init__(self, parent):
+        """Initializing the add-on settings panel object"""
         super(QuickDictionarySettingsPanel, self).__init__(parent)
 
-    def makeSettings(self, sizer):
+    def makeSettings(self, sizer: wx._core.BoxSizer):
+        """Populate the panel with settings controls.
+        @param sizer: The sizer to which to add the settings controls.
+        @type sizer: wx._core.BoxSizer
+        """
         # Translators: Help message for a dialog.
-        helpLabel = wx.StaticText(self, label=_("Select translation source and target language:"))
+        helpLabel = wx.StaticText(self, label=_("Select dictionary source and target language:"))
         helpLabel.Wrap(self.GetSize()[0])
         sizer.Add(helpLabel)
         fromSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -34,7 +43,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         intoSizer.Add(intoLabel)
         self._intoChoice = wx.Choice(self, choices=[])
         intoSizer.Add(self._intoChoice)
-        self.widgetMaker(self._fromChoice, sorted(langs.fromList(), key=lambda l: l.name))
+        self.widgetMaker(self._fromChoice, sorted(langs.fromList(), key=lambda l: l.name.lower()))
         self._fromChoice.Bind(wx.EVT_CHOICE, self.onSelectFrom)
         self.widgetMaker(self._intoChoice, langs.intoList(config.conf[_addonName]['from']))
         sizer.Add(fromSizer)
@@ -52,7 +61,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         self._autoSwapChk.SetValue(config.conf[_addonName]['autoswap'])
         sizer.Add(self._autoSwapChk)
         # Translators: A setting in addon settings dialog.
-        self._useMirrorChk = wx.CheckBox(self, label=_("Use mirror server"))
+        self._useMirrorChk = wx.CheckBox(self, label=_("Use alternative server"))
         self._useMirrorChk.SetValue(config.conf[_addonName]['mirror'])
         sizer.Add(self._useMirrorChk)
         tokenSizer = wx.BoxSizer(wx.VERTICAL)
@@ -72,19 +81,30 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
             tokenSizer.Hide(self._linkHref)
 
     def widgetMaker(self, widget, languages):
+        """Creating a widget based on the sequence of Language classes to display it in a wx.Choice object.
+        @param widget: widget based on a sequence of Language classes
+        @type widget: list
+        @param languages: list of languages available in the dictionary
+        @type languages: generator of Language objects
+        """
         for lang in languages:
             widget.Append(lang.name, lang)
 
     def onSelectFrom(self, event):
+        """Filling in the list of available destination languages when selecting the source language.
+        @param event: event indicating the selection of an item in the wx.Choice object
+        @type event: wx.core.PyEventBinder
+        """
         fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
         self._intoChoice.Clear()
-        self.widgetMaker(self._intoChoice, sorted(langs.intoList(fromLang), key=lambda l: l.name))
+        self.widgetMaker(self._intoChoice, sorted(langs.intoList(fromLang), key=lambda l: l.name.lower()))
 
     def postInit(self):
+        """Set system focus to source language selection dropdown list."""
         self._fromChoice.SetFocus()
 
     def onSave(self):
-        """Update Configuration"""
+        """Update Configuration when clicking OK."""
         fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
         intoLang = self._intoChoice.GetClientData(self._intoChoice.GetSelection()).code
         config.conf[_addonName]['from'] = fromLang
