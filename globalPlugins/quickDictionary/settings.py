@@ -53,7 +53,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         self._fromChoice.Select(langFrom)
         self._intoChoice.Select(langTo)
         # Translators: A setting in addon settings dialog.
-        self._copyToClipboardChk = wx.CheckBox(self, label=_("Copy translation result to clipboard"))
+        self._copyToClipboardChk = wx.CheckBox(self, label=_("Copy dictionary response to clipboard"))
         self._copyToClipboardChk.SetValue(config.conf[_addonName]['copytoclip'])
         sizer.Add(self._copyToClipboardChk)
         # Translators: A setting in addon settings dialog.
