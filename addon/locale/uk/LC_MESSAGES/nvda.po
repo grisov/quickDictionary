@@ -1,0 +1,245 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: NVDA Quick Dictionary 1.0\n"
+"Report-Msgid-Bugs-To: nvda-translations@freelists.org\n"
+"POT-Creation-Date: 2020-09-24 13:37+0300\n"
+"PO-Revision-Date: 2020-09-24 14:56+0300\n"
+"Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
+"Language-Team: \n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.1\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || "
+"n%100>14) ? 1 : 2);\n"
+"X-Poedit-Basepath: ../../../..\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "Invalid gesture is entered in add-on layer mode"
+msgstr "Натиснуто помилкову клавішу в режимі керування додатком"
+
+#. Translators: Method description is displayed in the add-on short help
+msgid "NVDA + D - switch to add-on gesture layer mode"
+msgstr "NVDA + D - перехід до режиму керування додатком"
+
+#. Translators: Method description is displayed in the add-on short help
+msgid ""
+"D - announce the dictionary entry for the currently selected word or phrase "
+"(the same as NVDA + D)"
+msgstr ""
+"D - оголосити словникову статтю для виділеного слова або словосполучення (те "
+"саме, що NVDA + D)"
+
+#. Translators: Method description is displayed in the add-on short help
+msgid "W - show dictionary entry in a separate browseable window"
+msgstr "W - показати словникову статтю в окремому вікні для перегляду"
+
+#. Translators: Method description is displayed in the add-on short help
+msgid "A - announce the current source and target languages"
+msgstr "A - оголосити поточну вихідну мову та мову перекладу"
+
+#. Translators: message presented to announce the current source and target languages.
+msgid "Translate: from {langFrom} to {langInto}"
+msgstr "Перекласти: з {langFrom} на {langInto}"
+
+#. Translators: Method description is displayed in the add-on short help
+msgid ""
+"S - swap languages and get quick dictionary entry (same as NVDA + Alt + D)"
+msgstr ""
+"S - поміняйте місцями мови та отримайте швидкий переклад (те саме, що NVDA + "
+"Alt + D)"
+
+#. Translators: Notification that languages ​​have been swapped
+msgid "Languages swapped"
+msgstr "Порядок мов змінено"
+
+#. Translators: Notification that reverse translation is not available for the current language pair
+msgid "Swap languages is not available for this pair"
+msgstr "Зворотній порядок не доступний для цієї пари мов"
+
+#. Translators: Method description is displayed in the add-on short help
+msgid "C - copy last dictionary entry to the clipboard"
+msgstr "C - скопіювати результати останнього запиту до буфера обміну"
+
+#. Translators: Notification that no dictionary entries have been received in the current session
+msgid "There is no dictionary queries"
+msgstr "Ще не виконувались запити до словника"
+
+#. Translators: Method description is displayed in the add-on short help
+msgid "H - announce this help message"
+msgstr "H - оголосити коротку довідкову інформацію"
+
+#. Translators: Message in the add-on short help
+msgid "to get a quick translation of a word or phrase - press NVDA + D twice;"
+msgstr ""
+"щоб отримати швидкий переклад слова чи словосполучення - двічі натисніть "
+"NVDA + D;"
+
+#. Translators: Message in the add-on short help
+msgid "NVDA + Alt + D - swap languages and get quick translation;"
+msgstr "NVDA + Alt + D - змінити порядок мов та отримати швидкий переклад;"
+
+#. Translators: Message in the add-on short help
+msgid "NVDA + Windows + D - quick access to add-on settings dialog."
+msgstr "NVDA + Windows + D - виклик діалогового вікна налаштувань додатку."
+
+#. Translators: Message in the add-on short help
+msgid "In add-on gestures layer mode:"
+msgstr "В режимі керування додатком:"
+
+#. Translators: Method description is displayed in the add-on short help
+msgid "O - open dictionary add-on settings dialog (same as NVDA + Windows + D)"
+msgstr ""
+"O - відкрити діалогове вікно налаштувань додатку (те саме, що NVDA + Windows "
+"+ D)"
+
+#. Translators: Notification of missing dictionary entry for current request
+msgid "No results"
+msgstr "Відсутні дані"
+
+#. Translators: Field name in a dictionary entry
+msgid "number"
+msgstr "число"
+
+#. Translators: Field name in a dictionary entry
+msgid "gender"
+msgstr "стать"
+
+#. Translators: Field name in a dictionary entry
+msgid "Mean"
+msgstr "Значення"
+
+#. Translators: Field name in a dictionary entry
+msgid "Synonyms"
+msgstr "Синоніми"
+
+#. Translators: Field name in a dictionary entry
+msgid "Examples"
+msgstr "Приклади"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Cebuano"
+msgstr "Себуано"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Esperanto"
+msgstr "Есперанто"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Hmong"
+msgstr "Хмонг"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Creole Haiti"
+msgstr "Креольська Гаїті"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Javanese"
+msgstr "Яванська"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Latin"
+msgstr "Латинська"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Malagasy"
+msgstr "Мадагаскарський"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Meadow Mari"
+msgstr "Лукомарійська"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Hill Mari"
+msgstr "Гірськомарійська"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Myanmar (Burmese)"
+msgstr "М'янма (бірманська)"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Chichewa"
+msgstr "Чичева"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Somali"
+msgstr "Сомалійська"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Sesotho"
+msgstr "Сесото"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Sundanese"
+msgstr "Сунданська"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Tagalog"
+msgstr "Тагалог"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Yiddish"
+msgstr "Їдиш"
+
+#. Translators: Help message for a dialog.
+msgid "Select dictionary source and target language:"
+msgstr "Оберіть вихідну та цільову мови словника:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Source language:"
+msgstr "Початкова мова"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Target language:"
+msgstr "Мова перекладу"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Copy dictionary response to clipboard"
+msgstr "Копіювати результат запиту до словника до буфера обміну"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Auto-swap languages"
+msgstr "Автоматична змінювати порядок мов"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Use alternative server"
+msgstr "Використовувати альтернативний сервер"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Dictionary Access Token:"
+msgstr "Код доступу до словника"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Register your own access token"
+msgstr "Зареєструвати власний код доступу"
+
+#. Translators: Message if the text was successfully copied to the clipboard
+msgid "Copied to clipboard."
+msgstr "Скопійовано до буфера обміну"
+
+#. Translators: Message if the text could not be copied to the clipboard
+msgid "Copy failed."
+msgstr "Помилка копіювання."
+
+#. Translators: user has pressed the shortcut key for translating selected text, but no text was actually selected and clipboard is clear
+msgid ""
+"There is no selected text, the clipboard is also empty, or its content is "
+"not text!"
+msgstr "Немає виділеного тексту та буфер обміну не містить текстових даних"
+
+#. Translators: Summary for this add-on to be shown on installation and add-on information.
+msgid "Quick Dictionary"
+msgstr "Швидкий словник"
+
+#. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
+msgid ""
+"Bilingual Dictionary add-on for quick translation selected words or phrases."
+msgstr ""
+"Дозволяє швидко отримувати дані з двомовних словників для обраних слів або "
+"словосполучень"
