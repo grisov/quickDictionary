@@ -1,4 +1,4 @@
-#-*- coding:utf-8 -*-
+﻿#-*- coding:utf-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -137,7 +137,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         beep(100, 100)
 
     # Translators: Method description is displayed in the add-on short help
-    @script(description=_("NVDA + D - switch to add-on gesture layer mode"))
+    @script(description=_("Switch to Quick Dictionary control mode"))
     def script_addonLayer(self, gesture):
         """A run-time binding will occur from which we can perform various layered dictionary commands.
         First, check if a second press of the script was done.
@@ -185,7 +185,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         ui.message(_("Translate: from {langFrom} to {langInto}").format(langFrom=langs[self.source].name, langInto=langs[self.target].name))
 
     # Translators: Method description is displayed in the add-on short help
-    @script(description=_("S - swap languages and get quick dictionary entry (same as NVDA + Alt + D)"))
+    @script(description=_("Swap languages and get Quick Dictionary translation"))
     def script_swapLanguages(self, gesture):
         """Swap languages ​​and present the dictionary entry for the selected word or phrase.
         @param gesture: gesture assigned to this method
@@ -226,27 +226,27 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         @type gesture: L{inputCore.InputGesture}
         """
         for message in [
-            self.script_addonLayer.__doc__,
+            "NVDA + D - %s," % self.script_addonLayer.__doc__,
             # Translators: Message in the add-on short help
             _("to get a quick translation of a word or phrase - press NVDA + D twice;"),
-            # Translators: Message in the add-on short help
-            _("NVDA + Alt + D - swap languages and get quick translation;"),
-            # Translators: Message in the add-on short help
-            _("NVDA + Windows + D - quick access to add-on settings dialog."),
+            "NVDA + Alt + D - %s;" % self.script_swapLanguages.__doc__,
+            "NVDA + Windows + D - %s." % self.script_showSettings.__doc__,
             "...",
             # Translators: Message in the add-on short help
             _("In add-on gestures layer mode:"),
             self.script_dictionaryAnnounce.__doc__,
             self.script_dictionaryBox.__doc__,
             self.script_announceLanguages.__doc__,
-            self.script_swapLanguages.__doc__,
+            # Translators: Message in the add-on short help
+            _("S - swap languages and get dictionary entry (same as NVDA + Alt + D)"),
             self.script_copyLastResult.__doc__,
-            self.script_showSettings.__doc__,
+            # Translators: Message in the add-on short help
+            _("O - open dictionary add-on settings dialog (same as NVDA + Windows + D)"),
             self.script_announceHelp.__doc__]:
             ui.message(message)
 
     # Translators: Method description is displayed in the add-on short help
-    @script(description=_("O - open dictionary add-on settings dialog (same as NVDA + Windows + D)"))
+    @script(description=_("Access to Quick Dictionary add-on settings dialog"))
     def script_showSettings(self, gesture):
         """Display the add-on settings dialog.
         @param gesture: gesture assigned to this method

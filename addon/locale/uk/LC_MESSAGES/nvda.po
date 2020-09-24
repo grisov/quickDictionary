@@ -25,8 +25,8 @@ msgid "Invalid gesture is entered in add-on layer mode"
 msgstr "Натиснуто помилкову клавішу в режимі керування додатком"
 
 #. Translators: Method description is displayed in the add-on short help
-msgid "NVDA + D - switch to add-on gesture layer mode"
-msgstr "NVDA + D - перехід до режиму керування додатком"
+msgid "Switch to Quick Dictionary control mode"
+msgstr "Переключення в режим керування додатком Швидкий Словник"
 
 #. Translators: Method description is displayed in the add-on short help
 msgid ""
@@ -48,11 +48,11 @@ msgstr "A - оголосити поточну вихідну мову та мо�
 msgid "Translate: from {langFrom} to {langInto}"
 msgstr "Перекласти: з {langFrom} на {langInto}"
 
-#. Translators: Method description is displayed in the add-on short help
+#. Translators: Message in the add-on short help
 msgid ""
-"S - swap languages and get quick dictionary entry (same as NVDA + Alt + D)"
+"S - swap languages and get dictionary entry (same as NVDA + Alt + D)"
 msgstr ""
-"S - поміняйте місцями мови та отримайте швидкий переклад (те саме, що NVDA + "
+"S - змінити порядок мов та отримати швидкий переклад (те саме, що NVDA + "
 "Alt + D)"
 
 #. Translators: Notification that languages ​​have been swapped
@@ -81,19 +81,19 @@ msgstr ""
 "щоб отримати швидкий переклад слова чи словосполучення - двічі натисніть "
 "NVDA + D;"
 
-#. Translators: Message in the add-on short help
-msgid "NVDA + Alt + D - swap languages and get quick translation;"
-msgstr "NVDA + Alt + D - змінити порядок мов та отримати швидкий переклад;"
+#. Translators: Method description is displayed in the add-on short help
+msgid "Swap languages and get Quick Dictionary translation"
+msgstr "Швидкий Словник: змінити порядок мов та отримати переклад"
 
-#. Translators: Message in the add-on short help
-msgid "NVDA + Windows + D - quick access to add-on settings dialog."
-msgstr "NVDA + Windows + D - виклик діалогового вікна налаштувань додатку."
+#. Translators: Method description is displayed in the add-on short help
+msgid "Access to Quick Dictionary add-on settings dialog"
+msgstr "Виклик діалогового вікна налаштувань додатку Швидкий Словник"
 
 #. Translators: Message in the add-on short help
 msgid "In add-on gestures layer mode:"
 msgstr "В режимі керування додатком:"
 
-#. Translators: Method description is displayed in the add-on short help
+#. Translators: Message in the add-on short help
 msgid "O - open dictionary add-on settings dialog (same as NVDA + Windows + D)"
 msgstr ""
 "O - відкрити діалогове вікно налаштувань додатку (те саме, що NVDA + Windows "
@@ -217,7 +217,7 @@ msgstr "Код &доступу до словника"
 
 #. Translators: A setting in addon settings dialog.
 msgid "Register your own access token"
-msgstr "Зареєструвати власний код доступу"
+msgstr "Зареєструвати вFласний код доступу"
 
 #. Translators: Message if the text was successfully copied to the clipboard
 msgid "Copied to clipboard."
