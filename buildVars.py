@@ -15,7 +15,7 @@ addon_info = {
     "addon_summary" : _("Quick Dictionary"),
     # Add-on description
     # Translators: Long description to be shown for this add-on on add-on information from add-ons manager
-    "addon_description" : _("""Bilingual Dictionary add-on for quick translation selected words or phrases."""),
+    "addon_description" : _("""Online Dictionary add-on for quick translation selected words or phrases."""),
     # version
     "addon_version" : "1.0",
     # Author(s)

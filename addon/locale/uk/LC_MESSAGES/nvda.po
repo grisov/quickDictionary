@@ -192,28 +192,28 @@ msgid "Select dictionary source and target language:"
 msgstr "Оберіть вихідну та цільову мови словника:"
 
 #. Translators: A setting in addon settings dialog.
-msgid "Source language:"
-msgstr "Початкова мова"
+msgid "&Source language:"
+msgstr "Початко&ва мова"
 
 #. Translators: A setting in addon settings dialog.
-msgid "Target language:"
-msgstr "Мова перекладу"
+msgid "&Target language:"
+msgstr "Мова &перекладу"
 
 #. Translators: A setting in addon settings dialog.
-msgid "Copy dictionary response to clipboard"
-msgstr "Копіювати результат запиту до словника до буфера обміну"
+msgid "Copy dictionary response to clip&board"
+msgstr "Копіювати результат запиту до словника до &буфера обміну"
 
 #. Translators: A setting in addon settings dialog.
-msgid "Auto-swap languages"
-msgstr "Автоматична змінювати порядок мов"
+msgid "Auto-&swap languages"
+msgstr "Автоматична з&мінювати порядок мов"
 
 #. Translators: A setting in addon settings dialog.
-msgid "Use alternative server"
-msgstr "Використовувати альтернативний сервер"
+msgid "Use &alternative server"
+msgstr "Використовувати &альтернативний сервер"
 
 #. Translators: A setting in addon settings dialog.
-msgid "Dictionary Access Token:"
-msgstr "Код доступу до словника"
+msgid "&Dictionary Access Token:"
+msgstr "Код &доступу до словника"
 
 #. Translators: A setting in addon settings dialog.
 msgid "Register your own access token"
@@ -239,7 +239,7 @@ msgstr "Швидкий словник"
 
 #. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
 msgid ""
-"Bilingual Dictionary add-on for quick translation selected words or phrases."
+"Online Dictionary add-on for quick translation selected words or phrases."
 msgstr ""
-"Дозволяє швидко отримувати дані з двомовних словників для обраних слів або "
+"Дозволяє швидко отримувати дані з онлайн словників для обраних слів або "
 "словосполучень"

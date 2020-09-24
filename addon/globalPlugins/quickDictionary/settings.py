@@ -33,13 +33,13 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         sizer.Add(helpLabel)
         fromSizer = wx.BoxSizer(wx.HORIZONTAL)
         # Translators: A setting in addon settings dialog.
-        fromLabel = wx.StaticText(self, label=_("Source language:"))
+        fromLabel = wx.StaticText(self, label=_("&Source language:"))
         fromSizer.Add(fromLabel)
         self._fromChoice = wx.Choice(self, choices=[])
         fromSizer.Add(self._fromChoice)
         intoSizer = wx.BoxSizer(wx.HORIZONTAL)
         # Translators: A setting in addon settings dialog.
-        intoLabel = wx.StaticText(self, label=_("Target language:"))
+        intoLabel = wx.StaticText(self, label=_("&Target language:"))
         intoSizer.Add(intoLabel)
         self._intoChoice = wx.Choice(self, choices=[])
         intoSizer.Add(self._intoChoice)
@@ -53,20 +53,20 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
         self._fromChoice.Select(langFrom)
         self._intoChoice.Select(langTo)
         # Translators: A setting in addon settings dialog.
-        self._copyToClipboardChk = wx.CheckBox(self, label=_("Copy dictionary response to clipboard"))
+        self._copyToClipboardChk = wx.CheckBox(self, label=_("Copy dictionary response to clip&board"))
         self._copyToClipboardChk.SetValue(config.conf[_addonName]['copytoclip'])
         sizer.Add(self._copyToClipboardChk)
         # Translators: A setting in addon settings dialog.
-        self._autoSwapChk = wx.CheckBox(self, label=_("Auto-swap languages"))
+        self._autoSwapChk = wx.CheckBox(self, label=_("Auto-&swap languages"))
         self._autoSwapChk.SetValue(config.conf[_addonName]['autoswap'])
         sizer.Add(self._autoSwapChk)
         # Translators: A setting in addon settings dialog.
-        self._useMirrorChk = wx.CheckBox(self, label=_("Use alternative server"))
+        self._useMirrorChk = wx.CheckBox(self, label=_("Use &alternative server"))
         self._useMirrorChk.SetValue(config.conf[_addonName]['mirror'])
         sizer.Add(self._useMirrorChk)
         tokenSizer = wx.BoxSizer(wx.VERTICAL)
         # Translators: A setting in addon settings dialog.
-        tokenLabel = wx.StaticText(self, label=_("Dictionary Access Token:"))
+        tokenLabel = wx.StaticText(self, label=_("&Dictionary Access Token:"))
         tokenSizer.Add(tokenLabel)
         self._tokenInput = wx.TextCtrl(self, style=wx.TE_LEFT)
         tokenSizer.Add(self._tokenInput)
