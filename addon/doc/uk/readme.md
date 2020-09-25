@@ -110,4 +110,4 @@
 1. Відкрийте командний рядок та перейдіть до кореневого каталогу репозиторію проекту.
 2. Запустіть команду **scons**. Створений додаток, якщо не виникне помилок, буде розміщений в поточному каталозі.
 
-[1]: https://github.com/grisov/quickDictionary
+[1]: https://github.com/grisov/quickDictionary/releases/download/v1.0/quickDictionary-1.0.nvda-addon

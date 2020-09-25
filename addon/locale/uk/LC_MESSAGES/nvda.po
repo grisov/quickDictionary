@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: NVDA Quick Dictionary 1.0\n"
 "Report-Msgid-Bugs-To: nvda-translations@freelists.org\n"
 "POT-Creation-Date: 2020-09-24 13:37+0300\n"
-"PO-Revision-Date: 2020-09-24 14:56+0300\n"
+"PO-Revision-Date: 2020-09-26 00:33+0300\n"
 "Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
 "Language-Team: \n"
 "Language: uk_UA\n"
@@ -30,11 +30,10 @@ msgstr "Переключення в режим керування додатко
 
 #. Translators: Method description is displayed in the add-on short help
 msgid ""
-"D - announce the dictionary entry for the currently selected word or phrase "
-"(the same as NVDA + D)"
+"D - announce the dictionary entry for the currently selected word or phrase (the same as NVDA + "
+"D)"
 msgstr ""
-"D - оголосити словникову статтю для виділеного слова або словосполучення (те "
-"саме, що NVDA + D)"
+"D - оголосити словникову статтю для виділеного слова або словосполучення (те саме, що NVDA + D)"
 
 #. Translators: Method description is displayed in the add-on short help
 msgid "W - show dictionary entry in a separate browseable window"
@@ -49,11 +48,8 @@ msgid "Translate: from {langFrom} to {langInto}"
 msgstr "Перекласти: з {langFrom} на {langInto}"
 
 #. Translators: Message in the add-on short help
-msgid ""
-"S - swap languages and get dictionary entry (same as NVDA + Alt + D)"
-msgstr ""
-"S - змінити порядок мов та отримати швидкий переклад (те саме, що NVDA + "
-"Alt + D)"
+msgid "S - swap languages and get dictionary entry (same as NVDA + Alt + D)"
+msgstr "S - змінити порядок мов та отримати швидкий переклад (те саме, що NVDA + Alt + D)"
 
 #. Translators: Notification that languages ​​have been swapped
 msgid "Languages swapped"
@@ -77,9 +73,7 @@ msgstr "H - оголосити коротку довідкову інформа�
 
 #. Translators: Message in the add-on short help
 msgid "to get a quick translation of a word or phrase - press NVDA + D twice;"
-msgstr ""
-"щоб отримати швидкий переклад слова чи словосполучення - двічі натисніть "
-"NVDA + D;"
+msgstr "щоб отримати швидкий переклад слова чи словосполучення - двічі натисніть NVDA + D;"
 
 #. Translators: Method description is displayed in the add-on short help
 msgid "Swap languages and get Quick Dictionary translation"
@@ -95,9 +89,7 @@ msgstr "В режимі керування додатком:"
 
 #. Translators: Message in the add-on short help
 msgid "O - open dictionary add-on settings dialog (same as NVDA + Windows + D)"
-msgstr ""
-"O - відкрити діалогове вікно налаштувань додатку (те саме, що NVDA + Windows "
-"+ D)"
+msgstr "O - відкрити діалогове вікно налаштувань додатку (те саме, що NVDA + Windows + D)"
 
 #. Translators: Notification of missing dictionary entry for current request
 msgid "No results"
@@ -228,9 +220,7 @@ msgid "Copy failed."
 msgstr "Помилка копіювання."
 
 #. Translators: user has pressed the shortcut key for translating selected text, but no text was actually selected and clipboard is clear
-msgid ""
-"There is no selected text, the clipboard is also empty, or its content is "
-"not text!"
+msgid "There is no selected text, the clipboard is also empty, or its content is not text!"
 msgstr "Немає виділеного тексту та буфер обміну не містить текстових даних"
 
 #. Translators: Summary for this add-on to be shown on installation and add-on information.
@@ -238,8 +228,5 @@ msgid "Quick Dictionary"
 msgstr "Швидкий словник"
 
 #. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
-msgid ""
-"Online Dictionary add-on for quick translation selected words or phrases."
-msgstr ""
-"Дозволяє швидко отримувати дані з онлайн словників для обраних слів або "
-"словосполучень"
+msgid "Online Dictionary add-on for quick translation selected words or phrases."
+msgstr "Дозволяє швидко отримувати дані з онлайн словників для обраних слів або словосполучень"
