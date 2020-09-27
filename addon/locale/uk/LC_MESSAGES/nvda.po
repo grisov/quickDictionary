@@ -1,4 +1,3 @@
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -7,7 +6,7 @@ msgstr ""
 "Project-Id-Version: NVDA Quick Dictionary 1.0\n"
 "Report-Msgid-Bugs-To: nvda-translations@freelists.org\n"
 "POT-Creation-Date: 2020-09-24 13:37+0300\n"
-"PO-Revision-Date: 2020-09-26 00:33+0300\n"
+"PO-Revision-Date: 2020-09-27 17:18+0300\n"
 "Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
 "Language-Team: \n"
 "Language: uk_UA\n"
@@ -15,8 +14,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.4.1\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || "
-"n%100>14) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n"
+"%100>14) ? 1 : 2);\n"
 "X-Poedit-Basepath: ../../../..\n"
 "X-Poedit-SearchPath-0: .\n"
 
@@ -30,10 +29,8 @@ msgstr "Переключення в режим керування додатко
 
 #. Translators: Method description is displayed in the add-on short help
 msgid ""
-"D - announce the dictionary entry for the currently selected word or phrase (the same as NVDA + "
-"D)"
-msgstr ""
-"D - оголосити словникову статтю для виділеного слова або словосполучення (те саме, що NVDA + D)"
+"D - announce the dictionary entry for the currently selected word or phrase (the same as NVDA+E)"
+msgstr "D - оголосити словникову статтю для виділеного слова або словосполучення (те саме, що NVDA+E)"
 
 #. Translators: Method description is displayed in the add-on short help
 msgid "W - show dictionary entry in a separate browseable window"
@@ -48,8 +45,8 @@ msgid "Translate: from {langFrom} to {langInto}"
 msgstr "Перекласти: з {langFrom} на {langInto}"
 
 #. Translators: Message in the add-on short help
-msgid "S - swap languages and get dictionary entry (same as NVDA + Alt + D)"
-msgstr "S - змінити порядок мов та отримати швидкий переклад (те саме, що NVDA + Alt + D)"
+msgid "S - swap languages and get dictionary entry (same as NVDA+Ctrl+E)"
+msgstr "S - змінити порядок мов та отримати швидкий переклад (те саме, що NVDA+Ctrl+E)"
 
 #. Translators: Notification that languages ​​have been swapped
 msgid "Languages swapped"
@@ -72,8 +69,8 @@ msgid "H - announce this help message"
 msgstr "H - оголосити коротку довідкову інформацію"
 
 #. Translators: Message in the add-on short help
-msgid "to get a quick translation of a word or phrase - press NVDA + D twice;"
-msgstr "щоб отримати швидкий переклад слова чи словосполучення - двічі натисніть NVDA + D;"
+msgid "to get a quick translation of a word or phrase - press NVDA+E twice;"
+msgstr "щоб отримати швидкий переклад слова чи словосполучення - двічі натисніть NVDA+E;"
 
 #. Translators: Method description is displayed in the add-on short help
 msgid "Swap languages and get Quick Dictionary translation"
@@ -88,8 +85,8 @@ msgid "In add-on gestures layer mode:"
 msgstr "В режимі керування додатком:"
 
 #. Translators: Message in the add-on short help
-msgid "O - open dictionary add-on settings dialog (same as NVDA + Windows + D)"
-msgstr "O - відкрити діалогове вікно налаштувань додатку (те саме, що NVDA + Windows + D)"
+msgid "O - open dictionary add-on settings dialog (same as NVDA+Alt+E)"
+msgstr "O - відкрити діалогове вікно налаштувань додатку (те саме, що NVDA+Alt+E)"
 
 #. Translators: Notification of missing dictionary entry for current request
 msgid "No results"

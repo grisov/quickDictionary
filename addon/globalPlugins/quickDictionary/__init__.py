@@ -152,7 +152,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         beep(200, 10)
 
     # Translators: Method description is displayed in the add-on short help
-    @script(description=_("D - announce the dictionary entry for the currently selected word or phrase (the same as NVDA + D)"))
+    @script(description=_("D - announce the dictionary entry for the currently selected word or phrase (the same as NVDA+E)"))
     def script_dictionaryAnnounce(self, gesture):
         """Receive and read a dictionary entry for the selected text or text from the clipboard.
         @param gesture: gesture assigned to this method
@@ -226,11 +226,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         @type gesture: L{inputCore.InputGesture}
         """
         for message in [
-            "NVDA + D - %s," % self.script_addonLayer.__doc__,
+            "NVDA+E - %s," % self.script_addonLayer.__doc__,
             # Translators: Message in the add-on short help
-            _("to get a quick translation of a word or phrase - press NVDA + D twice;"),
-            "NVDA + Alt + D - %s;" % self.script_swapLanguages.__doc__,
-            "NVDA + Windows + D - %s." % self.script_showSettings.__doc__,
+            _("to get a quick translation of a word or phrase - press NVDA+E twice;"),
+            "NVDA+Ctrl+E - %s;" % self.script_swapLanguages.__doc__,
+            "NVDA+Alt+E - %s." % self.script_showSettings.__doc__,
             "...",
             # Translators: Message in the add-on short help
             _("In add-on gestures layer mode:"),
@@ -238,10 +238,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             self.script_dictionaryBox.__doc__,
             self.script_announceLanguages.__doc__,
             # Translators: Message in the add-on short help
-            _("S - swap languages and get dictionary entry (same as NVDA + Alt + D)"),
+            _("S - swap languages and get dictionary entry (same as NVDA+Ctrl+E)"),
             self.script_copyLastResult.__doc__,
             # Translators: Message in the add-on short help
-            _("O - open dictionary add-on settings dialog (same as NVDA + Windows + D)"),
+            _("O - open dictionary add-on settings dialog (same as NVDA+Alt+E)"),
             self.script_announceHelp.__doc__]:
             ui.message(message)
 
@@ -287,7 +287,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             copyToClipboard(translator.plaintext)
 
     __addonGestures = {
-        "kb:NVDA+d": "dictionaryAnnounce",
+        "kb:NVDA+e": "dictionaryAnnounce",
         "kb:d": "dictionaryAnnounce",
         "kb:w": "dictionaryBox",
         "kb:a": "announceLanguages",
@@ -298,7 +298,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     }
 
     __gestures = {
-        "kb:NVDA+d": "addonLayer",
-        "kb:NVDA+alt+d": "swapLanguages",
-        "kb:NVDA+windows+d": "showSettings"
+        "kb:NVDA+e": "addonLayer",
+        "kb:NVDA+control+e": "swapLanguages",
+        "kb:NVDA+alt+e": "showSettings"
     }
