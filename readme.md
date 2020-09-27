@@ -91,6 +91,7 @@ To listen to short help, switch to add-on control mode with NVDA+E, then press H
 
 ### Version 1.0.1
 * Changed keyboard shortcuts that are duplicated in NVDA;
+* Fixed error in Ukrainian translation (thanks to Volodymyr Perig);
 
 ### Version 1.0: features of implementation
 * execution of requests to the remote server in a separate thread to avoid blocking the operation of NVDA;
