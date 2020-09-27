@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: NVDA Quick Dictionary 1.0\n"
 "Report-Msgid-Bugs-To: nvda-translations@freelists.org\n"
 "POT-Creation-Date: 2020-09-24 13:37+0300\n"
-"PO-Revision-Date: 2020-09-27 17:18+0300\n"
+"PO-Revision-Date: 2020-09-27 19:31+0300\n"
 "Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
 "Language-Team: \n"
 "Language: uk_UA\n"
@@ -206,7 +206,7 @@ msgstr "Код &доступу до словника"
 
 #. Translators: A setting in addon settings dialog.
 msgid "Register your own access token"
-msgstr "Зареєструвати вFласний код доступу"
+msgstr "Зареєструвати власний код доступу"
 
 #. Translators: Message if the text was successfully copied to the clipboard
 msgid "Copied to clipboard."
