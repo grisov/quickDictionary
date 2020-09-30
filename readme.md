@@ -1,15 +1,16 @@
 # NVDA Quick Dictionary
 
 * Author: Oleksandr Gryshchenko
-* Version 1.0.1
+* Version 1.1
 * Download [stable version][1]
 
 Welcome to NVDA Quick Dictionary addon, which will allow you to quickly get a dictionary article with the translation of a word or phrase into your chosen language by pressing a key combination. There are few keyboard shortcuts and they are all intuitive and convenient so you will remember them quickly.
 Dictionary articles contain detailed information about a word, such as part of speech, gender, plural or singular, translation options, list of meanings, synonyms and detailed examples. Such information will be useful for people who are learning foreign languages, or seek to use in communication all the richness and diversity of their own language.
+Below are all the features of the add-on and keyboard shortcuts to control them. By default all functions are called using two-layer commands. But for any of these methods, you can always assign convenient for you keyboard shortcuts. You can do it in the NVDA "Preferences" -> "Input gestures..." dialog.
 
 ## Receiving a dictionary article
-In order to get an article from the dictionary, you must first select the word you are interested in or copy it to the clipboard. Then just press NVDA+E twice.
-There is also another way to get a dictionary entry: pressing NVDA+E once switches the keyboard to add-on control mode, then just use the D key.
+In order to get an article from the dictionary, you must first select the word you are interested in or copy it to the clipboard. Then just press NVDA+Y twice.
+There is also another way to get a dictionary entry: pressing NVDA+Y once switches the keyboard to add-on control mode, then just use the D key.
 
 Note: Before making a request to a remote service, the add-on must receive a word or phrase that interests the user. The sequence of actions that add-on performs each time before accessing the dictionary:
 * receive the selected text and execute the request;
@@ -17,41 +18,32 @@ Note: Before making a request to a remote service, the add-on must receive a wor
 * if the clipboard is empty or its content is not text data - the add-on notifies the user and does not take further action.
 
 ## Add-on control mode
-For quick access to the most used functions of the add-on, there are three keyboard shortcuts:
-* Press NVDA+E twice to get a dictionary entry for the selected word or phrase.
-* NVDA+Ctrl+E - to swap the source and target languages and get a translation for the new combination.
-* NVDA+Alt+E - to open the add-on settings dialog.
-
-To access all other features of the add-on, you need to switch to add-on control mode, you can do this by pressing NVDA+E once. You will hear a short low beep and will be able to use the other commands described below. When you press a key that is not used in the application, you will hear another signal notifying you of an erroneous command and the application control mode will be automatically turned off.
+To access all the features of the add-on, you need to switch to add-on control mode, you can do this by pressing NVDA+Y once. You will hear a short low beep and will be able to use the other commands described below. When you press a key that is not used in the application, you will hear another signal notifying you of an erroneous command and the application control mode will be automatically turned off.
 
 ## Announcement of the selected pair of languages when working with the dictionary
 To determine the current source language and destination language, follow these steps:
-1. Enable add-on control mode with NVDA+E.
+1. Enable add-on control mode with NVDA+Y.
 2. Press A to listen to which languages are selected to retrieve data from the dictionary.
 
 ## Swap source and target languages
 This can be done quickly as follows:
 1. Select the word or phrase that interests you.
-2. Press NVDA+Ctrl+E.
+2. Enable add-on control mode with NVDA+Y and than press S.
 You will hear a message that the languages have been swapped and the available information from the dictionary.
-
-The same can be done using the add-on control mode:
-1. Select the word or phrase that interests you.
-2. Enable add-on control mode with NVDA+E and than press S.
 
 Note: Each time you swap languages, the add-on checks to see if a new pair of languages is available for translation in the remote dictionary. If there is no such language combination, you will hear a warning.
 
 ## Display a dictionary article in a separate browseable window
 An article from the dictionary can also be displayed in a separate window as a formatted web page:
 1. Select a word or phrase.
-2. Enable add-on control mode - NVDA+E.
+2. Enable add-on control mode - NVDA+Y.
 3. Press W.
 
 Note: In this window, you can use standard commands to navigate web page elements. To close the window just press Escape or Alt+F4.
 
 ## Copy the results of the last request to the clipboard
 This can be done by following the steps below:
-1. Enable add-on control mode - NVDA+E.
+1. Enable add-on control mode - NVDA+Y.
 2. Press C.
 You will then hear a message that the data has been successfully copied and the dictionary entry itself.
 
@@ -59,9 +51,7 @@ Note: If you haven't previously made any requests to the remote dictionary, you 
 If option "Copy dictionary response to clipboard" in the add-on settings is enabled, the data will be automatically copied after each successful request.
 
 ## Add-on settings dialog
-To change the add-on parameters you need to open the dialog box of its settings. This can be done in two ways:
-1. Using the keyboard shortcut NVDA+Alt+E.
-2. Through the add-on control mode: press NVDA+E and then the key O.
+To change the add-on parameters you need to open the dialog box of its settings. This can be done this way: press NVDA+Y and then the key O.
 The standard NVDA settings dialog with the open section of our add-on will appear on the screen.
 
 ### Choice of languages for translation
@@ -87,12 +77,15 @@ You will find a link to register below the field for entering the access token, 
 Note: The registration link is displayed only when using the default access token. Once you enter your own access code in the settings, this link will be hidden. To restore the default access token, simply clear the field for entering it and click "OK". The default access code will be restored in the add-on configuration and you will see it the next time you open the settings dialog.
 
 ## Brief reference information
-To listen to short help, switch to add-on control mode with NVDA+E, then press H. You will hear a message with a list of all available keyboard commands and add-on features.
+To listen to short help, switch to add-on control mode with NVDA+Y, then press H. You will hear a message with a list of all available keyboard commands and add-on features.
 
 ## Change log
 
-### Version 1.0.1
+### Version 1.1
 * Changed keyboard shortcuts that are duplicated in NVDA;
+* slightly changed keyboard shortcuts to control the add-on functions;
+* changed the description of the main add-on features;
+* updated help and translation of the add-on;
 * Fixed error in Ukrainian translation (thanks to Volodymyr Perig);
 
 ### Version 1.0: features of implementation

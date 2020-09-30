@@ -20,7 +20,7 @@ addon_info = {
 	# Translators: Long description to be shown for this add-on on add-on information from add-ons manager
 	"addon_description": _("""Online Dictionary add-on for quick translation selected words or phrases."""),
 	# version
-	"addon_version": "1.0.1",
+	"addon_version": "1.0.2",
 	# Author(s)
 	"addon_author": "Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>",
 	# URL for the add-on documentation support
