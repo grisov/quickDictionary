@@ -100,8 +100,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         """
         return config.conf[_addonName]['autoswap']
 
-    def terminate(self):
+    def terminate(self, *args, **kwargs):
         """This will be called when NVDA is finished with this global plugin"""
+        super().terminate(*args, **kwargs)
         try:
             gui.settingsDialogs.NVDASettingsDialog.categoryClasses.remove(QuickDictionarySettingsPanel)
         except IndexError:
@@ -128,7 +129,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         self.bindGestures(self.__gestures)
 
     # Translators: Method description is displayed in the NVDA gestures dialog
-    @script(description=_("Invalid gesture is entered in add-on layer mode"))
+    @script(description='')
     def script_error(self, gesture):
         """Called when the wrong gestures are using in add-on control mode.
         @param gesture: the input gesture in question
@@ -136,8 +137,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         """
         beep(100, 100)
 
-    # Translators: Method description is displayed in the add-on short help
-    @script(description=_("Switch to Quick Dictionary control mode"))
+    # Translators: Method description is displayed in the NVDA input gestures dialog
+    @script(description="%s, %s" % (_addonSummary, _("press %s for help") % 'H'))
     def script_addonLayer(self, gesture):
         """A run-time binding will occur from which we can perform various layered dictionary commands.
         First, check if a second press of the script was done.
@@ -151,8 +152,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         self._toggleGestures = True
         beep(200, 10)
 
-    # Translators: Method description is displayed in the add-on short help
-    @script(description=_("D - announce the dictionary entry for the currently selected word or phrase (the same as NVDA+E)"))
+    # Translators: Method description included in the add-on help message and NVDA input gestures dialog
+    @script(description="D - %s" % _("announce the dictionary entry for the currently selected word or phrase (the same as %s)") % 'NVDA+Y')
     def script_dictionaryAnnounce(self, gesture):
         """Receive and read a dictionary entry for the selected text or text from the clipboard.
         @param gesture: gesture assigned to this method
@@ -162,8 +163,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         if not text: return
         Thread(target=self.translate, args=[text, False]).start()
 
-    # Translators: Method description is displayed in the add-on short help
-    @script(description=_("W - show dictionary entry in a separate browseable window"))
+    # Translators: Method description included in the add-on help message and NVDA input gestures dialog
+    @script(description="W - %s" % _("show dictionary entry in a separate browseable window"))
     def script_dictionaryBox(self, gesture):
         """Receive and show in browseable window dictionary entry
         for the selected word/phrase or text from the clipboard.
@@ -174,8 +175,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         if not text: return
         Thread(target=self.translate, args=[text, True]).start()
 
-    # Translators: Method description is displayed in the add-on short help
-    @script(description=_("A - announce the current source and target languages"))
+    # Translators: Method description included in the add-on help message and NVDA input gestures dialog
+    @script(description="A - %s" % _("announce the current source and target languages"))
     def script_announceLanguages(self, gesture):
         """Pronounce the current pair of selected languages.
         @param gesture: gesture assigned to this method
@@ -184,8 +185,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         # Translators: message presented to announce the current source and target languages.
         ui.message(_("Translate: from {langFrom} to {langInto}").format(langFrom=langs[self.source].name, langInto=langs[self.target].name))
 
-    # Translators: Method description is displayed in the add-on short help
-    @script(description=_("Swap languages and get Quick Dictionary translation"))
+    # Translators: Method description included in the add-on help message and NVDA input gestures dialog
+    @script(description="S - %s" % _("swap languages and get Quick Dictionary translation"))
     def script_swapLanguages(self, gesture):
         """Swap languages ​​and present the dictionary entry for the selected word or phrase.
         @param gesture: gesture assigned to this method
@@ -203,8 +204,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             # Translators: Notification that reverse translation is not available for the current language pair
             ui.message(_("Swap languages is not available for this pair") + ": %s - %s" % (langs[self.source].name, langs[self.target].name))
 
-    # Translators: Method description is displayed in the add-on short help
-    @script(description=_("C - copy last dictionary entry to the clipboard"))
+    # Translators: Method description included in the add-on help message and NVDA input gestures dialog
+    @script(description="C - %s" % _("copy last dictionary entry to the clipboard"))
     def script_copyLastResult(self, gesture):
         """Copy the last received dictionary entry to the clipboard.
         @param gesture: gesture assigned to this method
@@ -218,35 +219,35 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         ui.message('%s - %s' % (langs[self._lastTranslator.langFrom].name, langs[self._lastTranslator.langTo].name))
         ui.message(self._lastTranslator.plaintext)
 
-    # Translators: Method description is displayed in the add-on short help
-    @script(description=_("H - announce this help message"))
+    # Translators: Method description included in the add-on help message and NVDA input gestures dialog
+    @script(description="H - %s" % _("announce the add-on help message"))
     def script_announceHelp(self, gesture):
         """Retrieves a description of all add-ons methods and presents them.
         @param gesture: gesture assigned to this method
         @type gesture: L{inputCore.InputGesture}
         """
         for message in [
-            "NVDA+E - %s," % self.script_addonLayer.__doc__,
+            _addonSummary,
             # Translators: Message in the add-on short help
-            _("to get a quick translation of a word or phrase - press NVDA+E twice;"),
-            "NVDA+Ctrl+E - %s;" % self.script_swapLanguages.__doc__,
-            "NVDA+Alt+E - %s." % self.script_showSettings.__doc__,
+            "NVDA+Y - %s" % _("switch to add-on control mode"),
+            # Translators: Message in the add-on short help
+            _("to get a quick translation of a word or phrase - press %s twice") % "NVDA+Y",
             "...",
             # Translators: Message in the add-on short help
             _("In add-on gestures layer mode:"),
             self.script_dictionaryAnnounce.__doc__,
             self.script_dictionaryBox.__doc__,
+            self.script_swapLanguages.__doc__,
             self.script_announceLanguages.__doc__,
-            # Translators: Message in the add-on short help
-            _("S - swap languages and get dictionary entry (same as NVDA+Ctrl+E)"),
             self.script_copyLastResult.__doc__,
+            self.script_showSettings.__doc__,
+            self.script_announceHelp.__doc__,
             # Translators: Message in the add-on short help
-            _("O - open dictionary add-on settings dialog (same as NVDA+Alt+E)"),
-            self.script_announceHelp.__doc__]:
+            _("for any of the listed features you can customize the keyboard shortcut in NVDA input gestures dialog")]:
             ui.message(message)
 
-    # Translators: Method description is displayed in the add-on short help
-    @script(description=_("Access to Quick Dictionary add-on settings dialog"))
+    # Translators: Method description included in the add-on help message and NVDA input gestures dialog
+    @script(description="O - %s" % _("open add-on settings dialog"))
     def script_showSettings(self, gesture):
         """Display the add-on settings dialog.
         @param gesture: gesture assigned to this method
@@ -287,7 +288,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
             copyToClipboard(translator.plaintext)
 
     __addonGestures = {
-        "kb:NVDA+e": "dictionaryAnnounce",
+        "kb:NVDA+y": "dictionaryAnnounce",
         "kb:d": "dictionaryAnnounce",
         "kb:w": "dictionaryBox",
         "kb:a": "announceLanguages",
@@ -298,7 +299,5 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
     }
 
     __gestures = {
-        "kb:NVDA+e": "addonLayer",
-        "kb:NVDA+control+e": "swapLanguages",
-        "kb:NVDA+alt+e": "showSettings"
+        "kb:NVDA+y": "addonLayer",
     }

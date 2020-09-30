@@ -1,4 +1,6 @@
-# NVDA Quick Dictionary
+﻿# NVDA Quick Dictionary
+
+* Автор: Олександр Грищенко
 * Версія 1.0.1
 * Завантажити [стабільну версію][1]
 

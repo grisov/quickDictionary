@@ -1,4 +1,6 @@
 # NVDA Quick Dictionary
+
+* Author: Oleksandr Gryshchenko
 * Version 1.0.1
 * Download [stable version][1]
 
