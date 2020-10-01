@@ -35,15 +35,15 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 		# Translators: A setting in addon settings dialog.
 		fromLabel = wx.StaticText(self, label=_("&Source language:"))
 		fromSizer.Add(fromLabel)
-		self._fromChoice = wx.Choice(self, choices=[])
+		self._fromChoice = wx.Choice(self, choices=[], style=wx.CB_SORT)
 		fromSizer.Add(self._fromChoice)
 		intoSizer = wx.BoxSizer(wx.HORIZONTAL)
 		# Translators: A setting in addon settings dialog.
 		intoLabel = wx.StaticText(self, label=_("&Target language:"))
 		intoSizer.Add(intoLabel)
-		self._intoChoice = wx.Choice(self, choices=[])
+		self._intoChoice = wx.Choice(self, choices=[], style=wx.CB_SORT)
 		intoSizer.Add(self._intoChoice)
-		self.widgetMaker(self._fromChoice, sorted(langs.fromList(), key=lambda l: l.name.lower()))
+		self.widgetMaker(self._fromChoice, langs.fromList())
 		self._fromChoice.Bind(wx.EVT_CHOICE, self.onSelectFrom)
 		self.widgetMaker(self._intoChoice, langs.intoList(config.conf[_addonName]['from']))
 		sizer.Add(fromSizer)
@@ -83,10 +83,12 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 	def widgetMaker(self, widget, languages):
 		"""Creating a widget based on the sequence of Language classes to display it in a wx.Choice object.
 		@param widget: widget based on a sequence of Language classes
-		@type widget: list
+		@type widget: wx.Choice
 		@param languages: list of languages available in the dictionary
-		@type languages: generator of Language objects
+		@type languages: languages.Languages
 		"""
+		# Translators: This displayed by default in the language selection choice list
+		widget.SetLabel(_("-- select language --"))
 		for lang in languages:
 			widget.Append(lang.name, lang)
 
@@ -97,7 +99,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 		"""
 		fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
 		self._intoChoice.Clear()
-		self.widgetMaker(self._intoChoice, sorted(langs.intoList(fromLang), key=lambda l: l.name.lower()))
+		self.widgetMaker(self._intoChoice, langs.intoList(fromLang))
 
 	def postInit(self):
 		"""Set system focus to source language selection dropdown list."""
