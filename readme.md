@@ -1,8 +1,9 @@
 # NVDA Quick Dictionary
 
 * Author: Oleksandr Gryshchenko
-* Version 1.1
+* Version: 1.1
 * Download [stable version][1]
+* Download [development version][2]
 
 Welcome to NVDA Quick Dictionary addon, which will allow you to quickly get a dictionary article with the translation of a word or phrase into your chosen language by pressing a key combination. There are few keyboard shortcuts and they are all intuitive and convenient so you will remember them quickly.
 Dictionary articles contain detailed information about a word, such as part of speech, gender, plural or singular, translation options, list of meanings, synonyms and detailed examples. Such information will be useful for people who are learning foreign languages, or seek to use in communication all the richness and diversity of their own language.
@@ -82,11 +83,12 @@ To listen to short help, switch to add-on control mode with NVDA+Y, then press H
 ## Change log
 
 ### Version 1.1
-* Changed keyboard shortcuts that are duplicated in NVDA;
-* slightly changed keyboard shortcuts to control the add-on functions;
+* changed some add-ons keyboard shortcuts which conflicted with other add-ons;
+* removed some keyboard shortcuts and gave to user opportunity to setup them yourself;
 * changed the description of the main add-on features;
 * updated help and translation of the add-on;
 * Fixed error in Ukrainian translation (thanks to Volodymyr Perig);
+* added russian translation.
 
 ### Version 1.0: features of implementation
 * execution of requests to the remote server in a separate thread to avoid blocking the operation of NVDA;
@@ -109,4 +111,5 @@ These can be installed with pip:
 1. Open a command line, change to the root of this repo
 2. Run the **scons** command. The created add-on, if there were no errors, is placed in the current directory.
 
-[1]: https://github.com/grisov/quickDictionary/releases/download/v1.0/quickDictionary-1.0.nvda-addon
+[1]: https://github.com/grisov/quickDictionary/releases/download/v1.1/quickDictionary-1.1.nvda-addon
+[2]: https://github.com/grisov/quickDictionary/releases/download/v1.1/quickDictionary-1.1.nvda-addon
