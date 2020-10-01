@@ -138,7 +138,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		beep(100, 100)
 
 	# Translators: Method description is displayed in the NVDA input gestures dialog
-	@script(description="%s, %s" % (_addonSummary, _("press %s for help") % 'H'))
+	@script(description="%s, %s" % (_addonSummary, _("then press %s for help") % 'H'))
 	def script_addonLayer(self, gesture):
 		"""A run-time binding will occur from which we can perform various layered dictionary commands.
 		First, check if a second press of the script was done.

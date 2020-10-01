@@ -1,52 +1,53 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: NVDA Quick Dictionary 1.0\n"
-"Report-Msgid-Bugs-To: nvda-translations@freelists.org\n"
-"POT-Creation-Date: 2020-09-24 13:37+0300\n"
-"PO-Revision-Date: 2020-09-27 19:31+0300\n"
-"Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
+"Project-Id-Version: 'quickDictionary' '1.1'\n"
+"Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
+"POT-Creation-Date: 2020-10-01 12:13+0300\n"
+"PO-Revision-Date: 2020-10-01 13:04+0300\n"
 "Language-Team: \n"
-"Language: uk_UA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.4.1\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n"
-"%100>14) ? 1 : 2);\n"
-"X-Poedit-Basepath: ../../../..\n"
-"X-Poedit-SearchPath-0: .\n"
+"Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"Language: uk_UA\n"
 
-#. Translators: Method description is displayed in the NVDA gestures dialog
-msgid "Invalid gesture is entered in add-on layer mode"
-msgstr "Натиснуто помилкову клавішу в режимі керування додатком"
+#. Translators: Method description is displayed in the NVDA input gestures dialog
+#, python-format
+msgid "then press %s for help"
+msgstr "потім натисніть %s для отримання довідки"
 
-#. Translators: Method description is displayed in the add-on short help
-msgid "Switch to Quick Dictionary control mode"
-msgstr "Переключення в режим керування додатком Швидкий Словник"
-
-#. Translators: Method description is displayed in the add-on short help
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+#, python-format
 msgid ""
-"D - announce the dictionary entry for the currently selected word or phrase (the same as NVDA+E)"
-msgstr "D - оголосити словникову статтю для виділеного слова або словосполучення (те саме, що NVDA+E)"
+"announce the dictionary entry for the currently selected word or phrase (the "
+"same as %s)"
+msgstr ""
+"оголосити словникову статтю для виділеного слова або словосполучення (те "
+"саме, що %s)"
 
-#. Translators: Method description is displayed in the add-on short help
-msgid "W - show dictionary entry in a separate browseable window"
-msgstr "W - показати словникову статтю в окремому вікні для перегляду"
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "show dictionary entry in a separate browseable window"
+msgstr "показати словникову статтю в окремому вікні для перегляду"
 
-#. Translators: Method description is displayed in the add-on short help
-msgid "A - announce the current source and target languages"
-msgstr "A - оголосити поточну вихідну мову та мову перекладу"
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "announce the current source and target languages"
+msgstr "оголосити поточну вихідну мову та мову перекладу"
 
 #. Translators: message presented to announce the current source and target languages.
 msgid "Translate: from {langFrom} to {langInto}"
 msgstr "Перекласти: з {langFrom} на {langInto}"
 
-#. Translators: Message in the add-on short help
-msgid "S - swap languages and get dictionary entry (same as NVDA+Ctrl+E)"
-msgstr "S - змінити порядок мов та отримати швидкий переклад (те саме, що NVDA+Ctrl+E)"
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "swap languages and get Quick Dictionary translation"
+msgstr "змінити порядок мов та отримати швидкий переклад"
 
 #. Translators: Notification that languages ​​have been swapped
 msgid "Languages swapped"
@@ -56,37 +57,42 @@ msgstr "Порядок мов змінено"
 msgid "Swap languages is not available for this pair"
 msgstr "Зворотній порядок не доступний для цієї пари мов"
 
-#. Translators: Method description is displayed in the add-on short help
-msgid "C - copy last dictionary entry to the clipboard"
-msgstr "C - скопіювати результати останнього запиту до буфера обміну"
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "copy last dictionary entry to the clipboard"
+msgstr "скопіювати результати останнього запиту до буфера обміну"
 
 #. Translators: Notification that no dictionary entries have been received in the current session
 msgid "There is no dictionary queries"
 msgstr "Ще не виконувались запити до словника"
 
-#. Translators: Method description is displayed in the add-on short help
-msgid "H - announce this help message"
-msgstr "H - оголосити коротку довідкову інформацію"
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "announce the add-on help message"
+msgstr "оголосити коротку довідкову інформацію"
 
 #. Translators: Message in the add-on short help
-msgid "to get a quick translation of a word or phrase - press NVDA+E twice;"
-msgstr "щоб отримати швидкий переклад слова чи словосполучення - двічі натисніть NVDA+E;"
+msgid "switch to add-on control mode"
+msgstr "Переключення в режим керування додатком"
 
-#. Translators: Method description is displayed in the add-on short help
-msgid "Swap languages and get Quick Dictionary translation"
-msgstr "Швидкий Словник: змінити порядок мов та отримати переклад"
-
-#. Translators: Method description is displayed in the add-on short help
-msgid "Access to Quick Dictionary add-on settings dialog"
-msgstr "Виклик діалогового вікна налаштувань додатку Швидкий Словник"
+#. Translators: Message in the add-on short help
+#, python-format
+msgid "to get a quick translation of a word or phrase - press %s twice"
+msgstr "щоб швидко перекласти слово або словосполучення - двічі натисніть %s"
 
 #. Translators: Message in the add-on short help
 msgid "In add-on gestures layer mode:"
 msgstr "В режимі керування додатком:"
 
 #. Translators: Message in the add-on short help
-msgid "O - open dictionary add-on settings dialog (same as NVDA+Alt+E)"
-msgstr "O - відкрити діалогове вікно налаштувань додатку (те саме, що NVDA+Alt+E)"
+msgid ""
+"for any of the listed features you can customize the keyboard shortcut in "
+"NVDA input gestures dialog"
+msgstr ""
+"для будь-якої з перерахованих функцій ви можете налаштувати власну "
+"комбінацію клавіш у діалоговому вікні жестів введення NVDA"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "open add-on settings dialog"
+msgstr "відкриває діалог налаштувань додатку"
 
 #. Translators: Notification of missing dictionary entry for current request
 msgid "No results"
@@ -208,6 +214,10 @@ msgstr "Код &доступу до словника"
 msgid "Register your own access token"
 msgstr "Зареєструвати власний код доступу"
 
+#. Translators: This displayed by default in the language selection choice list
+msgid "-- select language --"
+msgstr "-- оберіть мову --"
+
 #. Translators: Message if the text was successfully copied to the clipboard
 msgid "Copied to clipboard."
 msgstr "Скопійовано до буфера обміну"
@@ -217,13 +227,19 @@ msgid "Copy failed."
 msgstr "Помилка копіювання."
 
 #. Translators: user has pressed the shortcut key for translating selected text, but no text was actually selected and clipboard is clear
-msgid "There is no selected text, the clipboard is also empty, or its content is not text!"
+msgid ""
+"There is no selected text, the clipboard is also empty, or its content is "
+"not text!"
 msgstr "Немає виділеного тексту та буфер обміну не містить текстових даних"
 
-#. Translators: Summary for this add-on to be shown on installation and add-on information.
+#. Add-on summary, usually the user visible name of the addon.
+#. to be shown on installation and add-on information found in Add-ons Manager.
 msgid "Quick Dictionary"
 msgstr "Швидкий словник"
 
 #. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
-msgid "Online Dictionary add-on for quick translation selected words or phrases."
-msgstr "Дозволяє швидко отримувати дані з онлайн словників для обраних слів або словосполучень"
+msgid ""
+"Online Dictionary add-on for quick translation selected words or phrases."
+msgstr ""
+"Дозволяє швидко отримувати дані з онлайн словників для обраних слів або "
+"словосполучень"
