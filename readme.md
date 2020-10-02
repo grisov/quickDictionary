@@ -80,13 +80,21 @@ Note: The registration link is displayed only when using the default access toke
 ## Brief reference information
 To listen to short help, switch to add-on control mode with NVDA+Y, then press H. You will hear a message with a list of all available keyboard commands and add-on features.
 
+## Contributions
+We are very grateful to everyone who made the effort to develop, translate and maintain this add-on:
+* Cagri Dogan - Turkish translation;
+
+Several good solutions from other ingenious developments were used in the Quick Dictionary add-on. Thanks to the authors of the following add-ons:
+* Instant Translate - Alexy Sadovoy, Beqa Gozalishvili, Mesar Hameed, Alberto Buffolino and other NVDA contributors.
+
 ## Change log
 
 ### Version 1.1
-* changed some add-ons keyboard shortcuts which conflicted with other add-ons;
-* removed some keyboard shortcuts and gave to user opportunity to setup them yourself;
+* Turkish translation added thanks to Cagri Dogan;
+* changed some keyboard shortcuts which conflicted with other add-ons;
 * changed the description of the main add-on features;
 * updated help and translation of the add-on;
+* removed some keyboard shortcuts and gave to user opportunity to setup them yourself;
 * Fixed error in Ukrainian translation (thanks to Volodymyr Perig);
 * added russian translation.
 

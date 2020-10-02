@@ -1,0 +1,262 @@
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: NVDA Quick Dictionary 1.1\n"
+"Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
+"POT-Creation-Date: 2020-10-01 12:13+0300\n"
+"PO-Revision-Date: 2020-10-02 15:05+0300\n"
+"Last-Translator: Cagri Dogan <cagrid@hotmail.com>\n"
+"Language-Team: cagrid@hotmail.com\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.1\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"X-Poedit-Basepath: ../../../..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: quickDictionary/globalPlugins/quickDictionary\n"
+
+#. Translators: Method description is displayed in the NVDA input gestures dialog
+#, python-format
+msgid "then press %s for help"
+msgstr "Sonra yardım için %s basın"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+#, python-format
+msgid ""
+"announce the dictionary entry for the currently selected word or phrase (the "
+"same as %s)"
+msgstr ""
+"seçili kelime veya kelime öbeği için sözlük girişini söyle (%s ile aynı)"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "show dictionary entry in a separate browseable window"
+msgstr "sözlük girişini tarama kipinde ayrı bir pencerede göster"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "announce the current source and target languages"
+msgstr "mevcut kaynak ve hedef dilleri bildir"
+
+#. Translators: message presented to announce the current source and target languages.
+msgid "Translate: from {langFrom} to {langInto}"
+msgstr "Çevir: kaynak {langFrom}, hedef {langInto}"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "swap languages and get Quick Dictionary translation"
+msgstr "dilleri değiştir ve Çabuk Sözlük çevirisini al"
+
+#. Translators: Notification that languages ​​have been swapped
+msgid "Languages swapped"
+msgstr "Diller değiştirildi"
+
+#. Translators: Notification that reverse translation is not available for the current language pair
+msgid "Swap languages is not available for this pair"
+msgstr "Bu çift için dil değiştirilemez"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "copy last dictionary entry to the clipboard"
+msgstr "son sözlük girişini panoya kopyala"
+
+#. Translators: Notification that no dictionary entries have been received in the current session
+msgid "There is no dictionary queries"
+msgstr "Sözlük sorgusu yok"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "announce the add-on help message"
+msgstr "eklenti yardım mesajını söyle"
+
+#. Translators: Message in the add-on short help
+msgid "switch to add-on control mode"
+msgstr "Çabuk Sözlük kipini aç"
+
+#. Translators: Message in the add-on short help
+#, python-format
+msgid "to get a quick translation of a word or phrase - press %s twice"
+msgstr ""
+"bir kelime veya cümlenin çabuk çevirisini almak için - iki kez %s basın"
+
+#. Translators: Message in the add-on short help
+msgid "In add-on gestures layer mode:"
+msgstr "Eklenti hareketleri katman kipinde:"
+
+#. Translators: Message in the add-on short help
+msgid ""
+"for any of the listed features you can customize the keyboard shortcut in "
+"NVDA input gestures dialog"
+msgstr ""
+"listelenen özelliklerden herhangi biri için, klavye kısayolunu NVDA girdi "
+"hareketleri iletişim kutusunda özelleştirebilirsiniz"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "open add-on settings dialog"
+msgstr "Çabuk Sözlük eklenti ayarları iletişim kutusunu aç"
+
+#. Translators: Notification of missing dictionary entry for current request
+msgid "No results"
+msgstr "Sonuç yok"
+
+#. Translators: Field name in a dictionary entry
+msgid "number"
+msgstr "numara"
+
+#. Translators: Field name in a dictionary entry
+msgid "gender"
+msgstr "Cinsiyet"
+
+#. Translators: Field name in a dictionary entry
+msgid "Mean"
+msgstr "Ek anlam"
+
+#. Translators: Field name in a dictionary entry
+msgid "Synonyms"
+msgstr "Eş anlamlı"
+
+#. Translators: Field name in a dictionary entry
+msgid "Examples"
+msgstr "Örnekler"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Cebuano"
+msgstr "Cebuano"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Esperanto"
+msgstr "Esperanto"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Hmong"
+msgstr "Hmong"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Creole Haiti"
+msgstr "Creole Haiti"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Javanese"
+msgstr "Cava"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Latin"
+msgstr "Latince"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Malagasy"
+msgstr "Malgaşça"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Meadow Mari"
+msgstr "Meadow Mari"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Hill Mari"
+msgstr "Hill Mari"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Myanmar (Burmese)"
+msgstr "Myanmar (Birmanya)"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Chichewa"
+msgstr "Chichewa"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Somali"
+msgstr "Somali"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Sesotho"
+msgstr "Sesotho"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Sundanese"
+msgstr "Sunda dili"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Tagalog"
+msgstr "Tagalog"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Yiddish"
+msgstr "Yidiş"
+
+#. Translators: Help message for a dialog.
+msgid "Select dictionary source and target language:"
+msgstr "Sözlük için kaynak ve hedef dili seçin:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Source language:"
+msgstr "&Kaynak dil:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Target language:"
+msgstr "&Hedef dil:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Copy dictionary response to clip&board"
+msgstr "Sözlük yanıtını &panoya kopyala"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Auto-&swap languages"
+msgstr "Dilleri otomatik de&ğiştir"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Use &alternative server"
+msgstr "&Alternatif sunucu kullan"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Dictionary Access Token:"
+msgstr "&Sözlük Erişim Jetonu:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Register your own access token"
+msgstr "Kendi erişim jetonunuzu alın"
+
+#. Translators: This displayed by default in the language selection choice list
+msgid "-- select language --"
+msgstr "-- Dil Seçin --"
+
+#. Translators: Message if the text was successfully copied to the clipboard
+msgid "Copied to clipboard."
+msgstr "Panoya kopyalandı."
+
+#. Translators: Message if the text could not be copied to the clipboard
+msgid "Copy failed."
+msgstr "Kopyalanamadı."
+
+#. Translators: user has pressed the shortcut key for translating selected text, but no text was actually selected and clipboard is clear
+msgid ""
+"There is no selected text, the clipboard is also empty, or its content is "
+"not text!"
+msgstr "Seçili metin yok, pano da boş veya içeriği metin değil!"
+
+#. Add-on summary, usually the user visible name of the addon.
+#. to be shown on installation and add-on information found in Add-ons Manager.
+msgid "Quick Dictionary"
+msgstr "Çabuk Sözlük"
+
+#. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
+msgid ""
+"Online Dictionary add-on for quick translation selected words or phrases."
+msgstr ""
+"Seçilen ya da seçim yoksa panoda bulunan kelime ya da ifadeler için çevrim "
+"içi çabuk sözlük eklentisi"
+
+#~ msgid "Invalid gesture is entered in add-on layer mode"
+#~ msgstr "Eklenti katman kipinde geçersiz hareket girildi"
+
+#~| msgid ""
+#~| "S - swap languages and get dictionary entry (same as NVDA + Alt + D)"
+#~ msgid "S - swap languages and get dictionary entry (same as NVDA+Ctrl+E)"
+#~ msgstr ""
+#~ "S - dilleri değiştir ve sözlük girişini al (NVDA + Ctrl + E ile aynı)"
+
+#~| msgid ""
+#~| "O - open dictionary add-on settings dialog (same as NVDA + Windows + D)"
+#~ msgid "O - open dictionary add-on settings dialog (same as NVDA+Alt+E)"
+#~ msgstr ""
+#~ "O - sözlük eklenti ayarları iletişim kutusunu aç (NVDA + Alt + E ile aynı)"
