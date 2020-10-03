@@ -1,4 +1,4 @@
-#-*- coding:utf-8 -*-
+﻿#-*- coding:utf-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -51,6 +51,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(QuickDictionarySettingsPanel)
 		self._toggleGestures = False
 		self._lastTranslator = None
+		# For work with profiles of speech synthesizers
+		self._profiles = Profiles()
+		self._slot = 1
 
 	@property
 	def source(self) -> str:
@@ -255,6 +258,24 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""
 		wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, QuickDictionarySettingsPanel)
 
+	@script(description="")
+	def script_setSynthProfile(self, gesture):
+		self._slot = int(gesture.displayName[-1])
+		self._profiles[self._slot].set()
+		ui.message(str(self._slot))
+
+	@script(description="")
+	def script_announceSynthProfiles(self, gesture):
+		for slot, profile in self._profiles:
+			if profile.name:
+				ui.message("%d - %s" % (slot, profile.title))
+
+	@script(description="")
+	def script_saveSynthProfile(self, gesture):
+		self._profiles[self._slot].update()
+		self._profiles.save()
+		ui.message('saved')
+
 	def translate(self, text:str, isHtml:bool=False):
 		"""Retrieve the dictionary entry for the given word or phrase and display/announce the result.
 		This method must always be called in a separate thread so as not to block NVDA.
@@ -296,6 +317,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:c": "copyLastResult",
 		"kb:o": "showSettings",
 		"kb:h": "announceHelp",
+		"kb:p": "announceSynthProfiles",
+		"kb:v": "saveSynthProfile",
+		"kb:1": "setSynthProfile",
+		"kb:2": "setSynthProfile",
+		"kb:3": "setSynthProfile",
+		"kb:4": "setSynthProfile",
+		"kb:5": "setSynthProfile",
+		"kb:6": "setSynthProfile",
+		"kb:7": "setSynthProfile",
+		"kb:8": "setSynthProfile",
+		"kb:9": "setSynthProfile",
 	}
 
 	__gestures = {
