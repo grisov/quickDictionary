@@ -44,6 +44,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			"into": "string(default=%s)" % langs.defaultInto,
 			"autoswap": "boolean(default=false)",
 			"copytoclip": "boolean(default=false)",
+			"switchsynth": "boolean(default=false)",
 			"token": "string(default=%s)" % TOKEN,
 			"mirror": "boolean(default=false)"
 		}
