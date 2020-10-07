@@ -253,6 +253,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.script_swapLanguages.__doc__,
 			self.script_announceLanguages.__doc__,
 			self.script_copyLastResult.__doc__,
+			"...",
+			# Translators: Message in the add-on short help
+			_("Voice synthesizers profiles management:"),
+			self.script_selectSynthProfile.__doc__,
+			self.script_announceSelectedSynthProfile.__doc__,
+			self.script_announceSynthProfiles.__doc__,
+			self.script_restoreDefaultSynth.__doc__,
+			self.script_removeSynthProfile.__doc__,
+			self.script_saveSynthProfile.__doc__,
+			"...",
 			self.script_showSettings.__doc__,
 			self.script_announceHelp.__doc__,
 			# Translators: Message in the add-on short help
