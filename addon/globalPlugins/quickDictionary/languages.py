@@ -1,4 +1,9 @@
 #languages.py
+# A part of NonVisual Desktop Access (NVDA)
+# This file is covered by the GNU General Public License.
+# See the file COPYING for more details.
+# Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+
 import addonHandler
 from logHandler import log
 try:
@@ -38,6 +43,8 @@ class Language(object):
 		@rtype: str
 		"""
 		name = getLanguageDescription(self.lang)
+		if self.lang=='':
+			name = "- %s -" % name
 		if not name:
 			name = self.names.get(self.lang, None)
 		return name or self.lang
