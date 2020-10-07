@@ -28,6 +28,7 @@ from tones import beep
 from threading import Thread
 from .shared import copyToClipboard, getSelectedText, translateWithCaching, messageWithLangDetection, finally_
 from .languages import langs
+from .synthesizers import profiles
 from .settings import QuickDictionarySettingsPanel
 from .secret import APIKEY as TOKEN
 
@@ -44,16 +45,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			"into": "string(default=%s)" % langs.defaultInto,
 			"autoswap": "boolean(default=false)",
 			"copytoclip": "boolean(default=false)",
-			"switchsynth": "boolean(default=false)",
+			"switchsynth": "boolean(default=true)",
 			"token": "string(default=%s)" % TOKEN,
 			"mirror": "boolean(default=false)"
 		}
 		config.conf.spec[_addonName] = confspec
 		gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(QuickDictionarySettingsPanel)
+		# to use the second layer of keyboard shortcuts
 		self._toggleGestures = False
+		# to use copy latest translation to the clipboard
 		self._lastTranslator = None
-		# For work with profiles of speech synthesizers
-		self._profiles = Profiles()
+		# to use speech synthesizers profiles
 		self._slot = 1
 
 	@property
@@ -104,6 +106,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""
 		return config.conf[_addonName]['autoswap']
 
+	@property
+	def isSwitchSynth(self) -> bool:
+		"""Property indicate whether to switch the synthesizer when sounding the dictionary entry.
+		@return: value stored in the add-on configuration
+		@rtype: bool
+		"""
+		return config.conf[_addonName]['switchsynth']
+
 	def terminate(self, *args, **kwargs):
 		"""This will be called when NVDA is finished with this global plugin"""
 		super().terminate(*args, **kwargs)
@@ -132,7 +142,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.clearGestureBindings()
 		self.bindGestures(self.__gestures)
 
-	# Translators: Method description is displayed in the NVDA gestures dialog
 	@script(description='')
 	def script_error(self, gesture):
 		"""Called when the wrong gestures are using in add-on control mode.
@@ -259,23 +268,71 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""
 		wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, QuickDictionarySettingsPanel)
 
-	@script(description="")
-	def script_setSynthProfile(self, gesture):
+	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
+	@script(description=_("From %d to %d - selection of the voice synthesizer profile") % (1, 9))
+	def script_selectSynthProfile(self, gesture):
+		"""Switch between voice synthesizer profiles.
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
 		self._slot = int(gesture.displayName[-1])
-		self._profiles[self._slot].set()
-		ui.message(str(self._slot))
+		profiles[self._slot].set()
+		# Translators: Message when selecting a voice synthesizer profile
+		ui.message(_("Profile %d selected: %s") % (self._slot, profiles[self._slot].title))
 
-	@script(description="")
+	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
+	@script(description="G - %s" % _("announce the selected profile of voice synthesizers"))
+	def script_announceSelectedSynthProfile(self, gesture):
+		"""Announce the number and title of the currently selected voice synthesizer profile.
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
+		ui.message("%d - %s" % (self._slot, profiles[self._slot].title))
+
+	# Translators: Method description is displayed in the NVDA gestures dialog
+	@script(description="P - %s" % _("announce a list of all customized voice synthesizers profiles"))
 	def script_announceSynthProfiles(self, gesture):
-		for slot, profile in self._profiles:
+		"""Announce a list of of all configured voice synthesizers profiles and the associated languages.
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
+		for slot, profile in profiles:
 			if profile.name:
-				ui.message("%d - %s" % (slot, profile.title))
+				ui.message("%d: %s" % (slot, ', '.join([profile.title, langs[profile.lang].name])))
 
-	@script(description="")
+	# Translators: Method description is displayed in the NVDA gestures dialog
+	@script(description="Del - %s" % _("delete the selected voice synthesizer profile"))
+	def script_removeSynthProfile(self, gesture):
+		"""Delete the currently selected voice synthesizer profile.
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
+		slot, self._slot = self._slot, 1
+		profiles.remove(slot)
+		# Translators: 
+		ui.message(_("Profile %d successfully deleted") % slot)
+
+	# Translators: Method description is displayed in the NVDA gestures dialog
+	@script(description="R - %s" % _("restore default voice synthesizer"))
+	def script_restoreDefaultSynth(self, gesture):
+		"""Restore default voice synthesizer from previously saved profile.
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
+		profile = profiles.restoreDefault()
+		ui.message(profile.title)
+
+	# Translators: Method description is displayed in the NVDA gestures dialog
+	@script(description="V - %s" % _("save configured voice synthesizer profile"))
 	def script_saveSynthProfile(self, gesture):
-		self._profiles[self._slot].update()
-		self._profiles.save()
-		ui.message('saved')
+		"""Save configured voice synthesizer profile.
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
+		profiles[self._slot].update()
+		profiles.save()
+		# Translators: Announcing after saving synthesizer profile
+		ui.message(_("Voice synthesizer profile saved successfully"))
 
 	def translate(self, text:str, isHtml:bool=False):
 		"""Retrieve the dictionary entry for the given word or phrase and display/announce the result.
@@ -284,8 +341,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@type text: str
 		@param isHtml: a sign of whether it is necessary to display the result of work in the form of HTML page
 		@type isHtml: bool
-		:return:
-		:rtype:
+		@return: None
 		"""
 		pairs = [(self.source, self.target)]
 		if self.isAutoSwap:
@@ -318,17 +374,20 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:c": "copyLastResult",
 		"kb:o": "showSettings",
 		"kb:h": "announceHelp",
+		"kb:g": "announceSelectedSynthProfile",
 		"kb:p": "announceSynthProfiles",
+		"kb:delete": "removeSynthProfile",
+		"kb:r": "restoreDefaultSynth",
 		"kb:v": "saveSynthProfile",
-		"kb:1": "setSynthProfile",
-		"kb:2": "setSynthProfile",
-		"kb:3": "setSynthProfile",
-		"kb:4": "setSynthProfile",
-		"kb:5": "setSynthProfile",
-		"kb:6": "setSynthProfile",
-		"kb:7": "setSynthProfile",
-		"kb:8": "setSynthProfile",
-		"kb:9": "setSynthProfile",
+		"kb:1": "selectSynthProfile",
+		"kb:2": "selectSynthProfile",
+		"kb:3": "selectSynthProfile",
+		"kb:4": "selectSynthProfile",
+		"kb:5": "selectSynthProfile",
+		"kb:6": "selectSynthProfile",
+		"kb:7": "selectSynthProfile",
+		"kb:8": "selectSynthProfile",
+		"kb:9": "selectSynthProfile",
 	}
 
 	__gestures = {
