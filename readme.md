@@ -1,7 +1,7 @@
 # NVDA Quick Dictionary
 
 * Author: Oleksandr Gryshchenko
-* Version: 1.1
+* Version: 1.2
 * Download [stable version][1]
 * Download [development version][2]
 
@@ -77,6 +77,62 @@ You will find a link to register below the field for entering the access token, 
 
 Note: The registration link is displayed only when using the default access token. Once you enter your own access code in the settings, this link will be hidden. To restore the default access token, simply clear the field for entering it and click "OK". The default access code will be restored in the add-on configuration and you will see it the next time you open the settings dialog.
 
+## Add and manage voice synthesizers profiles
+This add-on implements the ability to voice the received dictionary articles using associated and pre-configured voice synthesizers.
+To take advantage of this feature, you must first create and save voice synthesizers profiles, and then associate these profiles with the languages in the add-on settings dialog.
+After that, upon receipt of the translation, associated voice synthesizers will be switched for each specified language.
+
+### Creating a voice synthesizer profile
+You can create up to 9 configuration profiles for the various voice synthesizers available in NVDA.
+To switch between profiles, use the number keys 1 to 9 in the add-on control mode.
+
+For example, to create a profile number 5, follow these steps:
+1. Switch to add-on control mode using NVDA+Y.
+2. Press the 5 key. You will hear a message that the selected profile is number 5.
+3. Go to the "Speech" section of the NVDA settings using NVDA+Ctrl+V and configure the desired voice synthesizer to be saved in the selected profile. Then press "Ok" button.
+4. Save the configured synthesizer in the selected profile - press NVDA+Y and then V. You will hear a message about the successful saving of the voice synthesizer profile.
+
+### Activate voice synthesizer by default
+To return to using the default voice synthesizer, press NVDA+Y, then press R. This will restore the default voice synthesizer and you will hear its name and the selected voice.
+
+### Switch between profiles
+As mentioned earlier, you can switch between voice synthesizers profiles using the number keys.
+If the profile already has previously saved voice synthesizer settings, the corresponding voice will be activated and you will hear a message with information about the number of the activated profile, the name of the synthesizer and the name of the voice.
+Otherwise, if the selected profile does not yet contain any data - a message will be displayed only about its number and the synthesizer will not switch.
+
+Note: In either case, you can return to default voice using the R key in add-on control mode (NVDA+Y).
+
+### Notification of the currently selected profile
+To hear which profile is currently selected, use the G key in add-on control mode (NVDA+Y).
+If the profile contains voice synthesizer settings, the name of the synthesizer and voice will be announced in addition to the number. Otherwise, you will only hear the active profile number.
+
+### Announce a list of all customized voice synthesizers profiles
+To listen to a list of all voice synthesizers profiles that have been configured before, press the P key in add-on control mode (NVDA+Y).
+For each profile will be announced its number, synthesizer name, voice name, and the language associated with that profile.
+
+Note: By default, the associated language is set to "- Immutable language -". This means that switching to this synthesizer will not be performed.
+The process of changing the associated language for each profile will be described below.
+
+### Delete settings from the selected profile
+To delete the voice synthesizer settings from the currently selected profile, use the Delete key in add-on control mode (NVDA+Y).
+You will hear a message about the successful deletion of the profile with the specified number.
+
+### Save changes
+After each manipulation of the profile (create/update/delete) it is necessary to save changes using V key in the add-on control mode (NVDA+Y).
+By pressing this key you will hear the message about successful saving of the changes.
+
+### Choice of associated language
+To associate a profile with the desired language, follow these steps:
+1. Open the add-on settings dialog using NVDA+Y and then O.
+2. Find and enable the "Switch between voice synthesizers for selected languages" checkbox.
+3. Tab to desired profile and select the language from the drop-down list to which it will be used.
+4. Press "OK".
+
+Note:
+* If no profile has been previously created, you will see a warning about it in the add-on settings dialog.
+* Each language can be associated with only one profile. If you select a language for one of the profiles, it will be automatically removed from the drop-down lists for the other profiles.
+* In order not to use the profile to switch synthesizers - associate it with the first item "- Immutable language -".
+
 ## Brief reference information
 To listen to short help, switch to add-on control mode with NVDA+Y, then press H. You will hear a message with a list of all available keyboard commands and add-on features.
 
@@ -86,11 +142,15 @@ We are very grateful to everyone who made the effort to develop, translate and m
 
 Several good solutions from other ingenious developments were used in the Quick Dictionary add-on. Thanks to the authors of the following add-ons:
 * Instant Translate - Alexy Sadovoy, Beqa Gozalishvili, Mesar Hameed, Alberto Buffolino and other NVDA contributors.
+* To work with voice synthesizers profiles were used ideas from the Switch Synth add-on (thanks to Tyler Spivey).
 
 ## Change log
 
-### Version 1.1
+### Version 1.2
+* Added the ability to automatically switch voice synthesizers for selected languages;
 * Turkish translation added thanks to Cagri Dogan;
+
+### Version 1.1
 * changed some keyboard shortcuts which conflicted with other add-ons;
 * changed the description of the main add-on features;
 * updated help and translation of the add-on;
