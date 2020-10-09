@@ -1,4 +1,4 @@
-#-*- coding:utf-8 -*-
+﻿#-*- coding:utf-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -284,7 +284,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, QuickDictionarySettingsPanel)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
-	@script(description=_("From %d to %d - selection of the voice synthesizer profile") % (1, 9))
+	@script(description=_("From {startslot} to {endslot} - selection of the voice synthesizer profile").format(startslot=1, endslot=9))
 	def script_selectSynthProfile(self, gesture):
 		"""Switch between voice synthesizer profiles.
 		@param gesture: gesture assigned to this method
@@ -293,7 +293,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._slot = int(gesture.displayName[-1])
 		profiles[self._slot].set()
 		# Translators: Message when selecting a voice synthesizer profile
-		ui.message(_("Profile %d selected: %s") % (self._slot, profiles[self._slot].title))
+		ui.message(_("Profile {slot} selected: {title}").format(slot=self._slot, title=profiles[self._slot].title))
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="G - %s" % _("announce the selected profile of voice synthesizers"))
@@ -324,7 +324,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""
 		slot, self._slot = self._slot, 1
 		profiles.remove(slot)
-		# Translators: 
+		# Translators: Message when deleting a profile
 		ui.message(_("Profile %d successfully deleted") % slot)
 
 	# Translators: Method description is displayed in the NVDA gestures dialog

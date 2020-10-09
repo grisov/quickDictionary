@@ -74,7 +74,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 		sizer.Add(self._useMirrorChk)
 
 		# Translators: A setting in addon settings dialog.
-		self._switchSynthChk = wx.CheckBox(self, label=_("Switch between voice synthesizers for selected languages"))
+		self._switchSynthChk = wx.CheckBox(self, label=_("Switch between &voice synthesizers for selected languages"))
 		sizer.Add(self._switchSynthChk)
 
 		# Output of the list of synthesizers for language binding
@@ -90,7 +90,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 			synthSizer.SetRows(len(profiles))
 			synthLabel = {}
 			for slot, profile in profiles:
-				synthLabel[slot] = wx.StaticText(self, label="%d. %s:" % (slot, profile.title), style=wx.ALIGN_RIGHT)
+				synthLabel[slot] = wx.StaticText(self, label="&%d. %s:" % (slot, profile.title), style=wx.ALIGN_RIGHT)
 				self._synthLangsChoice[slot] = wx.Choice(self, choices=[], style=wx.CB_SORT)
 				synthSizer.Add(synthLabel[slot], wx.ALIGN_RIGHT)
 				synthSizer.Add(self._synthLangsChoice[slot], proportion=wx.ALIGN_LEFT)

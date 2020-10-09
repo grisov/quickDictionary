@@ -1,23 +1,22 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 'quickDictionary' '1.1'\n"
+"Project-Id-Version: 'quickDictionary' '1.2'\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2020-10-01 12:13+0300\n"
-"PO-Revision-Date: 2020-10-01 16:32+0300\n"
+"POT-Creation-Date: 2020-10-09 11:33+0300\n"
+"PO-Revision-Date: 2020-10-09 11:59+0300\n"
+"Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
 "Language-Team: \n"
+"Language: uk_UA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.4.1\n"
-"Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
-"Language: uk_UA\n"
 
 #. Translators: Method description is displayed in the NVDA input gestures dialog
 #, python-format
@@ -83,6 +82,10 @@ msgid "In add-on gestures layer mode:"
 msgstr "В режимі керування додатком:"
 
 #. Translators: Message in the add-on short help
+msgid "Voice synthesizers profiles management:"
+msgstr "Керування профілями голосових синтезаторів:"
+
+#. Translators: Message in the add-on short help
 msgid ""
 "for any of the listed features you can customize the keyboard shortcut in "
 "NVDA input gestures dialog"
@@ -93,6 +96,44 @@ msgstr ""
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 msgid "open add-on settings dialog"
 msgstr "відкриває діалог налаштувань додатку"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid ""
+"From {startslot} to {endslot} - selection of the voice synthesizer profile"
+msgstr "Від {startslot} до {endslot} - вибір профіля голосового синтезатора"
+
+#. Translators: Message when selecting a voice synthesizer profile
+msgid "Profile {slot} selected: {title}"
+msgstr "Вибрано профіль {slot}: {title}"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "announce the selected profile of voice synthesizers"
+msgstr "оголосити вибраний профіль голосових синтезаторів"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "announce a list of all customized voice synthesizers profiles"
+msgstr "повідомити список всіх налаштованих профілів голосових синтезаторів"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "delete the selected voice synthesizer profile"
+msgstr "видалити вибраний профіль голосового синтезатора"
+
+#. Translators: Message when deleting a profile
+#, python-format
+msgid "Profile %d successfully deleted"
+msgstr "Профіль %d успішно видалено"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "restore default voice synthesizer"
+msgstr "повернутись до голосового синтезатора за замовчуванням"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "save configured voice synthesizer profile"
+msgstr "зберегти налаштований профіль синтезатора голосу"
+
+#. Translators: Announcing after saving synthesizer profile
+msgid "Voice synthesizer profile saved successfully"
+msgstr "Профіль синтезатора голосу успішно збережено"
 
 #. Translators: Notification of missing dictionary entry for current request
 msgid "No results"
@@ -207,6 +248,14 @@ msgid "Use &alternative server"
 msgstr "Використовувати &альтернативний сервер"
 
 #. Translators: A setting in addon settings dialog.
+msgid "Switch between &voice synthesizers for selected languages"
+msgstr "Перемикати &голосові синтезатори для вибраних мов"
+
+#. Translators: A warning in addon settings dialog.
+msgid "Please set up voice synthesizers profiles."
+msgstr "Будь-ласка налаштуйте профілі голосових синтезаторів"
+
+#. Translators: A setting in addon settings dialog.
 msgid "&Dictionary Access Token:"
 msgstr "Код &доступу до словника:"
 
@@ -233,10 +282,12 @@ msgid ""
 msgstr "Немає виділеного тексту та буфер обміну не містить текстових даних!"
 
 #. Add-on summary, usually the user visible name of the addon.
+#. Translators: Summary for this add-on
 #. to be shown on installation and add-on information found in Add-ons Manager.
 msgid "Quick Dictionary"
 msgstr "Швидкий словник"
 
+#. Add-on description
 #. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
 msgid ""
 "Online Dictionary add-on for quick translation selected words or phrases."
