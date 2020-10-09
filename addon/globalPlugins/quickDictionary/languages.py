@@ -72,6 +72,7 @@ class Languages(object):
 		self.file = file
 		self.langs = self.load()
 		self.names = langNames
+		self.updated = False
 
 	def load(self) -> list:
 		"""Loads a list of available language pairs from an external json file.
@@ -88,7 +89,6 @@ class Languages(object):
 		@return: the success status of the operation
 		@rtype: bool
 		"""
-		status = False
 		langs = []
 		headers = {
 			'User-Agent': 'Mozilla 5.0'}
@@ -114,8 +114,8 @@ class Languages(object):
 		if len(langs)>5:
 			with open(self.file, 'w') as f:
 				f.write(json.dumps(langs, skipkeys=True, ensure_ascii=False, indent=4))
-			status = True
-		return status
+			self.updated = True
+		return self.updated
 
 	def fromList(self) -> list:
 		"""Sequence of available source languages.

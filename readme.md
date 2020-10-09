@@ -51,6 +51,10 @@ You will then hear a message that the data has been successfully copied and the 
 Note: If you haven't previously made any requests to the remote dictionary, you will hear a warning.
 If option "Copy dictionary response to clipboard" in the add-on settings is enabled, the data will be automatically copied after each successful request.
 
+## Download the current list of available languages
+Use the U key in add-on control mode to download from the online dictionary and save current list of available source and target languages.
+After that you will hear a message about the status of the command.
+
 ## Add-on settings dialog
 To change the add-on parameters you need to open the dialog box of its settings. This can be done this way: press NVDA+Y and then the key O.
 The standard NVDA settings dialog with the open section of our add-on will appear on the screen.

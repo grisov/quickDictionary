@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 'quickDictionary' '1.2'\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2020-10-09 11:33+0300\n"
-"PO-Revision-Date: 2020-10-09 11:59+0300\n"
+"POT-Creation-Date: 2020-10-09 18:47+0300\n"
+"PO-Revision-Date: 2020-10-09 18:52+0300\n"
 "Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
 "Language-Team: \n"
 "Language: uk_UA\n"
@@ -65,6 +65,22 @@ msgid "There is no dictionary queries"
 msgstr "Ще не виконувались запити до словника"
 
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid ""
+"download from online dictionary and save the current list of available "
+"languages"
+msgstr ""
+"завантажити з онлайн-словника та зберегти актуальний список доступних мов"
+
+#. Translators: Notification when downloading from the online dictionary list of available languages
+msgid ""
+"The list of available languages ​​has been successfully downloaded and saved."
+msgstr "Список доступних мов успішно завантажено та збережено."
+
+#. Translators: Notification when downloading from the online dictionary list of available languages
+msgid "Warning! The list of available languages could not be loaded."
+msgstr "Увага! Не вдалось завантажити список доступних мов."
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 msgid "announce the add-on help message"
 msgstr "оголосити коротку довідкову інформацію"
 
@@ -113,6 +129,11 @@ msgstr "оголосити вибраний профіль голосових с
 #. Translators: Method description is displayed in the NVDA gestures dialog
 msgid "announce a list of all customized voice synthesizers profiles"
 msgstr "повідомити список всіх налаштованих профілів голосових синтезаторів"
+
+#. Translators: Notification of no configured profiles
+#. Translators: A warning in addon settings dialog.
+msgid "Please set up voice synthesizers profiles."
+msgstr "Будь-ласка налаштуйте профілі голосових синтезаторів"
 
 #. Translators: Method description is displayed in the NVDA gestures dialog
 msgid "delete the selected voice synthesizer profile"
@@ -250,10 +271,6 @@ msgstr "Використовувати &альтернативний серве�
 #. Translators: A setting in addon settings dialog.
 msgid "Switch between &voice synthesizers for selected languages"
 msgstr "Перемикати &голосові синтезатори для вибраних мов"
-
-#. Translators: A warning in addon settings dialog.
-msgid "Please set up voice synthesizers profiles."
-msgstr "Будь-ласка налаштуйте профілі голосових синтезаторів"
 
 #. Translators: A setting in addon settings dialog.
 msgid "&Dictionary Access Token:"

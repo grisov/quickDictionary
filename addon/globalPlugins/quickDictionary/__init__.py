@@ -25,6 +25,7 @@ from queueHandler import queueFunction, eventQueue
 import api, ui, config
 import gui, wx
 from tones import beep
+from time import sleep
 from threading import Thread
 from .shared import copyToClipboard, getSelectedText, translateWithCaching, messageWithLangDetection, finally_
 from .languages import langs
@@ -244,10 +245,27 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
-		status = langs.update()
-		if status:
+		Thread(target=self.downloadLanguages).start()
+
+	def downloadLanguages(self):
+		"""Download current list of available languages from the remote server and save them to a local file.
+		Call the request procedure to the remote server on a separate thread.
+		Wait for the request to complete and return a prepared response.
+		"""
+		load = Thread(target=langs.update)
+		load.start()
+		i=0
+		while load.is_alive():
+			sleep(0.1)
+			if i == 10:
+				beep(500, 100)
+				i = 0
+			i+=1
+		load.join()
+		if langs.updated:
 			# Translators: Notification when downloading from the online dictionary list of available languages
 			ui.message(_("The list of available languages ​​has been successfully downloaded and saved."))
+			langs.updated = False
 		else:
 			# Translators: Notification when downloading from the online dictionary list of available languages
 			ui.message(_("Warning! The list of available languages could not be loaded."))
