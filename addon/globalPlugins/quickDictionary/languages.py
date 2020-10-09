@@ -11,8 +11,17 @@ try:
 except addonHandler.AddonError:
 	log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
 
+import os
+import json
+import config
+import ssl
 from languageHandler import getLanguageDescription
 from locale import getdefaultlocale
+from urllib.request import Request, urlopen
+from .secret import APIKEY as TOKEN
+from . import _addonName
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class Language(object):
@@ -53,15 +62,60 @@ class Language(object):
 class Languages(object):
 	"""Represents a list of languages available in the dictionary service."""
 
-	def __init__(self, availableLanguages:list, langNames:dict):
+	def __init__(self, file: str, langNames:dict):
 		"""Initialization of an object representing a list of available language pairs.
-		@param availableLanguages: list of language pairs available in the dictionary
-		@type availableLanguages: list
+		@param file: external file containing a list of available source and target languages
+		@type file: str
 		@param langNames: additional languages, where key is a two-character code and value is name of the language
 		@type langNames: dict
 		"""
-		self.langs = availableLanguages
+		self.file = file
+		self.langs = self.load()
 		self.names = langNames
+
+	def load(self) -> list:
+		"""Loads a list of available language pairs from an external json file.
+		@return: list of language pairs available in the dictionary
+		@rtype: list
+		"""
+		data = []
+		with open(self.file, 'r', encoding='utf-8') as f:
+			data = json.load(f)
+		return data
+
+	def update(self) -> bool:
+		"""Get a list of available language pairs from a remote server and save them in an external file.
+		@return: the success status of the operation
+		@rtype: bool
+		"""
+		status = False
+		langs = []
+		headers = {
+			'User-Agent': 'Mozilla 5.0'}
+		directUrl = 'https://dictionary.yandex.net'
+		mirrorUrl = 'https://info.alwaysdata.net'
+		servers = [mirrorUrl]
+		if not config.conf[_addonName]['mirror']:
+			servers.insert(0, directUrl)
+		urlTemplate = "{server}/api/v1/dicservice.json/getLangs?key={key}"
+		for server in servers:
+			url = urlTemplate.format(server=server, key = TOKEN)
+			rq = Request(url, method='GET', headers=headers)
+			try:
+				resp = urlopen(rq, timeout=8)
+			except Exception as e:
+				log.exception(e)
+				continue
+			if resp.status!=200:
+				log.error("Incorrect response code %d from the server %s", resp.status, server)
+				continue
+			langs = json.loads(resp.read().decode())
+			break
+		if len(langs)>5:
+			with open(self.file, 'w') as f:
+				f.write(json.dumps(langs, skipkeys=True, ensure_ascii=False, indent=4))
+			status = True
+		return status
 
 	def fromList(self) -> list:
 		"""Sequence of available source languages.
@@ -165,113 +219,6 @@ langNames = {
 	"yi": _("Yiddish"),
 }
 
-# List of language pairs available in the dictionary
-availableLanguages = [
-	"be-be",
-	"be-ru",
-	"bg-ru",
-	"cs-cs",
-	"cs-en",
-	"cs-ru",
-	"da-en",
-	"da-ru",
-	"de-de",
-	"de-en",
-	"de-ru",
-	"de-tr",
-	"el-en",
-	"el-ru",
-	"en-cs",
-	"en-da",
-	"en-de",
-	"en-el",
-	"en-en",
-	"en-es",
-	"en-et",
-	"en-fi",
-	"en-fr",
-	"en-it",
-	"en-lt",
-	"en-lv",
-	"en-nl",
-	"en-no",
-	"en-pt",
-	"en-ru",
-	"en-sk",
-	"en-sv",
-	"en-tr",
-	"en-uk",
-	"es-en",
-	"es-es",
-	"es-ru",
-	"et-en",
-	"et-ru",
-	"fi-en",
-	"fi-ru",
-	"fi-fi",
-	"fr-fr",
-	"fr-en",
-	"fr-ru",
-	"hu-hu",
-	"hu-ru",
-	"it-en",
-	"it-it",
-	"it-ru",
-	"lt-en",
-	"lt-lt",
-	"lt-ru",
-	"lv-en",
-	"lv-ru",
-	"mhr-ru",
-	"mrj-ru",
-	"nl-en",
-	"nl-ru",
-	"no-en",
-	"no-ru",
-	"pl-ru",
-	"pt-en",
-	"pt-ru",
-	"ru-be",
-	"ru-bg",
-	"ru-cs",
-	"ru-da",
-	"ru-de",
-	"ru-el",
-	"ru-en",
-	"ru-es",
-	"ru-et",
-	"ru-fi",
-	"ru-fr",
-	"ru-hu",
-	"ru-it",
-	"ru-lt",
-	"ru-lv",
-	"ru-mhr",
-	"ru-mrj",
-	"ru-nl",
-	"ru-no",
-	"ru-pl",
-	"ru-pt",
-	"ru-ru",
-	"ru-sk",
-	"ru-sv",
-	"ru-tr",
-	"ru-tt",
-	"ru-uk",
-	"ru-zh",
-	"sk-en",
-	"sk-ru",
-	"sv-en",
-	"sv-ru",
-	"tr-de",
-	"tr-en",
-	"tr-ru",
-	"tt-ru",
-	"uk-en",
-	"uk-ru",
-	"uk-uk",
-	"zh-ru"
-]
 
 # An instance of the Languages object for use in the add-on
-langs = Languages(availableLanguages, langNames)
+langs = Languages("%s.%s" % (os.path.splitext(os.path.abspath(__file__))[0], 'json'), langNames)

@@ -172,11 +172,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
-		status = False
 		if config.conf[_addonName]['switchsynth']:
 			profile = next(filter(lambda x: x.lang==self.target, (p for s,p in profiles)), None)
 			if profile:
-				status = profile.set()
+				profile.set()
 		text = getSelectedText()
 		if not text: return
 		Thread(target=self.translate, args=[text, False]).start()
