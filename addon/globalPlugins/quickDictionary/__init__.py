@@ -172,10 +172,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
+		status = False
 		if config.conf[_addonName]['switchsynth']:
 			profile = next(filter(lambda x: x.lang==self.target, (p for s,p in profiles)), None)
 			if profile:
-				profile.set()
+				status = profile.set()
 		text = getSelectedText()
 		if not text: return
 		Thread(target=self.translate, args=[text, False]).start()
@@ -237,6 +238,21 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message(self._lastTranslator.plaintext)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
+	@script(description="U - %s" % _("download from online dictionary and save the current list of available languages"))
+	def script_updateLanguages(self, gesture):
+		"""Download a list of available languages from the online dictionary and save them to a local file.
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
+		status = langs.update()
+		if status:
+			# Translators: Notification when downloading from the online dictionary list of available languages
+			ui.message(_("The list of available languages ​​has been successfully downloaded and saved."))
+		else:
+			# Translators: Notification when downloading from the online dictionary list of available languages
+			ui.message(_("Warning! The list of available languages could not be loaded."))
+
+	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="H - %s" % _("announce the add-on help message"))
 	def script_announceHelp(self, gesture):
 		"""Retrieves a description of all add-ons methods and presents them.
@@ -257,6 +273,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.script_swapLanguages.__doc__,
 			self.script_announceLanguages.__doc__,
 			self.script_copyLastResult.__doc__,
+			self.script_updateLanguages.__doc__,
 			"...",
 			# Translators: Message in the add-on short help
 			_("Voice synthesizers profiles management:"),
@@ -390,6 +407,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:a": "announceLanguages",
 		"kb:s": "swapLanguages",
 		"kb:c": "copyLastResult",
+		"kb:u": "updateLanguages",
 		"kb:o": "showSettings",
 		"kb:h": "announceHelp",
 		"kb:g": "announceSelectedSynthProfile",
