@@ -1,4 +1,4 @@
-﻿#-*- coding:utf-8 -*-
+#-*- coding:utf-8 -*-
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -311,6 +311,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
+		if len(profiles)==0:
+			# Translators: Notification of no configured profiles
+			ui.message(_("Please set up voice synthesizers profiles."))
+			return
 		for slot, profile in profiles:
 			if profile.name:
 				ui.message("%d: %s" % (slot, ', '.join([profile.title, langs[profile.lang].name])))

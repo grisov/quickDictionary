@@ -26,6 +26,7 @@ class Profile(object):
 		self._name = synthName
 		self._conf = synthConf
 		self._lang = lang
+		self._status = False
 
 	def set(self) -> bool:
 		"""Sets the profile as the current voice synthesizer.
@@ -41,6 +42,7 @@ class Profile(object):
 			speech.getSynth().saveSettings()
 		except KeyError:
 			pass
+		self._status = state
 		return state
 
 	def update(self):
@@ -95,6 +97,19 @@ class Profile(object):
 		"""
 		self._lang = lang
 		return self
+
+	@property
+	def status(self) -> bool:
+		"""Status of success in changing the current voice synthesizer.
+		@return: status returned by the setSynth() method
+		@rtype: bool
+		"""
+		return self._status
+
+	def reset(self):
+		"""Reset the status of the current profile."""
+		self._status = False
+		return self._status
 
 
 class Profiles(object):
@@ -159,7 +174,7 @@ class Profiles(object):
 		@rtype: (int, synthesizers.Profile) iterator
 		"""
 		for slot in sorted(self._profs, key=lambda s: str(s)):
-			if isinstance(slot, int):
+			if isinstance(slot, int) and self._profs[slot].name:
 				yield slot, self._profs[slot]
 
 	def __len__(self):
@@ -167,7 +182,7 @@ class Profiles(object):
 		@return: the number of profiles saved in the collection
 		@rtype: int
 		"""
-		return(len(self._profs))
+		return len([p for s, p in self])
 
 	def remove(self, id: int):
 		"""Deletes the synthesizer profile by its specified ID (slot).
