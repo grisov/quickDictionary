@@ -58,6 +58,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._lastTranslator = None
 		# to use speech synthesizers profiles
 		self._slot = 1
+		# Sequence of messages
+		self._messages = []
 
 	@property
 	def source(self) -> str:
@@ -173,11 +175,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
-		status = False
-		if config.conf[_addonName]['switchsynth']:
-			profile = next(filter(lambda x: x.lang==self.target, (p for s,p in profiles)), None)
-			if profile:
-				status = profile.set()
 		text = getSelectedText()
 		if not text: return
 		Thread(target=self.translate, args=[text, False]).start()
@@ -214,10 +211,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if langs.isAvailable(self.target, self.source):
 			self.source, self.target = self.target, self.source
 			# Translators: Notification that languages ​​have been swapped
-			ui.message(_("Languages swapped"))
-			ui.message('%s - %s' % (self.source, self.target))
+			self._messages.append(_("Languages swapped"))
+			self._messages.append('%s - %s' % (self.source, self.target))
 			text = getSelectedText()
-			if not text: return
+			if not text:
+				ui.message('...'.join(self._messages))
+				self._messages.clear()
+				return
 			Thread(target=self.translate, args=[text, False]).start()
 		else:
 			# Translators: Notification that reverse translation is not available for the current language pair
@@ -407,14 +407,22 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if not translator.plaintext:
 				# Translators: Notification of missing dictionary entry for current request
 				ui.message(_("No results"))
+				self._messages.clear()
 				return
 		self._lastTranslator = translator
 		if isHtml:
 			ui.browseableMessage(translator.html, title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name), isHtml=isHtml)
 		else:
-			ui.message('%s - %s' % (langs[translator.langFrom].name, langs[translator.langTo].name))
+			if config.conf[_addonName]['switchsynth']:
+				profile = next(filter(lambda x: x.lang==self.target, (p for s,p in profiles)), None)
+				if profile:
+					profile.set()
+			self._messages.append('%s - %s' % (langs[translator.langFrom].name, langs[translator.langTo].name))
+			self._messages.append(translator.plaintext)
+			message = '...'.join(self._messages)
+			self._messages.clear()
 			queueFunction(eventQueue, messageWithLangDetection,
-				{'text': translator.plaintext, 'lang': translator.langTo})
+				{'text': message, 'lang': translator.langTo})
 		if self.isCopyToClipboard:
 			copyToClipboard(translator.plaintext)
 

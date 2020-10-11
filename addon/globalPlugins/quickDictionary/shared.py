@@ -15,13 +15,15 @@ import re
 import api
 import ui
 import braille
-from speech import LangChangeCommand, speak
+from speech import LangChangeCommand, CallbackCommand, speak
 from textInfos import POSITION_SELECTION
 from time import sleep
 from tones import beep
 from functools import lru_cache, wraps
 import config
 from .dictionary import Translator
+from .synthesizers import profiles
+from . import _addonName
 
 
 @lru_cache(maxsize=100)
@@ -115,11 +117,11 @@ def messageWithLangDetection(msg: dict):
 	@param msg: language code and text to be spoken in the specified language
 	@type msg: dict -> {'lang': str, 'text': str}
 	"""
+	speechSequence=[]
 	if config.conf['speech']['autoLanguageSwitching']:
-		speechSequence=[]
 		speechSequence.append(LangChangeCommand(msg['lang']))
-		speechSequence.append(msg['text'])
-		speak(speechSequence)
-		braille.handler.message(msg['text'])
-	else:
-		ui.message(msg['text'])
+	speechSequence.append(msg['text'])
+	if config.conf[_addonName]['switchsynth']:
+		speechSequence.append(CallbackCommand(callback=profiles.restoreDefault))
+	speak(speechSequence)
+	braille.handler.message(msg['text'])
