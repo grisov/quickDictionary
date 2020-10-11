@@ -427,6 +427,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			copyToClipboard(translator.plaintext)
 
 	__addonGestures = {
+		# Dictionary
 		"kb:NVDA+y": "dictionaryAnnounce",
 		"kb:d": "dictionaryAnnounce",
 		"kb:w": "dictionaryBox",
@@ -434,8 +435,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:s": "swapLanguages",
 		"kb:c": "copyLastResult",
 		"kb:u": "updateLanguages",
+		# General
 		"kb:o": "showSettings",
 		"kb:h": "announceHelp",
+		# Profiles of voice synthesizers
 		"kb:g": "announceSelectedSynthProfile",
 		"kb:p": "announceSynthProfiles",
 		"kb:delete": "removeSynthProfile",

@@ -137,6 +137,11 @@ Note:
 * Each language can be associated with only one profile. If you select a language for one of the profiles, it will be automatically removed from the drop-down lists for the other profiles.
 * In order not to use the profile to switch synthesizers - associate it with the first item "- Immutable language -".
 
+### The process of switching voice synthesizers
+After making the previous settings, the voice synthesizer of your choice will automatically turn on when you receive data from the dictionary. And after the announcement of the article, the default synthesizer will turn on again.
+
+Note: Switching synthesizers occurs at the beginning and after the announcement of the dictionary article. If you interrupt the current speech, the default synthesizer will not be activated automatically. So you have to switch to it manually. This can be done very simply by pressing NVDA+Y and then R. Done.
+
 ## Brief reference information
 To listen to short help, switch to add-on control mode with NVDA+Y, then press H. You will hear a message with a list of all available keyboard commands and add-on features.
 
@@ -152,6 +157,7 @@ Several good solutions from other ingenious developments were used in the Quick 
 
 ### Version 1.2
 * Added the ability to automatically switch voice synthesizers for selected languages;
+* added the ability to download the current list of languages available in the online-dictionary;
 * Turkish translation added thanks to Cagri Dogan;
 
 ### Version 1.1
