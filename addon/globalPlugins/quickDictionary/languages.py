@@ -94,9 +94,9 @@ class Languages(object):
 			'User-Agent': 'Mozilla 5.0'}
 		directUrl = 'https://dictionary.yandex.net'
 		mirrorUrl = 'https://info.alwaysdata.net'
-		servers = [mirrorUrl]
-		if not config.conf[_addonName]['mirror']:
-			servers.insert(0, directUrl)
+		servers = [directUrl, mirrorUrl]
+		if config.conf[_addonName]['mirror']:
+			servers.reverse()
 		urlTemplate = "{server}/api/v1/dicservice.json/getLangs?key={key}"
 		for server in servers:
 			url = urlTemplate.format(server=server, key = TOKEN)

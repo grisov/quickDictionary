@@ -78,9 +78,9 @@ class Translator(threading.Thread):
 			'User-Agent': 'Mozilla 5.0'}
 		directUrl = 'https://dictionary.yandex.net'
 		mirrorUrl = 'https://info.alwaysdata.net'
-		servers = [mirrorUrl]
-		if not self.mirror:
-			servers.insert(0, directUrl)
+		servers = [directUrl, mirrorUrl]
+		if self.mirror:
+			servers.reverse()
 		lang = '%s-%s' % (self.langFrom, self.langTo)
 		urlTemplate = "{server}/api/v1/dicservice.json/lookup?{key}lang={lang}&text={text}{ui}"
 		for server in servers:

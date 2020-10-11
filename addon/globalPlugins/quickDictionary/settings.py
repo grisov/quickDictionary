@@ -195,6 +195,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 		config.conf[_addonName]['switchsynth'] = self._switchSynthChk.GetValue()
 		accessToken = self._tokenInput.GetValue()
 		config.conf[_addonName]['token'] = accessToken if accessToken else TOKEN
-		for slot, profile in profiles:
-			profiles[slot].lang = self._choices[slot]
+		if config.conf[_addonName]['switchsynth']:
+			for slot, profile in profiles:
+				profiles[slot].lang = self._choices[slot]
 			profiles.save()
