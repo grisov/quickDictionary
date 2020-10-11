@@ -189,5 +189,5 @@
 1. Откройте командную строку, перейдите в корневой каталог этого репозитория.
 2. Запустите команду **scons**. Созданное дополнение при отсутствии ошибок будет помещено в текущий каталог.
 
-[1]: https://github.com/grisov/quickDictionary/releases/download/v1.1/quickDictionary-1.1.nvda-addon
-[2]: https://github.com/grisov/quickDictionary/releases/download/v1.1/quickDictionary-1.1.nvda-addon
+[1]: https://github.com/grisov/quickDictionary/releases/download/v1.2/quickDictionary-1.2.nvda-addon
+[2]: https://github.com/grisov/quickDictionary/releases/download/v1.2/quickDictionary-1.2.nvda-addon
