@@ -398,7 +398,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""
 		pairs = [(self.source, self.target)]
 		if self.isAutoSwap:
-			pairs.append((self.target, self.source))
+			if langs.isAvailable(self.target, self.source):
+				pairs.append((self.target, self.source))
 		for lFrom, lInto in pairs:
 			translator = translateWithCaching(lFrom, lInto, text)
 			if translator.plaintext:
@@ -414,7 +415,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			ui.browseableMessage(translator.html, title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name), isHtml=isHtml)
 		else:
 			if config.conf[_addonName]['switchsynth']:
-				profile = next(filter(lambda x: x.lang==self.target, (p for s,p in profiles)), None)
+				profile = next(filter(lambda x: x.lang==translator.langTo, (p for s,p in profiles)), None)
 				if profile:
 					profile.set()
 			self._messages.append('%s - %s' % (langs[translator.langFrom].name, langs[translator.langTo].name))
