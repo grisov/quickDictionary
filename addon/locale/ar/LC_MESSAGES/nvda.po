@@ -1,0 +1,310 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 'quickDictionary' '1.2'\n"
+"Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
+"POT-Creation-Date: 2020-10-09 18:47+0300\n"
+"PO-Revision-Date: 2020-10-12 14:26+0300\n"
+"Last-Translator: wafiqtaher <wafiqtaher@gmail.com>\n"
+"Language-Team: وفيق طاهر <wafiqtaher@gmail.com>\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.1\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#. Translators: Method description is displayed in the NVDA input gestures dialog
+#, python-format
+msgid "then press %s for help"
+msgstr "ثم اضغط %s للحصول على المساعدة"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+#, python-format
+msgid ""
+"announce the dictionary entry for the currently selected word or phrase (the "
+"same as %s)"
+msgstr "يعلن عن إدخال القاموس للكلمة أو العبارة المحددة حاليًا (مثل %s)"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "show dictionary entry in a separate browseable window"
+msgstr "عرض إدخال القاموس في نافذة منفصلة قابلة للتصفح"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "announce the current source and target languages"
+msgstr "يعلن عن المصدر الحالي ولغات الهدف"
+
+#. Translators: message presented to announce the current source and target languages.
+msgid "Translate: from {langFrom} to {langInto}"
+msgstr "الترجمة: من {langFrom} الى {langInto}"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "swap languages and get Quick Dictionary translation"
+msgstr "تبديل اللغات والحصول على ترجمة القاموس السريع"
+
+#. Translators: Notification that languages ​​have been swapped
+msgid "Languages swapped"
+msgstr "تم تبديل اللغات"
+
+#. Translators: Notification that reverse translation is not available for the current language pair
+msgid "Swap languages is not available for this pair"
+msgstr "تبديل اللغات غير متوفر لهذا الزوج من اللغة"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "copy last dictionary entry to the clipboard"
+msgstr "نسخ إدخال القاموس الأخير إلى الحافظة"
+
+#. Translators: Notification that no dictionary entries have been received in the current session
+msgid "There is no dictionary queries"
+msgstr "لا توجد استفسارات عن القاموس"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid ""
+"download from online dictionary and save the current list of available "
+"languages"
+msgstr "قم بتنزيل القاموس من على الإنترنت وحفظ القائمة الحالية للغات المتاحة"
+
+#. Translators: Notification when downloading from the online dictionary list of available languages
+msgid ""
+"The list of available languages ​​has been successfully downloaded and saved."
+msgstr "تم بنجاح تنزيل وحفظ قائمة اللغات المتاحة."
+
+#. Translators: Notification when downloading from the online dictionary list of available languages
+msgid "Warning! The list of available languages could not be loaded."
+msgstr "تحذير! لا يمكن تحميل قائمة اللغات المتاحة."
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "announce the add-on help message"
+msgstr "إعلن عن رسالة تعليمات الوظيفة الإضافية"
+
+#. Translators: Message in the add-on short help
+msgid "switch to add-on control mode"
+msgstr "قم بالتبديل إلى وضع التحكم الإضافي"
+
+#. Translators: Message in the add-on short help
+#, python-format
+msgid "to get a quick translation of a word or phrase - press %s twice"
+msgstr "للحصول على ترجمة سريعة للكلمة أو العبارة - اضغط على %s مرتين"
+
+#. Translators: Message in the add-on short help
+msgid "In add-on gestures layer mode:"
+msgstr "في وضع طبقة الإيماءات الإضافية:"
+
+#. Translators: Message in the add-on short help
+msgid "Voice synthesizers profiles management:"
+msgstr "إدارة ملفات تعريف أجهزة التوليف الصوتي:"
+
+#. Translators: Message in the add-on short help
+msgid ""
+"for any of the listed features you can customize the keyboard shortcut in "
+"NVDA input gestures dialog"
+msgstr ""
+"بالنسبة لأي من الميزات المدرجة ، يمكنك تخصيص اختصار لوحة المفاتيح في محاورة "
+"إيماءات الإدخال"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "open add-on settings dialog"
+msgstr "فتح مربع حوار إعدادات الوظيفة الإضافية"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid ""
+"From {startslot} to {endslot} - selection of the voice synthesizer profile"
+msgstr "من  {startslot} الى {endslot} -اختيار ملف تعريف مُركِّب الصوت"
+
+#. Translators: Message when selecting a voice synthesizer profile
+msgid "Profile {slot} selected: {title}"
+msgstr "تم تحديد الملف الشخصي {slot}: {title}"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "announce the selected profile of voice synthesizers"
+msgstr "أعلن عن ملف التعريف المحدد لأجهزة التوليف الصوتي"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "announce a list of all customized voice synthesizers profiles"
+msgstr "يعلن عن قائمة بجميع ملفات تعريف مُركِّبات الصوت المخصصة"
+
+#. Translators: Notification of no configured profiles
+#. Translators: A warning in addon settings dialog.
+msgid "Please set up voice synthesizers profiles."
+msgstr "الرجاء إعداد ملفات تعريف مُركِّبات الصوت."
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "delete the selected voice synthesizer profile"
+msgstr "احذف ملف تعريف مُركِّب الصوت المحدد"
+
+#. Translators: Message when deleting a profile
+#, python-format
+msgid "Profile %d successfully deleted"
+msgstr "تم حذف ملف التعريف %d بنجاح"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "restore default voice synthesizer"
+msgstr "استعادة مركب الصوت الافتراضي"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "save configured voice synthesizer profile"
+msgstr "حفظ الملف الشخصي للتكوين الصوتي"
+
+#. Translators: Announcing after saving synthesizer profile
+msgid "Voice synthesizer profile saved successfully"
+msgstr "تم حفظ ملف تعريف مُركِّب الصوت بنجاح"
+
+#. Translators: Notification of missing dictionary entry for current request
+msgid "No results"
+msgstr "لاتوجد  نتائج"
+
+#. Translators: Field name in a dictionary entry
+msgid "number"
+msgstr "رقم"
+
+#. Translators: Field name in a dictionary entry
+msgid "gender"
+msgstr "جنس"
+
+#. Translators: Field name in a dictionary entry
+msgid "Mean"
+msgstr "يعني"
+
+#. Translators: Field name in a dictionary entry
+msgid "Synonyms"
+msgstr "المرادفات"
+
+#. Translators: Field name in a dictionary entry
+msgid "Examples"
+msgstr "أمثلة"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Cebuano"
+msgstr "السيبيونو"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Esperanto"
+msgstr "اسبرانتو"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Hmong"
+msgstr "همونغ"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Creole Haiti"
+msgstr "الكريول هايتي"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Javanese"
+msgstr "الجاوية"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Latin"
+msgstr "لاتيني"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Malagasy"
+msgstr "مدغشقر"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Meadow Mari"
+msgstr "مرج ماري"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Hill Mari"
+msgstr "هيل ماري"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Myanmar (Burmese)"
+msgstr "ميانمار (البورمية)"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Chichewa"
+msgstr "شيشيوا"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Somali"
+msgstr "صومالي"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Sesotho"
+msgstr "سيسوتو"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Sundanese"
+msgstr "السوندانيز"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Tagalog"
+msgstr "تاغالوغ"
+
+#. Translators: The name of the language, which may not be in the main list
+msgid "Yiddish"
+msgstr "اليديشية"
+
+#. Translators: Help message for a dialog.
+msgid "Select dictionary source and target language:"
+msgstr "حدد مصدر القاموس واللغة الهدف:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Source language:"
+msgstr "لغة الم&صدر:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Target language:"
+msgstr "لغة ال&هدف:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Copy dictionary response to clip&board"
+msgstr "نسخ ناتج القاموس الى الحا&فظة"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Auto-&swap languages"
+msgstr "تبديل اللغات- &تلقائي"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Use &alternative server"
+msgstr "استخدام &خادم بديل"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Switch between &voice synthesizers for selected languages"
+msgstr "التبديل بين آلات الن&طق  الصوتية للغات المحددة"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Dictionary Access Token:"
+msgstr "&رمز الوصول إلى القاموس:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Register your own access token"
+msgstr "تسجيل رمز الوصول الخاص بك"
+
+#. Translators: This displayed by default in the language selection choice list
+msgid "-- select language --"
+msgstr "-- اختار اللغة--"
+
+#. Translators: Message if the text was successfully copied to the clipboard
+msgid "Copied to clipboard."
+msgstr "نسخ إلى الحافظة."
+
+#. Translators: Message if the text could not be copied to the clipboard
+msgid "Copy failed."
+msgstr "فشل النسخ."
+
+#. Translators: user has pressed the shortcut key for translating selected text, but no text was actually selected and clipboard is clear
+msgid ""
+"There is no selected text, the clipboard is also empty, or its content is "
+"not text!"
+msgstr "لا يوجد نص محدد ، الحافظة فارغة أيضًا ، أو محتواها ليس نصًا!"
+
+#. Add-on summary, usually the user visible name of the addon.
+#. Translators: Summary for this add-on
+#. to be shown on installation and add-on information found in Add-ons Manager.
+msgid "Quick Dictionary"
+msgstr "القاموس السريع"
+
+#. Add-on description
+#. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
+msgid ""
+"Online Dictionary add-on for quick translation selected words or phrases."
+msgstr ""
+"إضافة قاموس من على الإنترنت للترجمة السريعة للكلمات أو العبارات المختارة."
