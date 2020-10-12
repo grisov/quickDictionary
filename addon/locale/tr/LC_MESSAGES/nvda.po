@@ -3,10 +3,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: NVDA Quick Dictionary 1.1\n"
+"Project-Id-Version: NVDA Quick Dictionary 1.2\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2020-10-01 12:13+0300\n"
-"PO-Revision-Date: 2020-10-02 15:05+0300\n"
+"POT-Creation-Date: 2020-10-09 18:47+0300\n"
+"PO-Revision-Date: 2020-10-12 14:20+0300\n"
 "Last-Translator: Cagri Dogan <cagrid@hotmail.com>\n"
 "Language-Team: cagrid@hotmail.com\n"
 "Language: tr\n"
@@ -24,7 +24,7 @@ msgstr ""
 #. Translators: Method description is displayed in the NVDA input gestures dialog
 #, python-format
 msgid "then press %s for help"
-msgstr "Sonra yardım için %s basın"
+msgstr "Yardım için %s tuşuna basın"
 
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 #, python-format
@@ -67,6 +67,21 @@ msgid "There is no dictionary queries"
 msgstr "Sözlük sorgusu yok"
 
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid ""
+"download from online dictionary and save the current list of available "
+"languages"
+msgstr "çevrimiçi sözlükten indir ve mevcut dil listesini kaydet"
+
+#. Translators: Notification when downloading from the online dictionary list of available languages
+msgid ""
+"The list of available languages ​​has been successfully downloaded and saved."
+msgstr "Mevcut dil listesi başarıyla indirildi ve kaydedildi."
+
+#. Translators: Notification when downloading from the online dictionary list of available languages
+msgid "Warning! The list of available languages could not be loaded."
+msgstr "Uyarı! Mevcut dil listesi yüklenemedi."
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 msgid "announce the add-on help message"
 msgstr "eklenti yardım mesajını söyle"
 
@@ -85,6 +100,10 @@ msgid "In add-on gestures layer mode:"
 msgstr "Eklenti hareketleri katman kipinde:"
 
 #. Translators: Message in the add-on short help
+msgid "Voice synthesizers profiles management:"
+msgstr "Ses sentezleyicileri profil yönetimi:"
+
+#. Translators: Message in the add-on short help
 msgid ""
 "for any of the listed features you can customize the keyboard shortcut in "
 "NVDA input gestures dialog"
@@ -95,6 +114,50 @@ msgstr ""
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 msgid "open add-on settings dialog"
 msgstr "Çabuk Sözlük eklenti ayarları iletişim kutusunu aç"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid ""
+"From {startslot} to {endslot} - selection of the voice synthesizer profile"
+msgstr ""
+"{startslot} yuvadan {endslot} yuvaya - ses sentezleyici profilinin seçimi"
+
+#. Translators: Message when selecting a voice synthesizer profile
+msgid "Profile {slot} selected: {title}"
+msgstr "{slot} profil seçildi: {title}"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "announce the selected profile of voice synthesizers"
+msgstr "Seçili ses sesntezleme profilini bildir"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "announce a list of all customized voice synthesizers profiles"
+msgstr "tüm özelleştirilmiş ses sentezleyici profillerinin listesini bildir"
+
+#. Translators: Notification of no configured profiles
+#. Translators: A warning in addon settings dialog.
+msgid "Please set up voice synthesizers profiles."
+msgstr "Lütfen ses sentezleyici profillerini ayarlayın."
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "delete the selected voice synthesizer profile"
+msgstr "seçili ses sentezleyici profilini sil"
+
+#. Translators: Message when deleting a profile
+#, python-format
+msgid "Profile %d successfully deleted"
+msgstr "Profil %d başarıyla silindi"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "restore default voice synthesizer"
+msgstr "Varsayılan sentezleyiciye geri dön"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "save configured voice synthesizer profile"
+msgstr "yapılandırılmış ses sentezleyici profilini kaydet"
+
+#. Translators: Announcing after saving synthesizer profile
+msgid "Voice synthesizer profile saved successfully"
+msgstr "Ses sentezleyici profili başarıyla kaydedildi"
 
 #. Translators: Notification of missing dictionary entry for current request
 msgid "No results"
@@ -209,6 +272,10 @@ msgid "Use &alternative server"
 msgstr "&Alternatif sunucu kullan"
 
 #. Translators: A setting in addon settings dialog.
+msgid "Switch between &voice synthesizers for selected languages"
+msgstr "Seçilen diller için ses &sentezleyicileri arasında geçiş yap"
+
+#. Translators: A setting in addon settings dialog.
 msgid "&Dictionary Access Token:"
 msgstr "&Sözlük Erişim Jetonu:"
 
@@ -235,28 +302,15 @@ msgid ""
 msgstr "Seçili metin yok, pano da boş veya içeriği metin değil!"
 
 #. Add-on summary, usually the user visible name of the addon.
+#. Translators: Summary for this add-on
 #. to be shown on installation and add-on information found in Add-ons Manager.
 msgid "Quick Dictionary"
 msgstr "Çabuk Sözlük"
 
+#. Add-on description
 #. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
 msgid ""
 "Online Dictionary add-on for quick translation selected words or phrases."
 msgstr ""
 "Seçilen ya da seçim yoksa panoda bulunan kelime ya da ifadeler için çevrim "
 "içi çabuk sözlük eklentisi"
-
-#~ msgid "Invalid gesture is entered in add-on layer mode"
-#~ msgstr "Eklenti katman kipinde geçersiz hareket girildi"
-
-#~| msgid ""
-#~| "S - swap languages and get dictionary entry (same as NVDA + Alt + D)"
-#~ msgid "S - swap languages and get dictionary entry (same as NVDA+Ctrl+E)"
-#~ msgstr ""
-#~ "S - dilleri değiştir ve sözlük girişini al (NVDA + Ctrl + E ile aynı)"
-
-#~| msgid ""
-#~| "O - open dictionary add-on settings dialog (same as NVDA + Windows + D)"
-#~ msgid "O - open dictionary add-on settings dialog (same as NVDA+Alt+E)"
-#~ msgstr ""
-#~ "O - sözlük eklenti ayarları iletişim kutusunu aç (NVDA + Alt + E ile aynı)"
