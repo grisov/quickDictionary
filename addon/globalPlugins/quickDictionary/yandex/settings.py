@@ -14,10 +14,10 @@ except addonHandler.AddonError:
 import gui
 import wx
 import config
-from . import _addonName, _addonSummary
-from .languages import langs
-from .synthesizers import profiles
-from .secret import APIKEY as TOKEN
+from .. import _addonName, _addonSummary
+from .. import langs
+from ..synthesizers import profiles
+from . import secret
 
 
 class QuickDictionarySettingsPanel(gui.SettingsPanel):
@@ -124,7 +124,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 		self._linkHref.Update()
 		self._tokenInput.SetValue(config.conf[_addonName]['token'])
 		sizer.Add(self._linkHref, flag=wx.EXPAND)
-		sizer.Show(self._linkHref, show=self._tokenInput.GetValue()==TOKEN)
+		sizer.Show(self._linkHref, show=self._tokenInput.GetValue()==secret.APIKEY)
 
 	def widgetMaker(self, widget, languages):
 		"""Creating a widget based on the sequence of Language classes to display it in a wx.Choice object.
@@ -194,7 +194,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 		config.conf[_addonName]['mirror'] = self._useMirrorChk.GetValue()
 		config.conf[_addonName]['switchsynth'] = self._switchSynthChk.GetValue()
 		accessToken = self._tokenInput.GetValue()
-		config.conf[_addonName]['token'] = accessToken if accessToken else TOKEN
+		config.conf[_addonName]['token'] = accessToken if accessToken else secret.APIKEY
 		if config.conf[_addonName]['switchsynth']:
 			for slot, profile in profiles:
 				profiles[slot].lang = self._choices[slot]

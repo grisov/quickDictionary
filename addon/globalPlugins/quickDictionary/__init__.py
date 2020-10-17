@@ -27,16 +27,23 @@ import gui, wx
 from tones import beep
 from time import sleep
 from threading import Thread
+from .locator import global_lookup, discover_services
+from .service import DictionaryService
+
+discover_services()
+services = global_lookup.lookup_all(DictionaryService)
+langs = services[0].langs()
+secret = services[0].secret()
+Translator = services[0].translator()
+QuickDictionarySettingsPanel = services[0].settings()
+
 from .shared import copyToClipboard, getSelectedText, translateWithCaching, messageWithLangDetection, finally_
-from .languages import langs
 from .synthesizers import profiles
-from .settings import QuickDictionarySettingsPanel
-from .secret import APIKEY as TOKEN
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	"""Implementation global commands of NVDA add-on"""
-	scriptCategory = str(_addonSummary)
+	scriptCategory = _addonSummary
 
 	def __init__(self, *args, **kwargs):
 		"""Initializing initial configuration values ​​and other fields"""
@@ -47,7 +54,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			"autoswap": "boolean(default=false)",
 			"copytoclip": "boolean(default=false)",
 			"switchsynth": "boolean(default=true)",
-			"token": "string(default=%s)" % TOKEN,
+			"token": "string(default=%s)" % secret.APIKEY,
 			"mirror": "boolean(default=false)"
 		}
 		config.conf.spec[_addonName] = confspec

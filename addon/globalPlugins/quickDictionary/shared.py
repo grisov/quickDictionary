@@ -21,7 +21,7 @@ from time import sleep
 from tones import beep
 from functools import lru_cache, wraps
 import config
-from .dictionary import Translator
+from . import Translator
 from .synthesizers import profiles
 from . import _addonName
 
@@ -110,7 +110,6 @@ def finally_(func, final):
 		return new
 	return wrap(final)
 
-# below function is taken from Instant Translate add-on
 def messageWithLangDetection(msg: dict):
 	"""Pronounce text in a given language,
 	if enabled the setting for auto-switching languages of the synthesizer.

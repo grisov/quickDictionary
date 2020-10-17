@@ -18,8 +18,8 @@ import ssl
 from languageHandler import getLanguageDescription
 from locale import getdefaultlocale
 from urllib.request import Request, urlopen
-from .secret import APIKEY as TOKEN
-from . import _addonName
+from . import secret
+from .. import _addonName
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -99,7 +99,7 @@ class Languages(object):
 			servers.reverse()
 		urlTemplate = "{server}/api/v1/dicservice.json/getLangs?key={key}"
 		for server in servers:
-			url = urlTemplate.format(server=server, key = TOKEN)
+			url = urlTemplate.format(server=server, key = secret.APIKEY)
 			rq = Request(url, method='GET', headers=headers)
 			try:
 				resp = urlopen(rq, timeout=8)

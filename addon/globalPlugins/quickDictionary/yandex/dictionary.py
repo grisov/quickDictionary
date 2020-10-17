@@ -19,8 +19,8 @@ from urllib.request import Request, urlopen
 from urllib.parse import quote as urlencode
 from json import loads
 import config
-from . import _addonName
-from .languages import langs
+from .. import _addonName
+from .. import langs
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
