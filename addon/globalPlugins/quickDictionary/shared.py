@@ -15,19 +15,20 @@ import re
 import api
 import ui
 import braille
-from speech import LangChangeCommand, CallbackCommand, speak
+from speech import speak
+from speech.commands import LangChangeCommand, CallbackCommand
 from textInfos import POSITION_SELECTION
 from time import sleep
 from tones import beep
 from functools import lru_cache, wraps
 import config
-from . import Translator
-from .synthesizers import profiles
 from . import _addonName
+from .locator import services
+from .synthesizers import profiles
 
 
 @lru_cache(maxsize=100)
-def translateWithCaching(langFrom: str, langInto: str, text: str) -> Translator:
+def translateWithCaching(langFrom: str, langInto: str, text: str):
 	"""Call the request procedure to the remote server on a separate thread.
 	Wait for the request to complete and return a prepared response.
 	All function values are cached to reduce the number of requests to the server.
@@ -38,9 +39,9 @@ def translateWithCaching(langFrom: str, langInto: str, text: str) -> Translator:
 	@param text: word or phrase to translate
 	@type text: str
 	@return: object containing the prepared response from the remote dictionary
-	@rtype: Translator
+	@rtype: <service>.dictionary.Translator
 	"""
-	translator = Translator(langFrom, langInto, text)
+	translator = services[config.conf[_addonName]['active']].translator(langFrom, langInto, text)
 	translator.start()
 	i=0
 	while translator.is_alive():
@@ -52,7 +53,11 @@ def translateWithCaching(langFrom: str, langInto: str, text: str) -> Translator:
 	translator.join()
 	return translator
 
-def copyToClipboard(text: str):
+def copyToClipboard(text: str) -> None:
+	"""Copy the received text to the clipboard and announce the completion status of the operation.
+	@param text: text to be copied to the clipboard
+	@type text: str
+	"""
 	if api.copyToClip(text):
 		# Translators: Message if the text was successfully copied to the clipboard
 		ui.message(_("Copied to clipboard."))

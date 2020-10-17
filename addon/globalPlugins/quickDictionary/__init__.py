@@ -27,16 +27,7 @@ import gui, wx
 from tones import beep
 from time import sleep
 from threading import Thread
-from .locator import global_lookup, discover_services
-from .service import DictionaryService
-
-discover_services()
-services = global_lookup.lookup_all(DictionaryService)
-langs = services[0].langs()
-secret = services[0].secret()
-Translator = services[0].translator()
-QuickDictionarySettingsPanel = services[0].settings()
-
+from .locator import services
 from .shared import copyToClipboard, getSelectedText, translateWithCaching, messageWithLangDetection, finally_
 from .synthesizers import profiles
 
@@ -49,16 +40,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""Initializing initial configuration values ​​and other fields"""
 		super(GlobalPlugin, self).__init__(*args, **kwargs)
 		confspec = {
-			"from": "string(default=%s)" % langs.defaultFrom,
-			"into": "string(default=%s)" % langs.defaultInto,
-			"autoswap": "boolean(default=false)",
-			"copytoclip": "boolean(default=false)",
-			"switchsynth": "boolean(default=true)",
-			"token": "string(default=%s)" % secret.APIKEY,
-			"mirror": "boolean(default=false)"
+			"active": "integer(default=0,min=0,max=9)",
+			"switchsynth": "boolean(default=true)"
 		}
 		config.conf.spec[_addonName] = confspec
-		gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(QuickDictionarySettingsPanel)
+		for service in services:
+			config.conf.spec[_addonName][service.name] = service.confspec
+		global langs
+		langs = services[config.conf[_addonName]['active']].langs
+		gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(services[config.conf[_addonName]['active']].settings)
 		# to use the second layer of keyboard shortcuts
 		self._toggleGestures = False
 		# to use copy latest translation to the clipboard
@@ -74,7 +64,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: usually two-character language code
 		@rtype: str
 		"""
-		return config.conf[_addonName]['from']
+		return config.conf[_addonName][services[config.conf[_addonName]['active']].name]['from']
 
 	@source.setter
 	def source(self, lang: str):
@@ -82,7 +72,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param lang: usually two-character language code
 		@type lang: str
 		"""
-		config.conf[_addonName]['from'] = lang
+		config.conf[_addonName][services[config.conf[_addonName]['active']].name]['from'] = lang
 
 	@property
 	def target(self) -> str:
@@ -90,7 +80,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: usually two-character language code
 		@rtype: str
 		"""
-		return config.conf[_addonName]['into']
+		return config.conf[_addonName][services[config.conf[_addonName]['active']].name]['into']
 
 	@target.setter
 	def target(self, lang: str):
@@ -98,7 +88,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param lang: usually two-character language code
 		@type lang: str
 		"""
-		config.conf[_addonName]['into'] = lang
+		config.conf[_addonName][services[config.conf[_addonName]['active']].name]['into'] = lang
 
 	@property
 	def isCopyToClipboard(self) -> bool:
@@ -106,7 +96,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: value stored in the add-on configuration
 		@rtype: bool
 		"""
-		return config.conf[_addonName]['copytoclip']
+		return config.conf[_addonName][services[config.conf[_addonName]['active']].name]['copytoclip']
 
 	@property
 	def isAutoSwap(self) -> bool:
@@ -114,7 +104,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: value stored in the add-on configuration
 		@rtype: bool
 		"""
-		return config.conf[_addonName]['autoswap']
+		return config.conf[_addonName][services[config.conf[_addonName]['active']].name]['autoswap']
 
 	@property
 	def isSwitchSynth(self) -> bool:
@@ -128,7 +118,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""This will be called when NVDA is finished with this global plugin"""
 		super().terminate(*args, **kwargs)
 		try:
-			gui.settingsDialogs.NVDASettingsDialog.categoryClasses.remove(QuickDictionarySettingsPanel)
+			gui.settingsDialogs.NVDASettingsDialog.categoryClasses.remove(services[config.conf[_addonName]['active']].settings)
 		except IndexError:
 			log.warning("Can't remove %s Settings panel from NVDA settings dialogs", _addonSummary)
 
@@ -322,7 +312,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
-		wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, QuickDictionarySettingsPanel)
+		wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, services[config.conf[_addonName][active]].settings)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description=_("From {startslot} to {endslot} - selection of the voice synthesizer profile").format(startslot=1, endslot=9))

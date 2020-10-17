@@ -7,17 +7,25 @@ class DictionaryService(object):
 	"""
 
 	@property
-	def label(self):
+	def name(self):
 		pass
 
+	@property
+	def summary(self):
+		pass
+
+	@property
+	def confspec(self):
+		pass
+
+	@property
 	def translator(self):
 		pass
 
+	@property
 	def langs(self):
 		pass
 
+	@property
 	def settings(self):
-		pass
-
-	def secret(self):
 		pass

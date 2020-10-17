@@ -14,10 +14,11 @@ except addonHandler.AddonError:
 import gui
 import wx
 import config
-from .. import _addonName, _addonSummary
-from .. import langs
-from ..synthesizers import profiles
 from . import secret
+from .dictionary import NAME
+from .languages import langs
+from .. import _addonName, _addonSummary
+from ..synthesizers import profiles
 
 
 class QuickDictionarySettingsPanel(gui.SettingsPanel):
@@ -54,23 +55,23 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 		languageSizer.Add(intoSizer)
 		self.widgetMaker(self._fromChoice, langs.fromList())
 		self._fromChoice.Bind(wx.EVT_CHOICE, self.onSelectFrom)
-		self.widgetMaker(self._intoChoice, langs.intoList(config.conf[_addonName]['from']))
+		self.widgetMaker(self._intoChoice, langs.intoList(config.conf[_addonName][NAME]['from']))
 		sizer.Add(languageSizer, flag=wx.EXPAND)
-		langFrom = self._fromChoice.FindString(langs[config.conf[_addonName]['from']].name)
-		langTo = self._intoChoice.FindString(langs[config.conf[_addonName]['into']].name)
+		langFrom = self._fromChoice.FindString(langs[config.conf[_addonName][NAME]['from']].name)
+		langTo = self._intoChoice.FindString(langs[config.conf[_addonName][NAME]['into']].name)
 		self._fromChoice.Select(langFrom)
 		self._intoChoice.Select(langTo)
 		# Translators: A setting in addon settings dialog.
 		self._copyToClipboardChk = wx.CheckBox(self, label=_("Copy dictionary response to clip&board"))
-		self._copyToClipboardChk.SetValue(config.conf[_addonName]['copytoclip'])
+		self._copyToClipboardChk.SetValue(config.conf[_addonName][NAME]['copytoclip'])
 		sizer.Add(self._copyToClipboardChk)
 		# Translators: A setting in addon settings dialog.
 		self._autoSwapChk = wx.CheckBox(self, label=_("Auto-&swap languages"))
-		self._autoSwapChk.SetValue(config.conf[_addonName]['autoswap'])
+		self._autoSwapChk.SetValue(config.conf[_addonName][NAME]['autoswap'])
 		sizer.Add(self._autoSwapChk)
 		# Translators: A setting in addon settings dialog.
 		self._useMirrorChk = wx.CheckBox(self, label=_("Use &alternative server"))
-		self._useMirrorChk.SetValue(config.conf[_addonName]['mirror'])
+		self._useMirrorChk.SetValue(config.conf[_addonName][NAME]['mirror'])
 		sizer.Add(self._useMirrorChk)
 
 		# Translators: A setting in addon settings dialog.
@@ -122,7 +123,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 		# Translators: A setting in addon settings dialog.
 		self._linkHref = wx.adv.HyperlinkCtrl(self, -1, label=_("Register your own access token"), url=url, style=wx.adv.HL_CONTEXTMENU | wx.adv.HL_DEFAULT_STYLE | wx.adv.HL_ALIGN_RIGHT)
 		self._linkHref.Update()
-		self._tokenInput.SetValue(config.conf[_addonName]['token'])
+		self._tokenInput.SetValue(config.conf[_addonName][NAME]['token'])
 		sizer.Add(self._linkHref, flag=wx.EXPAND)
 		sizer.Show(self._linkHref, show=self._tokenInput.GetValue()==secret.APIKEY)
 
@@ -146,7 +147,7 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 		fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
 		self._intoChoice.Clear()
 		self.widgetMaker(self._intoChoice, langs.intoList(fromLang))
-		intoLang = self._intoChoice.FindString(langs[config.conf[_addonName]['into']].name)
+		intoLang = self._intoChoice.FindString(langs[config.conf[_addonName][NAME]['into']].name)
 		self._intoChoice.Select(intoLang if intoLang>=0 else 0)
 
 	def widgetMakerExclude(self, widget, slot: int):
@@ -187,14 +188,14 @@ class QuickDictionarySettingsPanel(gui.SettingsPanel):
 		"""Update Configuration when clicking OK."""
 		fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
 		intoLang = self._intoChoice.GetClientData(self._intoChoice.GetSelection()).code
-		config.conf[_addonName]['from'] = fromLang
-		config.conf[_addonName]['into'] = intoLang
-		config.conf[_addonName]['copytoclip'] = self._copyToClipboardChk.GetValue()
-		config.conf[_addonName]['autoswap'] = self._autoSwapChk.GetValue()
-		config.conf[_addonName]['mirror'] = self._useMirrorChk.GetValue()
+		config.conf[_addonName][NAME]['from'] = fromLang
+		config.conf[_addonName][NAME]['into'] = intoLang
+		config.conf[_addonName][NAME]['copytoclip'] = self._copyToClipboardChk.GetValue()
+		config.conf[_addonName][NAME]['autoswap'] = self._autoSwapChk.GetValue()
+		config.conf[_addonName][NAME]['mirror'] = self._useMirrorChk.GetValue()
 		config.conf[_addonName]['switchsynth'] = self._switchSynthChk.GetValue()
 		accessToken = self._tokenInput.GetValue()
-		config.conf[_addonName]['token'] = accessToken if accessToken else secret.APIKEY
+		config.conf[_addonName][NAME]['token'] = accessToken if accessToken else secret.APIKEY
 		if config.conf[_addonName]['switchsynth']:
 			for slot, profile in profiles:
 				profiles[slot].lang = self._choices[slot]
