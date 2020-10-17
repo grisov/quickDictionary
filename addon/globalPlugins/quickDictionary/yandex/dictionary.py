@@ -20,8 +20,21 @@ from urllib.parse import quote as urlencode
 from json import loads
 import config
 from .. import _addonName
-from .. import langs
+from .languages import langs
+from .secret import APIKEY
 
+
+# Translators: The name of the online dictionary service
+SUMMARY = _("Yandex Dictionaries")
+NAME = os.path.basename(os.path.dirname(__file__))
+confspec = {
+	"from": "string(default=%s)" % langs.defaultFrom,
+	"into": "string(default=%s)" % langs.defaultInto,
+	"autoswap": "boolean(default=false)",
+	"copytoclip": "boolean(default=false)",
+	"token": "string(default=%s)" % APIKEY,
+	"mirror": "boolean(default=false)"
+}
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
@@ -51,8 +64,8 @@ class Translator(threading.Thread):
 	langTo = lambda self: self._langTo
 	text = lambda self: self._text
 	uiLang = lambda self: self._langTo or langs.locale
-	token = lambda self: config.conf[_addonName]['token']
-	mirror = lambda self: config.conf[_addonName]['mirror']
+	token = lambda self: config.conf[_addonName][NAME]['token']
+	mirror = lambda self: config.conf[_addonName][NAME]['mirror']
 	html = lambda self: self._html
 	plaintext = lambda self: self._plaintext
 

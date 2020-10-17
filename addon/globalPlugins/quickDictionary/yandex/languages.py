@@ -21,6 +21,7 @@ from urllib.request import Request, urlopen
 from . import secret
 from .. import _addonName
 
+NAME = os.path.basename(os.path.dirname(__file__))
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
@@ -95,7 +96,7 @@ class Languages(object):
 		directUrl = 'https://dictionary.yandex.net'
 		mirrorUrl = 'https://info.alwaysdata.net'
 		servers = [directUrl, mirrorUrl]
-		if config.conf[_addonName]['mirror']:
+		if config.conf[_addonName][NAME]['mirror']:
 			servers.reverse()
 		urlTemplate = "{server}/api/v1/dicservice.json/getLangs?key={key}"
 		for server in servers:

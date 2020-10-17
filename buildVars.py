@@ -44,7 +44,8 @@ import os.path  # NOQA
 # Define the python files that are the sources of your add-on.
 # You can use glob expressions here, they will be expanded.
 pythonSources = [
-	"addon/globalPlugins/*/*.py"
+	"addon/globalPlugins/*/*.py",
+	"addon/globalPlugins/*/*/*.py"
 ]
 
 # Files that contain strings for translation. Usually your python sources

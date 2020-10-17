@@ -1,7 +1,10 @@
 #locator.py
 import os
 import fnmatch
+import config
 from importlib import import_module
+from . import _addonName
+from .service import DictionaryService
 
 
 def discover_services():
@@ -14,7 +17,7 @@ def discover_services():
 			matches.append(os.path.join(dir_path, dir, filename))
 	rel_files = [file[len(dir_path)+1:] for file in matches]
 	modules = [rel_file.replace('/', '.').replace('\\', '.')[:-3] for rel_file in rel_files]
-	imported_mods = [import_module("..%s" % module, package=__name__) for module in modules]
+	imported_mods = [import_module(".." + module, package=__name__) for module in modules]
 
 
 class Lookup(object):
@@ -56,3 +59,7 @@ def service_provider(*services):
 		return clazz
 
 	return real_decorator
+
+
+discover_services()
+services = global_lookup.lookup_all(DictionaryService)

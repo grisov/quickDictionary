@@ -11,17 +11,25 @@ PACKAGE = __name__.replace('.' + os.path.basename(os.path.dirname(__file__)), ''
 class YandexDictionary(DictionaryService):
 
 	@property
-	def label(self):
-		return os.path.splitext(os.path.basename(__file__))[0]
+	def name(self):
+		return import_module('.dictionary', package=PACKAGE).NAME
 
+	@property
+	def summary(self):
+		return import_module('.dictionary', package=PACKAGE).SUMMARY
+
+	@property
+	def confspec(self):
+		return import_module('.dictionary', package=PACKAGE).confspec
+
+	@property
 	def translator(self):
 		return import_module('.dictionary', package=PACKAGE).Translator
 
+	@property
 	def langs(self):
 		return import_module('.languages', package=PACKAGE).langs
 
+	@property
 	def settings(self):
 		return import_module('.settings', package=PACKAGE).QuickDictionarySettingsPanel
-
-	def secret(self):
-		return import_module('.secret', package=PACKAGE)
