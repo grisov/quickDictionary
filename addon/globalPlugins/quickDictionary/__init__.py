@@ -47,8 +47,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		config.conf.spec[_addonName] = confspec
 		for service in services:
 			config.conf.spec[_addonName][service.name] = service.confspec
-		global langs
-		langs = services[config.conf[_addonName]['active']].langs
 		gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(services[config.conf[_addonName]['active']].settings)
 		# to use the second layer of keyboard shortcuts
 		self._toggleGestures = False
@@ -198,6 +196,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
+		langs = services[config.conf[_addonName]['active']].langs
 		# Translators: message presented to announce the current source and target languages.
 		ui.message(_("Translate: from {langFrom} to {langInto}").format(langFrom=langs[self.source].name, langInto=langs[self.target].name))
 
@@ -208,6 +207,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
+		langs = services[config.conf[_addonName]['active']].langs
 		if langs.isAvailable(self.target, self.source):
 			self.source, self.target = self.target, self.source
 			# Translators: Notification that languages ​​have been swapped
@@ -234,6 +234,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			# Translators: Notification that no dictionary entries have been received in the current session
 			ui.message(_("There is no dictionary queries"))
 			return
+		langs = services[config.conf[_addonName]['active']].langs
 		copyToClipboard(self._lastTranslator.plaintext)
 		ui.message('%s - %s' % (langs[self._lastTranslator.langFrom].name, langs[self._lastTranslator.langTo].name))
 		ui.message(self._lastTranslator.plaintext)
@@ -252,6 +253,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		Call the request procedure to the remote server on a separate thread.
 		Wait for the request to complete and return a prepared response.
 		"""
+		langs = services[config.conf[_addonName]['active']].langs
 		load = Thread(target=langs.update)
 		load.start()
 		i=0
@@ -361,6 +363,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			# Translators: Notification of no configured profiles
 			ui.message(_("Please set up voice synthesizers profiles."))
 			return
+		langs = services[config.conf[_addonName]['active']].langs
 		for slot, profile in profiles:
 			if profile.name:
 				ui.message("%d: %s" % (slot, ', '.join([profile.title, langs[profile.lang].name])))
@@ -433,6 +436,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@type isHtml: bool
 		@return: None
 		"""
+		langs = services[config.conf[_addonName]['active']].langs
 		pairs = [(self.source, self.target)]
 		if self.isAutoSwap:
 			if langs.isAvailable(self.target, self.source):
@@ -454,6 +458,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if config.conf[_addonName]['switchsynth']:
 				profile = next(filter(lambda x: x.lang==translator.langTo, (p for s,p in profiles)), None)
 				if profile:
+					profiles.rememberCurrent()
 					profile.set()
 			self._messages.append('%s - %s' % (langs[translator.langFrom].name, langs[translator.langTo].name))
 			self._messages.append(translator.plaintext)

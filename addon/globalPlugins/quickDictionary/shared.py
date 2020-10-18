@@ -126,6 +126,8 @@ def messageWithLangDetection(msg: dict):
 		speechSequence.append(LangChangeCommand(msg['lang']))
 	speechSequence.append(msg['text'])
 	if config.conf[_addonName]['switchsynth']:
+		previous = profiles.getCurrent()
 		speechSequence.append(CallbackCommand(callback=profiles.restorePrevious))
+		speechSequence.append(CallbackCommand(callback=lambda prev=previous: profiles.rememberCurrent(prev)))
 	speak(speechSequence)
 	braille.handler.message(msg['text'])

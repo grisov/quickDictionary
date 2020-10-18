@@ -224,11 +224,11 @@ env.Depends(manifest, "buildVars.py")
 env.Depends(addon, manifest)
 
 sourcesDir = os.path.dirname(pythonFiles[0].abspath)
-secretFile = os.path.join(sourcesDir, 'secret.py')
+secretFile = os.path.join(sourcesDir, 'yandex', 'secret.py')
 if not os.path.isfile(secretFile):
 	url = "https://yandex.com/dev/dictionary/keys/get/"
 	token = input("Please specify Dictionary Access Token,\nyou can register it here: %s:\n" % url)
-	with codecs.open(secretFile, "w", "utf-8") as f:
+	with codecs.open(secretFile, "w", encoding="utf-8") as f:
 		f.write('APIKEY = "%s"\n' % token)
 env.Depends(addon, secretFile)
 
