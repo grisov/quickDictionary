@@ -20,6 +20,7 @@ from urllib.parse import quote as urlencode
 from json import loads
 import config
 from .. import _addonName
+from ..graphui import htmlTemplate
 from .languages import langs
 from .secret import APIKEY
 
@@ -55,7 +56,6 @@ class Translator(threading.Thread):
 		self._langFrom = langFrom
 		self._langTo = langTo
 		self._text = text
-		self._style = '<link rel="stylesheet" type="text/css" href="%s">' % os.path.join(os.path.dirname(__file__), 'style.css')
 		self._html = ''
 		self._plaintext = ''
 
@@ -113,7 +113,7 @@ class Translator(threading.Thread):
 				continue
 			parser = Parser(loads(resp.read().decode()))
 			html = parser.to_html()
-			self._html = '%s\r\n%s' % (self._style, html) if html else html
+			self._html = htmlTemplate.format(body=html) if html else html
 			self._plaintext = parser.to_text()
 			return
 

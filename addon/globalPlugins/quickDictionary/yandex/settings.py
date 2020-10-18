@@ -16,7 +16,7 @@ import wx
 import config
 from . import secret
 from .dictionary import NAME, SUMMARY
-from .._gui import _addonName, _addonSummary, langs, QDSettingsPanel
+from ..graphui import _addonName, _addonSummary, langs, QDSettingsPanel
 
 
 class QuickDictionarySettingsPanel(QDSettingsPanel):
