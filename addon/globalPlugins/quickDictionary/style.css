@@ -6,14 +6,22 @@ font-weight:bold;
 text-decoration:none;
 text-align:left;
 }
+h2 {
+margin:0;
+font-family:Times New Roman, Verdena, Arial, Helvetica, sans-serif;
+font-size:22pt;
+font-weight:bold;
+text-decoration:none;
+text-align:left;
+}
 ul {
 list-style:square;
 }
 li {
-font-size:22pt;
+font-size:18pt;
 text-decoration:none;
 }
 p {
-font-size:20pt;
+font-size:18pt;
 text-decoration:none;
 }

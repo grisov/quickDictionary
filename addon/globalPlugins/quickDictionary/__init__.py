@@ -30,6 +30,7 @@ from threading import Thread
 from .locator import services
 from .shared import copyToClipboard, getSelectedText, translateWithCaching, messageWithLangDetection, finally_
 from .synthesizers import profiles
+from .template import htmlTemplate
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
@@ -270,43 +271,52 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			ui.message(_("Warning! The list of available languages could not be loaded."))
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
-	@script(description="H - %s" % _("announce the add-on help message"))
-	def script_announceHelp(self, gesture):
+	@script(description="H - %s" % _("add-on help page"))
+	def script_help(self, gesture):
 		"""Retrieves a description of all add-ons methods and presents them.
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
-		for message in [
-			_addonSummary,
+		lines = [
+			"<h1>%s</h1>" % _addonSummary,
 			# Translators: Message in the add-on short help
-			"NVDA+Y - %s" % _("switch to add-on control mode"),
+			"<p>NVDA+Y - %s,</p>" % _("switch to add-on control mode"),
 			# Translators: Message in the add-on short help
-			_("to get a quick translation of a word or phrase - press %s twice") % "NVDA+Y",
-			"...",
+			"<p>%s.</p>" % _("to get a quick translation of a word or phrase - press %s twice") % "NVDA+Y",
+			"<br>",
 			# Translators: Message in the add-on short help
-			_("In add-on gestures layer mode:"),
+			"<h2>%s</h2>" % _("In add-on gestures layer mode:"),
+			'<ul type="disc">']
+		for method in [
 			self.script_dictionaryAnnounce.__doc__,
 			self.script_dictionaryBox.__doc__,
 			self.script_swapLanguages.__doc__,
 			self.script_announceLanguages.__doc__,
 			self.script_copyLastResult.__doc__,
 			self.script_updateLanguages.__doc__,
-			self.script_selectService.__doc__,
-			"...",
+			self.script_selectService.__doc__]:
+			lines.append("<li>%s</li>" % method)
+		lines += ["</ul>", "<br>",
 			# Translators: Message in the add-on short help
-			_("Voice synthesizers profiles management:"),
+			"<h2>%s</h2>" % _("Voice synthesizers profiles management:"),
+			'<ul type="disc">']
+		for method in [
 			self.script_selectSynthProfile.__doc__,
 			self.script_announceSelectedSynthProfile.__doc__,
 			self.script_announceSynthProfiles.__doc__,
 			self.script_restoreDefaultSynth.__doc__,
 			self.script_removeSynthProfile.__doc__,
-			self.script_saveSynthProfile.__doc__,
-			"...",
+			self.script_saveSynthProfile.__doc__]:
+			lines.append("<li>%s</li>" % method)
+		lines += ["</ul>", "<br>"]
+		for line in [
 			self.script_showSettings.__doc__,
-			self.script_announceHelp.__doc__,
+			self.script_help.__doc__,
 			# Translators: Message in the add-on short help
 			_("for any of the listed features you can customize the keyboard shortcut in NVDA input gestures dialog")]:
-			ui.message(message)
+			lines.append("<p>%s.</p>" % line.capitalize())
+		ui.browseableMessage(htmlTemplate.format(body=''.join(lines)),
+			_("add-on help page").capitalize(), True)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="O - %s" % _("open add-on settings dialog"))
@@ -449,7 +459,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:u": "updateLanguages",
 		# General
 		"kb:o": "showSettings",
-		"kb:h": "announceHelp",
+		"kb:h": "help",
 		# Profiles of voice synthesizers
 		"kb:g": "announceSelectedSynthProfile",
 		"kb:p": "announceSynthProfiles",

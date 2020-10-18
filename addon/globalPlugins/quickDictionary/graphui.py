@@ -11,7 +11,6 @@ try:
 except addonHandler.AddonError:
 	log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
 
-import os
 import gui
 import wx
 import config
@@ -108,17 +107,3 @@ class QDSettingsPanel(gui.SettingsPanel):
 			for slot, profile in profiles:
 				profiles[slot].lang = self._choices[slot]
 			profiles.save()
-
-
-# Template for displaying HTML content.
-htmlTemplate = ''.join(["&nbsp;",
-	"<!DOCTYPE html>",
-	"<html>",
-	"<head>",
-	'<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-	"<title></title>"
-	'<link rel="stylesheet" type="text/css" href="%s">' % os.path.join(os.path.dirname(__file__), 'style.css'),
-	"</head>",
-	"<body>{body}</body>",
-	"</html>"
-])

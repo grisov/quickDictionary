@@ -20,7 +20,7 @@ from urllib.parse import quote as urlencode
 from json import loads
 import config
 from .. import _addonName
-from ..graphui import htmlTemplate
+from ..template import htmlTemplate
 from .languages import langs
 from .secret import APIKEY
 
