@@ -55,6 +55,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._lastTranslator = None
 		# to use speech synthesizers profiles
 		self._slot = 1
+		# to switch between services
+		self._gate = config.conf[_addonName]['active']+1
 		# Sequence of messages
 		self._messages = []
 
@@ -289,6 +291,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.script_announceLanguages.__doc__,
 			self.script_copyLastResult.__doc__,
 			self.script_updateLanguages.__doc__,
+			self.script_selectService.__doc__,
 			"...",
 			# Translators: Message in the add-on short help
 			_("Voice synthesizers profiles management:"),
@@ -384,6 +387,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		# Translators: Announcing after saving synthesizer profile
 		ui.message(_("Voice synthesizer profile saved successfully"))
 
+	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
+	@script(description=_("From F1 to F{endgate} - select online dictionary service").format(endgate=len(services)))
+	def script_selectService(self, gesture):
+		"""
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
+		self._gate = min(int(gesture.displayName[-1]), len(services))
+		config.conf[_addonName]['active'] = self._gate - 1
+		ui.message(': '.join([gesture.displayName, services[self._gate-1].summary]))
+
 	def translate(self, text:str, isHtml:bool=False):
 		"""Retrieve the dictionary entry for the given word or phrase and display/announce the result.
 		This method must always be called in a separate thread so as not to block NVDA.
@@ -444,7 +458,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:v": "saveSynthProfile",
 	}
 	for key in range(1, 10):
-		__addonGestures["kb:%d" % key] = "selectSynthProfile",
+		__addonGestures["kb:%d" % key] = "selectSynthProfile"
+	for key in range(1, len(services)+1):
+		__addonGestures["kb:f%d" % key] = "selectService"
 
 	__gestures = {
 		"kb:NVDA+y": "addonLayer",
