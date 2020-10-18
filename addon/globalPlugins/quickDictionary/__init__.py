@@ -303,7 +303,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		for method in [
 			self.script_selectSynthProfile.__doc__,
 			self.script_announceSelectedSynthProfile.__doc__,
-			self.script_announceSynthProfiles.__doc__,
+			self.script_announceAllSynthProfiles.__doc__,
+			self.script_restorePreviousSynth.__doc__,
 			self.script_restoreDefaultSynth.__doc__,
 			self.script_removeSynthProfile.__doc__,
 			self.script_saveSynthProfile.__doc__]:
@@ -335,6 +336,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@type gesture: L{inputCore.InputGesture}
 		"""
 		self._slot = int(gesture.displayName[-1])
+		profiles.rememberCurrent()
 		profiles[self._slot].set()
 		# Translators: Message when selecting a voice synthesizer profile
 		ui.message(_("Profile {slot} selected: {title}").format(slot=self._slot, title=profiles[self._slot].title))
@@ -350,7 +352,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	# Translators: Method description is displayed in the NVDA gestures dialog
 	@script(description="P - %s" % _("announce a list of all customized voice synthesizers profiles"))
-	def script_announceSynthProfiles(self, gesture):
+	def script_announceAllSynthProfiles(self, gesture):
 		"""Announce a list of of all configured voice synthesizers profiles and the associated languages.
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
@@ -372,6 +374,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""
 		slot, self._slot = self._slot, 1
 		profiles.remove(slot)
+		profiles.restorePrevious()
 		# Translators: Message when deleting a profile
 		ui.message(_("Profile %d successfully deleted") % slot)
 
@@ -382,7 +385,20 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
+		profiles.rememberCurrent()
 		profile = profiles.restoreDefault()
+		ui.message(profile.title)
+
+	# Translators: Method description is displayed in the NVDA gestures dialog
+	@script(description="B - %s" % _("back to previous voice synthesizer"))
+	def script_restorePreviousSynth(self, gesture):
+		"""Restore previous voice synthesizer if profile was saved before switching.
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
+		current = profiles.getCurrent()
+		profile = profiles.restorePrevious()
+		profiles.rememberCurrent(current)
 		ui.message(profile.title)
 
 	# Translators: Method description is displayed in the NVDA gestures dialog
@@ -462,8 +478,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:h": "help",
 		# Profiles of voice synthesizers
 		"kb:g": "announceSelectedSynthProfile",
-		"kb:p": "announceSynthProfiles",
+		"kb:p": "announceAllSynthProfiles",
 		"kb:delete": "removeSynthProfile",
+		"kb:b": "restorePreviousSynth",
 		"kb:r": "restoreDefaultSynth",
 		"kb:v": "saveSynthProfile",
 	}

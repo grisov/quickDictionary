@@ -11,6 +11,7 @@ import speech
 import config
 from . import _addonName
 
+
 class Profile(object):
 	"""Represents the profile of the voice synthesizer."""
 
@@ -26,6 +27,7 @@ class Profile(object):
 		self._name = synthName
 		self._conf = synthConf
 		self._lang = lang
+		# Whether the switch to this synthesizer was performed and whether it was successful
 		self._status = False
 
 	def set(self) -> bool:
@@ -106,8 +108,11 @@ class Profile(object):
 		"""
 		return self._status
 
-	def reset(self):
-		"""Reset the status of the current profile."""
+	def reset(self) -> bool:
+		"""Reset the status of the current profile.
+		@return: always value False
+		@rtype: bool
+		"""
 		self._status = False
 		return self._status
 
@@ -123,6 +128,8 @@ class Profiles(object):
 		self._profs = {}
 		# default synthesizer profile settings
 		self._default = Profile().update()
+		# Previous voice synthesizer before switching to another
+		self._previous = Profile().update()
 		self.load()
 
 	def load(self):
@@ -138,10 +145,10 @@ class Profiles(object):
 		self._profs = dict((key, Profile(val['name'], val['conf'], val['lang'])) if isinstance(key,int) else (key,val) for key,val in data.items())
 		return self
 
-	def save(self):
-		"""Saves synthesizers profile set data to an external file.
-		@return: the current set of customized voice synthesizers profiles
-		@rtype: synthesizers.Profiles
+	def save(self) -> bool:
+		"""Saves synthesizers profiles collection data to an external file.
+		@return: a sign of the success of saving data to a file
+		@rtype: bool
 		"""
 		profs = {}
 		for slot in sorted(self._profs, key=lambda slot: str(slot)):
@@ -153,11 +160,14 @@ class Profiles(object):
 				}
 			else:
 				profs[slot] = self._profs[slot]
-		with open(self._path, 'wb') as f:
-			pickle.dump(profs, f)
-		return self
+		try:
+			with open(self._path, 'wb') as f:
+				pickle.dump(profs, f)
+		except Exception as e:
+			return False
+		return True
 
-	def __getitem__(self, id: int):
+	def __getitem__(self, id: int) -> Profile:
 		"""Returns a synthesizer profile object by its slot ID.
 		@param id: profile ID, which is its slot on the user's keyboard from 1 to 9
 		@type id: int [1-9]
@@ -177,14 +187,14 @@ class Profiles(object):
 			if isinstance(slot, int) and self._profs[slot].name:
 				yield slot, self._profs[slot]
 
-	def __len__(self):
+	def __len__(self) -> int:
 		"""Returns the number of voice synthesizers profiles available in the collection.
 		@return: the number of profiles saved in the collection
 		@rtype: int
 		"""
 		return len([p for s, p in self])
 
-	def remove(self, id: int):
+	def remove(self, id: int) -> Profile:
 		"""Deletes the synthesizer profile by its specified ID (slot).
 		@param id: profile ID (the slot with which it is associated)
 		@type id: int
@@ -197,7 +207,7 @@ class Profiles(object):
 			prof = None
 		return prof
 
-	def currentAsDefault(self):
+	def currentAsDefault(self) -> Profile:
 		"""Save the current voice as the default synthesizer.
 		@return: current synthesizer profile
 		@rtype: synthesizers.Profile
@@ -205,13 +215,38 @@ class Profiles(object):
 		self._default = Profile().update()
 		return self._default
 
-	def restoreDefault(self):
-		"""Restores the default synthesizer that was saved earlier.
+	def restoreDefault(self) -> Profile:
+		"""Restore default synthesizer that was saved earlier.
 		@return: the default synthesizer profile that was saved earlier
 		@rtype: synthesizers.Profile
 		"""
 		self._default.set()
 		return self._default
+
+	def getCurrent(self) -> Profile:
+		"""Return the profile of the current voice synthesizer.
+		@return: current synthesizer profile
+		@rtype: synthesizers.Profile
+		"""
+		return Profile().update()
+
+	def rememberCurrent(self, current: Profile=None) -> Profile:
+		"""Store current or received voice as the previous synthesizer.
+		@param current: voice synthesizer profile
+		@type: synthesizers.Profile
+		@return: current synthesizer profile
+		@rtype: synthesizers.Profile
+		"""
+		self._previous = current or Profile().update()
+		return self._previous
+
+	def restorePrevious(self) -> Profile:
+		"""Restore previous voice synthesizer.
+		@return: profile of the previous voice synthesizer
+		@rtype: synthesizers.Profile
+		"""
+		self._previous.set()
+		return self._previous
 
 
 # An instance of the Profiles object for later use in the add-on
