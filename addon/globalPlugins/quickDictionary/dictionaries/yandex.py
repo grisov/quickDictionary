@@ -1,8 +1,7 @@
 #yandex.py
 import os
 from importlib import import_module
-from ..locator import service_provider
-from ..service import DictionaryService
+from ..locator import service_provider, DictionaryService
 
 PACKAGE = __name__.replace('.' + os.path.basename(os.path.dirname(__file__)), '')
 
