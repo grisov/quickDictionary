@@ -116,8 +116,8 @@ def finally_(func, final):
 	return wrap(final)
 
 def messageWithLangDetection(msg: dict):
-	"""Pronounce text in a given language,
-	if enabled the setting for auto-switching languages of the synthesizer.
+	"""Pronounce text in a given language if enabled the setting for auto-switching languages of the synthesizer.
+	After the speech, switche to the previous synthesizer, if the corresponding option is enabled.
 	@param msg: language code and text to be spoken in the specified language
 	@type msg: dict -> {'lang': str, 'text': str}
 	"""
@@ -126,6 +126,6 @@ def messageWithLangDetection(msg: dict):
 		speechSequence.append(LangChangeCommand(msg['lang']))
 	speechSequence.append(msg['text'])
 	if config.conf[_addonName]['switchsynth']:
-		speechSequence.append(CallbackCommand(callback=profiles.restoreDefault))
+		speechSequence.append(CallbackCommand(callback=profiles.restorePrevious))
 	speak(speechSequence)
 	braille.handler.message(msg['text'])
