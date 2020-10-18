@@ -312,7 +312,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
-		wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, services[config.conf[_addonName][active]].settings)
+		wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, services[config.conf[_addonName]['active']].settings)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description=_("From {startslot} to {endslot} - selection of the voice synthesizer profile").format(startslot=1, endslot=9))
@@ -442,16 +442,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:delete": "removeSynthProfile",
 		"kb:r": "restoreDefaultSynth",
 		"kb:v": "saveSynthProfile",
-		"kb:1": "selectSynthProfile",
-		"kb:2": "selectSynthProfile",
-		"kb:3": "selectSynthProfile",
-		"kb:4": "selectSynthProfile",
-		"kb:5": "selectSynthProfile",
-		"kb:6": "selectSynthProfile",
-		"kb:7": "selectSynthProfile",
-		"kb:8": "selectSynthProfile",
-		"kb:9": "selectSynthProfile",
 	}
+	for key in range(1, 10):
+		__addonGestures["kb:%d" % key] = "selectSynthProfile",
 
 	__gestures = {
 		"kb:NVDA+y": "addonLayer",
