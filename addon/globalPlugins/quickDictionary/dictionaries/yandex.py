@@ -15,6 +15,9 @@ PACKAGE = __name__.replace('.' + os.path.basename(os.path.dirname(__file__)), ''
 class YandexDictionary(DictionaryService):
 	"""Representation of the online dictionary service."""
 
+	# Used to set the sort order of a list of services
+	id: int = 1
+
 	@property
 	def name(self) -> str:
 		"""Short service name.

@@ -50,7 +50,7 @@ class Lookup(object):
 		@rtype: list
 		"""
 		list = self._lookup.get(service) or []
-		return list
+		return sorted(list, key=lambda srv: srv.id)
 
 	def lookup(self, service: object) -> list:
 		"""Return the first instance of the specified service or None.
@@ -85,6 +85,9 @@ class DictionaryService(object):
 	"""A template that specifies the type of online dictionary services.
 	This class only contains the software contract that must be fulfilled by all dictionary services.
 	"""
+
+	# Used to set the sort order of a list of services
+	id: int = 0
 
 	@property
 	def name(self) -> str:
