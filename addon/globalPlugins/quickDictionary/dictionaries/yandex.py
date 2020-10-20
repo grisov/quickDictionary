@@ -60,9 +60,9 @@ class YandexDictionary(DictionaryService):
 		return import_module('.languages', package=PACKAGE).langs
 
 	@property
-	def settings(self) -> object:
+	def panel(self) -> object:
 		"""A link to the class that represents the settings panel of the selected service.
 		@return: link to the add-on settings panel
-		@rtype: object, usually inherited from graphui.QDSettingsPanel
+		@rtype: wx.Panel
 		"""
-		return import_module('.settings', package=PACKAGE).QuickDictionarySettingsPanel
+		return import_module('.settings', package=PACKAGE).ServicePanel

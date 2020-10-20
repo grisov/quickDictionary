@@ -1,4 +1,5 @@
 #settings.py
+# Contains a description of the settings panel of a specific service
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -17,22 +18,18 @@ import config
 from . import secret
 from .dictionary import NAME, SUMMARY
 from .languages import langs
-from ..graphui import _addonName, _addonSummary, QDSettingsPanel
+from .. import _addonName, _addonSummary
 
 
-class QuickDictionarySettingsPanel(QDSettingsPanel):
-	"""Add-on settings panel object"""
-	title = "{addon}, {service}".format(addon=_addonSummary, service=SUMMARY)
+class ServicePanel(wx.Panel):
+	"""Service settings panel object."""
 
-	def __init__(self, parent):
-		"""Initializing the add-on settings panel object"""
-		super(QuickDictionarySettingsPanel, self).__init__(parent)
-
-	def makeSettings(self, sizer: wx._core.BoxSizer):
-		"""Populate the panel with settings controls.
-		@param sizer: The sizer to which to add the settings controls.
-		@type sizer: wx._core.BoxSizer
-		"""
+	def __init__(self, parent=None, id=wx.ID_ANY):
+		"""Create a settings panel for a specific service."""
+		super(ServicePanel, self).__init__(parent, id)
+		"""Populate the service panel with settings controls."""
+		sizer = wx.BoxSizer(wx.VERTICAL)
+		self.SetSizer(sizer)
 		# Translators: Help message for a dialog.
 		helpLabel = wx.StaticText(self, label=_("Select dictionary source and target language:"), style=wx.ALIGN_LEFT)
 		helpLabel.Wrap(helpLabel.GetSize()[0])
@@ -73,9 +70,6 @@ class QuickDictionarySettingsPanel(QDSettingsPanel):
 		self._useMirrorChk.SetValue(config.conf[_addonName][NAME]['mirror'])
 		sizer.Add(self._useMirrorChk)
 
-		# Display a block for associating voice synthesizers with selected languages
-		super(QuickDictionarySettingsPanel, self).makeAssociateSynths(sizer)
-
 		# Field for input access token and link to registration
 		tokenSizer = wx.BoxSizer(wx.HORIZONTAL)
 		# Translators: A setting in addon settings dialog.
@@ -91,8 +85,9 @@ class QuickDictionarySettingsPanel(QDSettingsPanel):
 		self._tokenInput.SetValue(config.conf[_addonName][NAME]['token'])
 		sizer.Add(self._linkHref, flag=wx.EXPAND)
 		sizer.Show(self._linkHref, show=self._tokenInput.GetValue()==secret.APIKEY)
+		sizer.Fit(self)
 
-	def widgetMaker(self, widget, languages):
+	def widgetMaker(self, widget, languages) -> None:
 		"""Creating a widget based on the sequence of Language classes to display it in a wx.Choice object.
 		@param widget: widget based on a sequence of Language classes
 		@type widget: wx.Choice
@@ -104,7 +99,7 @@ class QuickDictionarySettingsPanel(QDSettingsPanel):
 		for lang in languages:
 			widget.Append(lang.name, lang)
 
-	def onSelectFrom(self, event):
+	def onSelectFrom(self, event) -> None:
 		"""Filling in the list of available destination languages when selecting the source language.
 		@param event: event indicating the selection of an item in the wx.Choice object
 		@type event: wx.core.PyEventBinder
@@ -115,13 +110,8 @@ class QuickDictionarySettingsPanel(QDSettingsPanel):
 		intoLang = self._intoChoice.FindString(langs[config.conf[_addonName][NAME]['into']].name)
 		self._intoChoice.Select(intoLang if intoLang>=0 else 0)
 
-	def postInit(self):
-		"""Set system focus to source language selection dropdown list."""
-		self._fromChoice.SetFocus()
-
-	def onSave(self):
-		"""Update Configuration when clicking OK."""
-		super(QuickDictionarySettingsPanel, self).onSave()
+	def save(self) -> None:
+		"""Save the state of the service panel settings."""
 		fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
 		intoLang = self._intoChoice.GetClientData(self._intoChoice.GetSelection()).code
 		config.conf[_addonName][NAME]['from'] = fromLang
@@ -130,4 +120,4 @@ class QuickDictionarySettingsPanel(QDSettingsPanel):
 		config.conf[_addonName][NAME]['autoswap'] = self._autoSwapChk.GetValue()
 		config.conf[_addonName][NAME]['mirror'] = self._useMirrorChk.GetValue()
 		accessToken = self._tokenInput.GetValue()
-		config.conf[_addonName][NAME]['token'] = accessToken if accessToken else secret.APIKEY
+		config.conf[_addonName][NAME]['token'] = accessToken or secret.APIKEY

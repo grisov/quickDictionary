@@ -31,6 +31,7 @@ from .locator import services
 from .shared import copyToClipboard, getSelectedText, translateWithCaching, messageWithLangDetection, finally_
 from .synthesizers import profiles
 from .template import htmlTemplate
+from .settings import QDSettingsPanel
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
@@ -47,7 +48,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		config.conf.spec[_addonName] = confspec
 		for service in services:
 			config.conf.spec[_addonName][service.name] = service.confspec
-		gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(services[config.conf[_addonName]['active']].settings)
+		gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(QDSettingsPanel)
 		# to use the second layer of keyboard shortcuts
 		self._toggleGestures = False
 		# to use copy latest translation to the clipboard
@@ -119,7 +120,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""This will be called when NVDA is finished with this global plugin"""
 		super().terminate(*args, **kwargs)
 		try:
-			gui.settingsDialogs.NVDASettingsDialog.categoryClasses.remove(services[config.conf[_addonName]['active']].settings)
+			gui.settingsDialogs.NVDASettingsDialog.categoryClasses.remove(QDSettingsPanel)
 		except IndexError:
 			log.warning("Can't remove %s Settings panel from NVDA settings dialogs", _addonSummary)
 
@@ -328,7 +329,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
-		wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, services[config.conf[_addonName]['active']].settings)
+		wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, QDSettingsPanel)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description=_("From {startslot} to {endslot} - selection of the voice synthesizer profile").format(startslot=1, endslot=9))

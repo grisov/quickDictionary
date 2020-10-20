@@ -50,7 +50,10 @@ class Lookup(object):
 		@rtype: list
 		"""
 		list = self._lookup.get(service) or []
-		return sorted(list, key=lambda srv: srv.id)
+		list = sorted(list, key=lambda srv: srv.id)
+		for i in range(len(list)):
+			list[i].id = i
+		return list
 
 	def lookup(self, service: object) -> list:
 		"""Return the first instance of the specified service or None.
@@ -131,10 +134,10 @@ class DictionaryService(object):
 		pass
 
 	@property
-	def settings(self) -> object:
+	def panel(self) -> object:
 		"""A link to the class that represents the settings panel of the selected service.
 		@return: link to the add-on settings panel
-		@rtype: object, usually inherited from graphui.QDSettingsPanel
+		@rtype: wx.Panel
 		"""
 		pass
 
