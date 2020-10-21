@@ -89,7 +89,7 @@ class Language(object):
 		return name or self._lang
 
 
-class ServiceLanguages(object):
+class Languages(object):
 	"""Represents a list of languages available in the dictionary service."""
 
 	def __init__(self, file: str):

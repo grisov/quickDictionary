@@ -15,20 +15,20 @@ except addonHandler.AddonError:
 import os
 import re
 import ssl
-import threading
 from urllib.request import Request, urlopen
 from urllib.parse import quote as urlencode
 from json import loads
 import config
 from .. import _addonName
+from ..dictionary import Translator
 from ..shared import htmlTemplate
 from .languages import langs
 from .secret import APIKEY
 
 
 # Translators: The name of the online dictionary service
-SUMMARY = _("Yandex Dictionaries")
-NAME = os.path.basename(os.path.dirname(__file__))
+_serviceSummary = _("Yandex Dictionaries")
+_serviceName = os.path.basename(os.path.dirname(__file__))
 confspec = {
 	"from": "string(default=%s)" % langs.defaultFrom.code,
 	"into": "string(default=%s)" % langs.defaultInto.code,
@@ -40,7 +40,7 @@ confspec = {
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
-class Translator(threading.Thread):
+class ServiceTranslator(Translator):
 	"""Provides interaction with the online dictionary service."""
 
 	def __init__(self, langFrom:str, langTo:str, text:str, *args, **kwargs):
@@ -52,42 +52,22 @@ class Translator(threading.Thread):
 		@param text: a word or phrase to look up in a dictionary
 		@type text: str
 		"""
-		super(Translator, self).__init__(*args, **kwargs)
-		self._stopEvent = threading.Event()
-		self._langFrom = langFrom
-		self._langTo = langTo
-		self._text = text
-		self._html = ''
-		self._plaintext = ''
+		super(ServiceTranslator, self).__init__(langFrom, langTo, text, *args, **kwargs)
 
 	# The list of getters defining parameters for working with the dictionary
-	langFrom = lambda self: self._langFrom
-	langTo = lambda self: self._langTo
-	text = lambda self: self._text
 	uiLang = lambda self: self._langTo or langs.locale
-	token = lambda self: config.conf[_addonName][NAME]['token']
-	mirror = lambda self: config.conf[_addonName][NAME]['mirror']
-	html = lambda self: self._html
-	plaintext = lambda self: self._plaintext
+	token = lambda self: config.conf[_addonName][_serviceName]['token']
+	mirror = lambda self: config.conf[_addonName][_serviceName]['mirror']
 
 	# Define class properties
-	langFrom = property(langFrom)
-	langTo = property(langTo)
-	text = property(text)
 	uiLang = property(uiLang)
 	token = property(token)
 	mirror = property(mirror)
-	html = property(html)
-	plaintext = property(plaintext)
-
-	def _stop(self, *args, **kwargs):
-		"""Executed when a process terminates in a thread."""
-		super(Translator, self)._stop(*args, **kwargs)
-		self._stopEvent.set()
 
 	def run(self):
 		"""Query the remote dictionary and save the processed response.
-		Should run in a separate thread to avoid blocking."""
+		Should run in a separate thread to avoid blocking.
+		"""
 		headers = {
 			'User-Agent': 'Mozilla 5.0'}
 		directUrl = 'https://dictionary.yandex.net'
@@ -106,7 +86,7 @@ class Translator(threading.Thread):
 			try:
 				resp = urlopen(rq, timeout=8)
 			except Exception as e:
-				log.exception(e)
+				log.error("%s, %s", str(e), server)
 				self._html = 'Error: %s [%s]' % (str(e), server)
 				continue
 			if resp.status!=200:
@@ -120,7 +100,9 @@ class Translator(threading.Thread):
 
 
 class Parser(object):
-	"""Converts the response from the server into a human-readable formats."""
+	"""Converts the response from the server into a human-readable formats.
+	Must contain to_html() and to_text() methods.
+	"""
 
 	def __init__(self, resp:dict):
 		"""Initializing input values.

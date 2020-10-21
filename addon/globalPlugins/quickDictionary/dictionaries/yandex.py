@@ -1,4 +1,5 @@
 #yandex.py
+# Online dictionary service description
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -25,7 +26,7 @@ class YandexDictionary(DictionaryService):
 		@return: service name
 		@rtype: str
 		"""
-		return import_module('.dictionary', package=PACKAGE).NAME
+		return import_module('.dictionary', package=PACKAGE)._serviceName
 
 	@property
 	def summary(self) -> str:
@@ -33,7 +34,7 @@ class YandexDictionary(DictionaryService):
 		@return service summary
 		@rtype: str
 		"""
-		return import_module('.dictionary', package=PACKAGE).SUMMARY
+		return import_module('.dictionary', package=PACKAGE)._serviceSummary
 
 	@property
 	def confspec(self) -> dict:
@@ -47,9 +48,9 @@ class YandexDictionary(DictionaryService):
 	def translator(self) -> object:
 		"""A link to the class used by the service to receive translations from the online dictionary.
 		@return: object type used by the service
-		@rtype: object, usually inherited from <service_name>.dictionary.Translator
+		@rtype: object, usually <service_name>.dictionary.ServiceTranslator
 		"""
-		return import_module('.dictionary', package=PACKAGE).Translator
+		return import_module('.dictionary', package=PACKAGE).ServiceTranslator
 
 	@property
 	def langs(self) -> object:

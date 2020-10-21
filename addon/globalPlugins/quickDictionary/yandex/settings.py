@@ -15,10 +15,10 @@ except addonHandler.AddonError:
 import gui
 import wx
 import config
+from .. import _addonName
+from .dictionary import _serviceName
 from . import secret
-from .dictionary import NAME, SUMMARY
 from .languages import langs
-from .. import _addonName, _addonSummary
 
 
 class ServicePanel(wx.Panel):
@@ -51,23 +51,23 @@ class ServicePanel(wx.Panel):
 		languageSizer.Add(intoSizer)
 		self.widgetMaker(self._fromChoice, langs.fromList())
 		self._fromChoice.Bind(wx.EVT_CHOICE, self.onSelectFrom)
-		self.widgetMaker(self._intoChoice, langs.intoList(config.conf[_addonName][NAME]['from']))
+		self.widgetMaker(self._intoChoice, langs.intoList(config.conf[_addonName][_serviceName]['from']))
 		sizer.Add(languageSizer, flag=wx.EXPAND)
-		langFrom = self._fromChoice.FindString(langs[config.conf[_addonName][NAME]['from']].name)
-		langTo = self._intoChoice.FindString(langs[config.conf[_addonName][NAME]['into']].name)
+		langFrom = self._fromChoice.FindString(langs[config.conf[_addonName][_serviceName]['from']].name)
+		langTo = self._intoChoice.FindString(langs[config.conf[_addonName][_serviceName]['into']].name)
 		self._fromChoice.Select(langFrom)
 		self._intoChoice.Select(langTo)
 		# Translators: A setting in addon settings dialog.
 		self._copyToClipboardChk = wx.CheckBox(self, label=_("Copy dictionary response to clip&board"))
-		self._copyToClipboardChk.SetValue(config.conf[_addonName][NAME]['copytoclip'])
+		self._copyToClipboardChk.SetValue(config.conf[_addonName][_serviceName]['copytoclip'])
 		sizer.Add(self._copyToClipboardChk)
 		# Translators: A setting in addon settings dialog.
 		self._autoSwapChk = wx.CheckBox(self, label=_("Auto-&swap languages"))
-		self._autoSwapChk.SetValue(config.conf[_addonName][NAME]['autoswap'])
+		self._autoSwapChk.SetValue(config.conf[_addonName][_serviceName]['autoswap'])
 		sizer.Add(self._autoSwapChk)
 		# Translators: A setting in addon settings dialog.
 		self._useMirrorChk = wx.CheckBox(self, label=_("Use &alternative server"))
-		self._useMirrorChk.SetValue(config.conf[_addonName][NAME]['mirror'])
+		self._useMirrorChk.SetValue(config.conf[_addonName]_serviceName['mirror'])
 		sizer.Add(self._useMirrorChk)
 
 		# Field for input access token and link to registration
@@ -82,7 +82,7 @@ class ServicePanel(wx.Panel):
 		# Translators: A setting in addon settings dialog.
 		self._linkHref = wx.adv.HyperlinkCtrl(self, -1, label=_("Register your own access token"), url=url, style=wx.adv.HL_CONTEXTMENU | wx.adv.HL_DEFAULT_STYLE | wx.adv.HL_ALIGN_RIGHT)
 		self._linkHref.Update()
-		self._tokenInput.SetValue(config.conf[_addonName][NAME]['token'])
+		self._tokenInput.SetValue(config.conf[_addonName]_serviceName['token'])
 		sizer.Add(self._linkHref, flag=wx.EXPAND)
 		sizer.Show(self._linkHref, show=self._tokenInput.GetValue()==secret.APIKEY)
 		sizer.Fit(self)
@@ -107,17 +107,17 @@ class ServicePanel(wx.Panel):
 		fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
 		self._intoChoice.Clear()
 		self.widgetMaker(self._intoChoice, langs.intoList(fromLang))
-		intoLang = self._intoChoice.FindString(langs[config.conf[_addonName][NAME]['into']].name)
+		intoLang = self._intoChoice.FindString(langs[config.conf[_addonName]_serviceName['into']].name)
 		self._intoChoice.Select(intoLang if intoLang>=0 else 0)
 
 	def save(self) -> None:
 		"""Save the state of the service panel settings."""
 		fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
 		intoLang = self._intoChoice.GetClientData(self._intoChoice.GetSelection()).code
-		config.conf[_addonName][NAME]['from'] = fromLang
-		config.conf[_addonName][NAME]['into'] = intoLang
-		config.conf[_addonName][NAME]['copytoclip'] = self._copyToClipboardChk.GetValue()
-		config.conf[_addonName][NAME]['autoswap'] = self._autoSwapChk.GetValue()
-		config.conf[_addonName][NAME]['mirror'] = self._useMirrorChk.GetValue()
+		config.conf[_addonName]_serviceName['from'] = fromLang
+		config.conf[_addonName]_serviceName['into'] = intoLang
+		config.conf[_addonName]_serviceName['copytoclip'] = self._copyToClipboardChk.GetValue()
+		config.conf[_addonName]_serviceName['autoswap'] = self._autoSwapChk.GetValue()
+		config.conf[_addonName]_serviceName['mirror'] = self._useMirrorChk.GetValue()
 		accessToken = self._tokenInput.GetValue()
-		config.conf[_addonName][NAME]['token'] = accessToken or secret.APIKEY
+		config.conf[_addonName]_serviceName['token'] = accessToken or secret.APIKEY

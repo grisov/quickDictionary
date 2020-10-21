@@ -11,14 +11,14 @@ import config
 import ssl
 from urllib.request import Request, urlopen
 from logHandler import log
-from . import secret
 from .. import _addonName
-from ..languages import Language, ServiceLanguages
+from ..languages import Language, Languages
+from . import secret
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
-class Languages(ServiceLanguages):
+class ServiceLanguages(Languages):
 	"""Represents a list of languages available in the dictionary service."""
 
 	def __init__(self, file: str = "%s.json" % os.path.splitext(os.path.abspath(__file__))[0]):
@@ -28,7 +28,7 @@ class Languages(ServiceLanguages):
 		@param file: external file containing a list of available source and target languages
 		@type file: str
 		"""
-		super(Languages, self).__init__(file)
+		super(ServiceLanguages, self).__init__(file)
 		self.updated = False
 		self._all = []
 
@@ -45,8 +45,8 @@ class Languages(ServiceLanguages):
 		directUrl = 'https://dictionary.yandex.net'
 		mirrorUrl = 'https://info.alwaysdata.net'
 		servers = [directUrl, mirrorUrl]
-		serviceName = os.path.basename(os.path.dirname(__file__))
-		if config.conf[_addonName][serviceName]['mirror']:
+		_serviceName = os.path.basename(os.path.dirname(__file__))
+		if config.conf[_addonName][_serviceName]['mirror']:
 			servers.reverse()
 		urlTemplate = "{server}/api/v1/dicservice.json/getLangs?key={key}"
 		for server in servers:
@@ -130,4 +130,4 @@ class Languages(ServiceLanguages):
 
 
 # An instance of the Languages object for use in the add-on
-langs = Languages()
+langs = ServiceLanguages()
