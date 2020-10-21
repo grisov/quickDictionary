@@ -1,4 +1,5 @@
 #dictionary.py
+# Service summary, configuration scheme and objects for executing translation requests and processing the received answers
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -20,7 +21,7 @@ from urllib.parse import quote as urlencode
 from json import loads
 import config
 from .. import _addonName
-from ..template import htmlTemplate
+from ..shared import htmlTemplate
 from .languages import langs
 from .secret import APIKEY
 
@@ -29,8 +30,8 @@ from .secret import APIKEY
 SUMMARY = _("Yandex Dictionaries")
 NAME = os.path.basename(os.path.dirname(__file__))
 confspec = {
-	"from": "string(default=%s)" % langs.defaultFrom,
-	"into": "string(default=%s)" % langs.defaultInto,
+	"from": "string(default=%s)" % langs.defaultFrom.code,
+	"into": "string(default=%s)" % langs.defaultInto.code,
 	"autoswap": "boolean(default=false)",
 	"copytoclip": "boolean(default=false)",
 	"token": "string(default=%s)" % APIKEY,

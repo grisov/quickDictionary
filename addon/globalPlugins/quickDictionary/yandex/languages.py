@@ -1,102 +1,50 @@
 #languages.py
+# Description of the class for working with the languages of a specific service
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 # Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-import addonHandler
-from logHandler import log
-try:
-	addonHandler.initTranslation()
-except addonHandler.AddonError:
-	log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
-
 import os
 import json
 import config
 import ssl
-from languageHandler import getLanguageDescription
-from locale import getdefaultlocale
 from urllib.request import Request, urlopen
+from logHandler import log
 from . import secret
 from .. import _addonName
+from ..languages import Language, ServiceLanguages
 
-NAME = os.path.basename(os.path.dirname(__file__))
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
-class Language(object):
-	"""Object representation of language"""
-
-	def __init__(self, code:str, langNames:dict):
-		"""Language object fields initialization.
-		@param code: usually two-character language code
-		@type code: str
-		@param langNames: additional languages, where key is a two-character code and value is name of the language
-		@type langNames: dict
-		"""
-		self.lang = code
-		self.names = langNames
-
-	@property
-	def code(self) -> str:
-		"""Language code.
-		@return: usually two-character language code
-		@rtype: str
-		"""
-		return self.lang
-
-	@property
-	def name(self) -> str:
-		"""Language name.
-		@return: full language name
-		@rtype: str
-		"""
-		name = getLanguageDescription(self.lang)
-		if self.lang=='':
-			name = "- %s -" % name
-		if not name:
-			name = self.names.get(self.lang, None)
-		return name or self.lang
-
-
-class Languages(object):
+class Languages(ServiceLanguages):
 	"""Represents a list of languages available in the dictionary service."""
 
-	def __init__(self, file: str, langNames:dict):
-		"""Initialization of an object representing a list of available language pairs.
+	def __init__(self, file: str):
+		"""Initialization of an object representing a collection of available language pairs.
+		Inherited methods from the parent class: load, save, __getitem__ and locale property
+		Must be implemented: fromList, intoList, update, isAvailable and properties defaultFrom, defaultInto, all
 		@param file: external file containing a list of available source and target languages
 		@type file: str
-		@param langNames: additional languages, where key is a two-character code and value is name of the language
-		@type langNames: dict
 		"""
-		self.file = file
-		self.langs = self.load()
-		self.names = langNames
-		self.updated = False
-
-	def load(self) -> list:
-		"""Loads a list of available language pairs from an external json file.
-		@return: list of language pairs available in the dictionary
-		@rtype: list
-		"""
-		data = []
-		with open(self.file, 'r', encoding='utf-8') as f:
-			data = json.load(f)
-		return data
+		super(Languages, self).__init__(file)
+		self._all = []
 
 	def update(self) -> bool:
 		"""Get a list of available language pairs from a remote server and save them in an external file.
 		@return: the success status of the operation
 		@rtype: bool
 		"""
+		self.updated = False
 		langs = []
 		headers = {
 			'User-Agent': 'Mozilla 5.0'}
 		directUrl = 'https://dictionary.yandex.net'
 		mirrorUrl = 'https://info.alwaysdata.net'
 		servers = [directUrl, mirrorUrl]
-		if config.conf[_addonName][NAME]['mirror']:
+		serviceName = os.path.basename(os.path.dirname(__file__))
+		if config.conf[_addonName][serviceName]['mirror']:
 			servers.reverse()
 		urlTemplate = "{server}/api/v1/dicservice.json/getLangs?key={key}"
 		for server in servers:
@@ -110,34 +58,32 @@ class Languages(object):
 			if resp.status!=200:
 				log.error("Incorrect response code %d from the server %s", resp.status, server)
 				continue
-			langs = json.loads(resp.read().decode())
 			break
-		if len(langs)>5:
-			with open(self.file, 'w') as f:
-				f.write(json.dumps(langs, skipkeys=True, ensure_ascii=False, indent=4))
-			self.updated = True
+		langs = json.loads(resp.read().decode())
+		if len(langs)>10:
+			self.updated = self.save(langs)
 		return self.updated
 
 	def fromList(self) -> list:
 		"""Sequence of available source languages.
 		@return: sequence of available source languages
-		@rtype: list of Language
+		@rtype: list of Language objects
 		"""
-		for lang in list({c.split('-')[0]: c for c in self.langs}):
-			yield Language(lang, self.names)
+		for lang in list({c.split('-')[0]: c for c in self._langs}):
+			yield Language(lang)
 
-	def intoList(self, lng: str) -> list:
+	def intoList(self, lang: str) -> list:
 		"""Sequence of available target languages for a given source language.
-		@param lng: source language code
-		@type lng: str
+		@param lang: source language code
+		@type lang: str
 		@return: sequence of available target languages
-		@rtype: list of Language
+		@rtype: list of Language objects
 		"""
-		if not lng: return []
-		for lang in self.langs:
-			l = lang.split('-')
-			if l[0]==lng:
-				yield Language(l[1], self.names)
+		if not lang: return []
+		for lng in self._langs:
+			l = lng.split('-')
+			if l[0]==lang:
+				yield Language(l[1])
 
 	def isAvailable(self, source: str, target: str) -> bool:
 		"""Indicates whether the selected language pair is in the list of available languages.
@@ -148,7 +94,7 @@ class Languages(object):
 		@return: whether a language pair is present in the list of available
 		@rtype: bool
 		"""
-		return "%s-%s" % (source, target) in self.langs
+		return "%s-%s" % (source, target) in self._langs
 
 	@property
 	def defaultFrom(self) -> str:
@@ -156,7 +102,7 @@ class Languages(object):
 		@return: 'en' if available, else - the first language in list of source languages
 		@rtype: str
 		"""
-		return 'en' if next(filter(lambda l: l.code=='en', self.fromList()), None) else self.langs[0].split('-')[0]
+		return Language('en' if next(filter(lambda l: l.code=='en', self.fromList()), None) else self.langs[0].split('-')[0])
 
 	@property
 	def defaultInto(self) -> str:
@@ -164,62 +110,22 @@ class Languages(object):
 		@return: locale language, if it is available as the target for the default source, otherwise the first one in the list
 		@rtype: str
 		"""
-		return self.locale if next(filter(lambda l: l.code==self.locale, self.intoList(self.defaultFrom)), None) else [l for l in self.intoList(self.defaultFrom)][0].code
+		return self.locale if next(filter(lambda l: l.code==self.locale.code, self.intoList(self.defaultFrom.code)), None) else [l for l in self.intoList(self.defaultFrom.code)][0]
 
 	@property
-	def locale(self) -> str:
-		"""User locale language.
-		@return: locale language code used on the user's computer
-		@rtype: str
+	def all(self) -> list:
+		"""Full list of all supported source and target languages.
+		@return: list of all supported languages
+		@rtype: list of Language
 		"""
-		return getdefaultlocale()[0].split('_')[0]
-
-	def __getitem__(self, lang: str) -> Language:
-		"""Returns the Language object for the given language code.
-		@param lang: two-character language code
-		@type lang: str
-		@return: the Language object for the given code
-		@rtype: Language
-		"""
-		return Language(lang, self.names)
-
-
-# Languages which may not be in the main list
-langNames = {
-	# Translators: The name of the language, which may not be in the main list
-	"ceb": _("Cebuano"),
-	# Translators: The name of the language, which may not be in the main list
-	"eo": _("Esperanto"),
-	# Translators: The name of the language, which may not be in the main list
-	"hmn": _("Hmong"),
-	# Translators: The name of the language, which may not be in the main list
-	"ht": _("Creole Haiti"),
-	# Translators: The name of the language, which may not be in the main list
-	"jv": _("Javanese"),
-	# Translators: The name of the language, which may not be in the main list
-	"la": _("Latin"),
-	# Translators: The name of the language, which may not be in the main list
-	"mg": _("Malagasy"),
-	# Translators: The name of the language, which may not be in the main list
-	"mhr": _("Meadow Mari"),
-	# Translators: The name of the language, which may not be in the main list
-	"mrj": _("Hill Mari"),
-	# Translators: The name of the language, which may not be in the main list
-	"my": _("Myanmar (Burmese)"),
-	# Translators: The name of the language, which may not be in the main list
-	"ny": _("Chichewa"),
-	# Translators: The name of the language, which may not be in the main list
-	"so": _("Somali"),
-	# Translators: The name of the language, which may not be in the main list
-	"st": _("Sesotho"),
-	# Translators: The name of the language, which may not be in the main list
-	"su": _("Sundanese"),
-	# Translators: The name of the language, which may not be in the main list
-	"tl": _("Tagalog"),
-	# Translators: The name of the language, which may not be in the main list
-	"yi": _("Yiddish"),
-}
+		if not self._all:
+			self._all = [lang for lang in self.fromList()]
+			for source in self.fromList():
+				for target in self.intoList(source.code):
+					if target.code not in [lng.code for lng in self._all]:
+						self._all.append(target)
+		return self._all
 
 
 # An instance of the Languages object for use in the add-on
-langs = Languages("%s.%s" % (os.path.splitext(os.path.abspath(__file__))[0], 'json'), langNames)
+langs = Languages("%s.json" % os.path.splitext(os.path.abspath(__file__))[0])

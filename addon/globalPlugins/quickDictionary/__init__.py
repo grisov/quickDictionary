@@ -28,9 +28,8 @@ from tones import beep
 from time import sleep
 from threading import Thread
 from .locator import services
-from .shared import copyToClipboard, getSelectedText, translateWithCaching, messageWithLangDetection, finally_
+from .shared import copyToClipboard, getSelectedText, translateWithCaching, messageWithLangDetection, finally_, htmlTemplate
 from .synthesizers import profiles
-from .template import htmlTemplate
 from .settings import QDSettingsPanel
 
 
