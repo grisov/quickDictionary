@@ -100,7 +100,7 @@ class DictionaryService(object):
 		@return: service name
 		@rtype: str
 		"""
-		pass
+		raise NotImplementedError("This property must be overridden in the child class!")
 
 	@property
 	def summary(self) -> str:
@@ -108,7 +108,7 @@ class DictionaryService(object):
 		@return service summary
 		@rtype: str
 		"""
-		pass
+		raise NotImplementedError("This property must be overridden in the child class!")
 
 	@property
 	def confspec(self) -> dict:
@@ -116,7 +116,7 @@ class DictionaryService(object):
 		@return: configuration scheme
 		@rtype: dict
 		"""
-		pass
+		raise NotImplementedError("This property must be overridden in the child class!")
 
 	@property
 	def translator(self) -> object:
@@ -124,7 +124,7 @@ class DictionaryService(object):
 		@return: object type used by the service
 		@rtype: object, usually inherited from <service_name>.dictionary.Translator
 		"""
-		pass
+		raise NotImplementedError("This property must be overridden in the child class!")
 
 	@property
 	def langs(self) -> object:
@@ -132,7 +132,7 @@ class DictionaryService(object):
 		@return: an instance of the class to interact with the list of available languages
 		@rtyp: object, usually instance of <service_name>.languages.Languages
 		"""
-		pass
+		raise NotImplementedError("This property must be overridden in the child class!")
 
 	@property
 	def panel(self) -> object:
@@ -140,7 +140,7 @@ class DictionaryService(object):
 		@return: link to the add-on settings panel
 		@rtype: wx.Panel
 		"""
-		pass
+		raise NotImplementedError("This property must be overridden in the child class!")
 
 
 # Discover all available services for use in the add-on

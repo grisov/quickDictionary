@@ -143,3 +143,63 @@ class ServiceLanguages(object):
 		@rtype: Language
 		"""
 		return Language(lang)
+
+	# The following methods and properties must be overridden in the child class
+	def update(self) -> bool:
+		"""Get a list of available language pairs from a remote server and save them in an external file.
+		Also, this method should save the result of the operation in the logical field <self.updated>.
+		@return: the success status of the operation
+		@rtype: bool
+		"""
+		raise NotImplementedError("This method must be overridden in the child class!")
+
+	def fromList(self) -> list:
+		"""Sequence of available source languages.
+		@return: sequence of available source languages
+		@rtype: list of Language objects
+		"""
+		raise NotImplementedError("This method must be overridden in the child class!")
+
+	def intoList(self, lang: str) -> list:
+		"""Sequence of available target languages for a given source language.
+		@param lang: source language code
+		@type lang: str
+		@return: sequence of available target languages
+		@rtype: list of Language objects
+		"""
+		raise NotImplementedError("This method must be overridden in the child class!")
+
+	def isAvailable(self, source: str, target: str) -> bool:
+		"""Indicates whether the selected language pair is in the list of available languages.
+		@param source: source language code
+		@type source: str
+		@param target: target language code
+		@type target: str
+		@return: whether a language pair is present in the list of available
+		@rtype: bool
+		"""
+		raise NotImplementedError("This method must be overridden in the child class!")
+
+	@property
+	def defaultFrom(self) -> str:
+		"""Default source language.
+		@return: 'en' if available, else - the first language in list of source languages
+		@rtype: str
+		"""
+		raise NotImplementedError("This property must be overridden in the child class!")
+
+	@property
+	def defaultInto(self) -> str:
+		"""Default target language.
+		@return: locale language, if it is available as the target for the default source, otherwise the first one in the list
+		@rtype: str
+		"""
+		raise NotImplementedError("This property must be overridden in the child class!")
+
+	@property
+	def all(self) -> list:
+		"""Full list of all supported source and target languages.
+		@return: list of all supported languages
+		@rtype: list of Language
+		"""
+		raise NotImplementedError("This property must be overridden in the child class!")

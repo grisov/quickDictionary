@@ -1,5 +1,5 @@
 #settings.py
-# General graphic dialogs of Quick Dictionary add-on
+# Main graphic dialogs of Quick Dictionary add-on
 # A part of NonVisual Desktop Access (NVDA)
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -170,7 +170,7 @@ class AssociateSynthPanel(wx.Panel):
 
 		# Setting initial values in choices and interaction between choices
 		langs = services[self._active].langs
-		self._langs = [langs['']] + [l for l in langs.fromList()]
+		self._langs = [langs['']] + [l for l in langs.all]
 		self._choices = dict({slot: profile.lang for slot, profile in profiles})
 		for slot, profile in profiles:
 			self.widgetMakerExclude(self._synthLangsChoice[slot], slot)

@@ -21,7 +21,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 class Languages(ServiceLanguages):
 	"""Represents a list of languages available in the dictionary service."""
 
-	def __init__(self, file: str):
+	def __init__(self, file: str = "%s.json" % os.path.splitext(os.path.abspath(__file__))[0]):
 		"""Initialization of an object representing a collection of available language pairs.
 		Inherited methods from the parent class: load, save, __getitem__ and locale property
 		Must be implemented: fromList, intoList, update, isAvailable and properties defaultFrom, defaultInto, all
@@ -29,10 +29,12 @@ class Languages(ServiceLanguages):
 		@type file: str
 		"""
 		super(Languages, self).__init__(file)
+		self.updated = False
 		self._all = []
 
 	def update(self) -> bool:
 		"""Get a list of available language pairs from a remote server and save them in an external file.
+		This method should save the result of the operation in the logical field <self.updated>.
 		@return: the success status of the operation
 		@rtype: bool
 		"""
@@ -128,4 +130,4 @@ class Languages(ServiceLanguages):
 
 
 # An instance of the Languages object for use in the add-on
-langs = Languages("%s.json" % os.path.splitext(os.path.abspath(__file__))[0])
+langs = Languages()
