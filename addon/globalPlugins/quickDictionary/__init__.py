@@ -423,7 +423,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
-		self._gate = min(int(gesture.displayName[-1]), len(services))
+		self._gate = min(int(gesture.displayName.lower().replace('f', '')), len(services))
 		config.conf[_addonName]['active'] = self._gate - 1
 		ui.message(': '.join([gesture.displayName, services[self._gate-1].summary]))
 

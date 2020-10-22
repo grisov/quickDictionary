@@ -5,8 +5,7 @@ addon/doc/en/
 *.ini
 *.nvda-addon
 .sconsign.dblite
-addon/globalPlugins/*/*.json
-addon/globalPlugins/*/*/secret.py
+addon/globalPlugins/*/*.zip
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

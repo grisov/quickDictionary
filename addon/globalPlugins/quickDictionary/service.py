@@ -453,7 +453,7 @@ class Secrets(object):
 		@return: credentials required for authorization in the selected service
 		@rtype: service.Secret
 		"""
-		return self._secrets.get(service, {})
+		return self._secrets.get(service, Secret(service))
 
 
 # an instance for further use in addon services is created here so as not to perform its initialization on each call
