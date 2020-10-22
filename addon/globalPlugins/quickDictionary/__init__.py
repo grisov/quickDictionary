@@ -28,7 +28,7 @@ from tones import beep
 from time import sleep
 from threading import Thread
 from .locator import services
-from .shared import copyToClipboard, getSelectedText, translateWithCaching, messageWithLangDetection, finally_, htmlTemplate
+from .shared import copyToClipboard, getSelectedText, translateWithCaching, waitingFor, messageWithLangDetection, finally_, htmlTemplate
 from .synthesizers import profiles
 from .settings import QDSettingsPanel
 
@@ -246,31 +246,19 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
-		Thread(target=self.downloadLanguages).start()
-
-	def downloadLanguages(self):
-		"""Download current list of available languages from the remote server and save them to a local file.
-		Call the request procedure to the remote server on a separate thread.
-		Wait for the request to complete and return a prepared response.
-		"""
-		langs = services[config.conf[_addonName]['active']].langs
-		load = Thread(target=langs.update)
-		load.start()
-		i=0
-		while load.is_alive():
-			sleep(0.1)
-			if i == 10:
-				beep(500, 100)
-				i = 0
-			i+=1
-		load.join()
-		if langs.updated:
-			# Translators: Notification when downloading from the online dictionary list of available languages
-			ui.message(_("The list of available languages ​​has been successfully downloaded and saved."))
-			langs.updated = False
-		else:
-			# Translators: Notification when downloading from the online dictionary list of available languages
-			ui.message(_("Warning! The list of available languages could not be loaded."))
+		def downloadLanguages() -> None:
+			"""Download current list of available languages from the remote server and save them to a local file.
+			Wait for the request to complete and return a prepared response.
+			"""
+			langs = services[config.conf[_addonName]['active']].langs
+			waitingFor(langs.update)
+			if langs.updated:
+				# Translators: Notification when downloading from the online dictionary list of available languages
+				ui.message(_("The list of available languages ​​has been successfully downloaded and saved."))
+			else:
+				# Translators: Notification when downloading from the online dictionary list of available languages
+				ui.message(_("Warning! The list of available languages could not be loaded."))
+		Thread(target=downloadLanguages).start()
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="H - %s" % _("add-on help page"))
@@ -427,22 +415,25 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		config.conf[_addonName]['active'] = self._gate - 1
 		ui.message(': '.join([gesture.displayName, services[self._gate-1].summary]))
 
-	def translate(self, text:str, isHtml:bool=False):
+	def translate(self, text:str, isHtml:bool=False) -> None:
 		"""Retrieve the dictionary entry for the given word or phrase and display/announce the result.
 		This method must always be called in a separate thread so as not to block NVDA.
 		@param text: a word or phrase to look up in a dictionary
 		@type text: str
 		@param isHtml: a sign of whether it is necessary to display the result of work in the form of HTML page
 		@type isHtml: bool
-		@return: None
 		"""
-		langs = services[config.conf[_addonName]['active']].langs
+		active = config.conf[_addonName]['active']
+		langs = services[active].langs
+		serviceName = services[active].name
 		pairs = [(self.source, self.target)]
 		if self.isAutoSwap:
 			if langs.isAvailable(self.target, self.source):
 				pairs.append((self.target, self.source))
 		for lFrom, lInto in pairs:
-			translator = translateWithCaching(lFrom, lInto, text)
+			translator = translateWithCaching(lFrom, lInto, text, active,
+				hash(config.conf[_addonName][serviceName]['username'] + config.conf[_addonName][serviceName]['password']))
+			#cache_state = translateWithCaching.cache_info() # - to check the current status of the queries cache
 			if translator.plaintext:
 				break
 		else:

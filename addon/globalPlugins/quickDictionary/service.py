@@ -256,6 +256,14 @@ class Translator(Thread):
 		super(Translator, self)._stop(*args, **kwargs)
 		self._stopEvent.set()
 
+	def __hash__(self) -> int:
+		"""Make the class hashable with a constant hash value.
+		This is necessary for the caching performed by the decorator functools.lru_cache to work correctly.
+		@return: numeric value of the hash
+		@rtype: int, always 0
+		"""
+		return 0
+
 	def run(self):
 		"""Query the remote dictionary and save the processed response.
 		Should run in a separate thread to avoid blocking.
@@ -395,7 +403,7 @@ class Secret(object):
 class Secrets(object):
 	"""Manage the credentials required for all add-on services to work."""
 
-	def __init__(self, dir:str = os.path.dirname(__file__), file:str = 'credentials'):
+	def __init__(self, dir:str = os.path.dirname(__file__), file:str = 'qd'):
 		"""Initialize all required values.
 		@param dir: the directory where the credential file is stored
 		@type dir: str
