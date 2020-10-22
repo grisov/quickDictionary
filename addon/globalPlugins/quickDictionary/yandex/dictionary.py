@@ -20,10 +20,9 @@ from urllib.parse import quote as urlencode
 from json import loads
 import config
 from .. import _addonName
-from ..dictionary import Translator
+from ..service import Translator, secrets
 from ..shared import htmlTemplate
 from .languages import langs
-from .secret import APIKEY
 
 
 # Translators: The name of the online dictionary service
@@ -34,7 +33,7 @@ confspec = {
 	"into": "string(default=%s)" % langs.defaultInto.code,
 	"autoswap": "boolean(default=false)",
 	"copytoclip": "boolean(default=false)",
-	"token": "string(default=%s)" % APIKEY,
+	"token": "string(default=%s)" % secrets[_serviceName]._password,
 	"mirror": "boolean(default=false)"
 }
 ssl._create_default_https_context = ssl._create_unverified_context

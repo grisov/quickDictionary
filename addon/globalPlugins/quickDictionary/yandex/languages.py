@@ -12,8 +12,7 @@ import ssl
 from urllib.request import Request, urlopen
 from logHandler import log
 from .. import _addonName
-from ..languages import Language, Languages
-from . import secret
+from ..service import Language, Languages, secrets
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -50,7 +49,7 @@ class ServiceLanguages(Languages):
 			servers.reverse()
 		urlTemplate = "{server}/api/v1/dicservice.json/getLangs?key={key}"
 		for server in servers:
-			url = urlTemplate.format(server=server, key = secret.APIKEY)
+			url = urlTemplate.format(server=server, key = secrets[_serviceName].password)
 			rq = Request(url, method='GET', headers=headers)
 			try:
 				resp = urlopen(rq, timeout=8)
