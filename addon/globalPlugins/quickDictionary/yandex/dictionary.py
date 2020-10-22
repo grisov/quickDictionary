@@ -33,7 +33,8 @@ confspec = {
 	"into": "string(default=%s)" % langs.defaultInto.code,
 	"autoswap": "boolean(default=false)",
 	"copytoclip": "boolean(default=false)",
-	"token": "string(default=%s)" % secrets[_serviceName]._password,
+	"username": 'string(default="")',
+	"password": "string(default=%s)" % secrets[_serviceName]._password,
 	"mirror": "boolean(default=false)"
 }
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -55,7 +56,7 @@ class ServiceTranslator(Translator):
 
 	# The list of getters defining parameters for working with the dictionary
 	uiLang = lambda self: self._langTo or langs.locale
-	token = lambda self: config.conf[_addonName][_serviceName]['token']
+	token = lambda self: secrets[_serviceName].decode(config.conf[_addonName][_serviceName]['password'])
 	mirror = lambda self: config.conf[_addonName][_serviceName]['mirror']
 
 	# Define class properties

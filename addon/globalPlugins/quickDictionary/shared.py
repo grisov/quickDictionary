@@ -23,6 +23,7 @@ from textInfos import POSITION_SELECTION
 from time import sleep
 from tones import beep
 from functools import lru_cache, wraps
+from threading import Thread
 import config
 from . import _addonName
 from .locator import services
@@ -30,7 +31,7 @@ from .synthesizers import profiles
 
 
 @lru_cache(maxsize=100)
-def translateWithCaching(langFrom: str, langInto: str, text: str):
+def translateWithCaching(langFrom: str, langInto: str, text: str, service_id:int, credentials:int):
 	"""Call the request procedure to the remote server on a separate thread.
 	Wait for the request to complete and return a prepared response.
 	All function values are cached to reduce the number of requests to the server.
@@ -40,6 +41,11 @@ def translateWithCaching(langFrom: str, langInto: str, text: str):
 	@type langInto: str
 	@param text: word or phrase to translate
 	@type text: str
+	* the following parameters are not used in the function, but are required for to properly caching
+	@param service_id: the ID of the service used for translation
+	@type service_id: int
+	@param credentials: hash of credentials used to access the online service
+	@type credentials: int, hash(username + password)
 	@return: object containing the prepared response from the remote dictionary
 	@rtype: <service>.dictionary.Translator
 	"""
@@ -54,6 +60,24 @@ def translateWithCaching(langFrom: str, langInto: str, text: str):
 		i+=1
 	translator.join()
 	return translator
+
+def waitingFor(target, args:list=[]):
+	"""Waiting for the function to complete, beeps are output while waiting.
+	@param target: function that will be started and user will hear sounds during its execution
+	@type target: function
+	@param args: list of arguments to be passed to the function
+	@type args: list
+	"""
+	load = Thread(target=target, args=args)
+	load.start()
+	i=0
+	while load.is_alive():
+		sleep(0.1)
+		if i == 10:
+			beep(500, 100)
+			i = 0
+		i+=1
+	load.join()
 
 def copyToClipboard(text: str) -> None:
 	"""Copy the received text to the clipboard and announce the completion status of the operation.

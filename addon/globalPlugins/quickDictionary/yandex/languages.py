@@ -49,7 +49,7 @@ class ServiceLanguages(Languages):
 			servers.reverse()
 		urlTemplate = "{server}/api/v1/dicservice.json/getLangs?key={key}"
 		for server in servers:
-			url = urlTemplate.format(server=server, key = secrets[_serviceName].password)
+			url = urlTemplate.format(server=server, key = secrets[_serviceName].decode(config.conf[_addonName][_serviceName]['password']))
 			rq = Request(url, method='GET', headers=headers)
 			try:
 				resp = urlopen(rq, timeout=8)
