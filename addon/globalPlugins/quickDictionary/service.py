@@ -123,7 +123,7 @@ class Languages(object):
 				data = json.load(f)
 		except Exception as e:
 			log.exception(e)
-		return data.get('data')
+		return data.get('data', {})
 
 	def save(self, data) -> bool:
 		"""Save a collection of available languages to an external file.

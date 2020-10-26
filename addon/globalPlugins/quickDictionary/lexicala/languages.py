@@ -6,15 +6,11 @@
 # Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 import os
-import json
 import config
-import ssl
-from urllib.request import Request, urlopen
 from logHandler import log
 from .. import _addonName
 from ..service import Language, Languages, secrets
-
-ssl._create_default_https_context = ssl._create_unverified_context
+from .api import Lapi, serviceName
 
 
 class ServiceLanguages(Languages):
@@ -31,6 +27,23 @@ class ServiceLanguages(Languages):
 		self.updated = False
 		self._all = []
 
+	@property
+	def sources(self):
+		return list(self._langs.get('resources', []))
+
+	@property
+	def source(self):
+		return config.conf.get(_addonName, {}).get(serviceName, {}).get('source') or self.defaultSource
+
+	@source.setter
+	def source(self, source):
+		if source in self.sources:
+			config.conf[_addonName][serviceName]['source'] = source
+
+	@property
+	def defaultSource(self):
+		return next(iter(self.sources), 'password')
+
 	def update(self) -> bool:
 		"""Get a list of available language pairs from a remote server and save them in an external file.
 		This method should save the result of the operation in the logical field <self.updated>.
@@ -38,30 +51,8 @@ class ServiceLanguages(Languages):
 		@rtype: bool
 		"""
 		self.updated = False
-		langs = []
-		headers = {
-			'User-Agent': 'Mozilla 5.0'}
-		directUrl = 'https://dictionary.yandex.net'
-		mirrorUrl = 'https://info.alwaysdata.net'
-		servers = [directUrl, mirrorUrl]
-		_serviceName = os.path.basename(os.path.dirname(__file__))
-		if config.conf[_addonName][_serviceName]['mirror']:
-			servers.reverse()
-		urlTemplate = "{server}/api/v1/dicservice.json/getLangs?key={key}"
-		for server in servers:
-			url = urlTemplate.format(server=server, key = secrets[_serviceName].decode(config.conf[_addonName][_serviceName]['password']))
-			rq = Request(url, method='GET', headers=headers)
-			try:
-				resp = urlopen(rq, timeout=8)
-			except Exception as e:
-				log.exception(e)
-				continue
-			if resp.status!=200:
-				log.error("Incorrect response code %d from the server %s", resp.status, server)
-				continue
-			break
-		langs = json.loads(resp.read().decode())
-		if len(langs)>10:
+		langs = Lapi().languages()
+		if len(langs.get('resources', []))>=3:
 			self.updated = self.save(langs)
 		return self.updated
 
@@ -70,21 +61,18 @@ class ServiceLanguages(Languages):
 		@return: sequence of available source languages
 		@rtype: list of Language objects
 		"""
-		for lang in list({c.split('-')[0]: c for c in self._langs}):
+		for lang in self._langs.get('resources', {}).get(self.source, {}).get('source_languages', []):
 			yield Language(lang)
 
-	def intoList(self, lang: str) -> list:
-		"""Sequence of available target languages for a given source language.
-		@param lang: source language code
+	def intoList(self, lang: str='') -> list:
+		"""Sequence of available target languages.
+		@param ***lang: source language code
 		@type lang: str
 		@return: sequence of available target languages
 		@rtype: list of Language objects
 		"""
-		if not lang: return []
-		for lng in self._langs:
-			l = lng.split('-')
-			if l[0]==lang:
-				yield Language(l[1])
+		for lang in self._langs.get('resources', {}).get(self.source, {}).get('target_languages', []):
+			yield Language(lang)
 
 	def isAvailable(self, source: str, target: str) -> bool:
 		"""Indicates whether the selected language pair is in the list of available languages.
@@ -95,7 +83,7 @@ class ServiceLanguages(Languages):
 		@return: whether a language pair is present in the list of available
 		@rtype: bool
 		"""
-		return "%s-%s" % (source, target) in self._langs
+		return (source in [lang.code for lang in self.fromList()]) and (target in [lang.code for lang in self.intoList()])
 
 	@property
 	def defaultFrom(self) -> str:
@@ -103,7 +91,7 @@ class ServiceLanguages(Languages):
 		@return: 'en' if available, else - the first language in list of source languages
 		@rtype: str
 		"""
-		return Language('en' if next(filter(lambda l: l.code=='en', self.fromList()), None) else self._langs[0].split('-')[0])
+		return Language('en' if 'en' in self._langs['resources'][self.defaultSource]['source_languages'] else next(iter(self._langs['resources'][self.defaultSource]['source_languages']), ''))
 
 	@property
 	def defaultInto(self) -> str:
@@ -111,7 +99,8 @@ class ServiceLanguages(Languages):
 		@return: locale language, if it is available as the target for the default source, otherwise the first one in the list
 		@rtype: str
 		"""
-		return self.locale if next(filter(lambda l: l.code==self.locale.code, self.intoList(self.defaultFrom.code)), None) else [l for l in self.intoList(self.defaultFrom.code)][0]
+		return self.locale if self.locale.code in self._langs['resources'][self.defaultSource]['target_languages'] else Language(next(iter(self._langs['resources'][self.defaultSource]['target_languages']), ''))
+		return self.locale if next(filter(lambda l: l.code==self.locale.code, self.intoList()), None) else next(self.intoList())
 
 	@property
 	def all(self) -> list:
@@ -120,11 +109,10 @@ class ServiceLanguages(Languages):
 		@rtype: list of Language
 		"""
 		if not self._all:
-			self._all = [lang for lang in self.fromList()]
-			for source in self.fromList():
-				for target in self.intoList(source.code):
-					if target.code not in [lng.code for lng in self._all]:
-						self._all.append(target)
+			for source in self.sources:
+				self._all.extend(self._langs.get('resources', {}).get(source, {}).get('source_languages', []))
+				self._all.extend(self._langs.get('resources', {}).get(source, {}).get('target_languages', []))
+			self._all = list(frozenset(self._all))
 		return self._all
 
 
