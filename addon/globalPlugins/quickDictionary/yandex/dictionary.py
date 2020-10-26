@@ -143,11 +143,11 @@ class Parser(object):
 			if key in self.resp:
 				html += {
 					# Translators: Field name in a dictionary entry
-					'mean': "<p><i>%s</i>: " % _("Mean"),
+					'mean': "<p><i>%s</i>: " % _("mean").capitalize(),
 					# Translators: Field name in a dictionary entry
-					'syn': "<p><i>%s</i>:\n" % _("Synonyms"),
+					'syn': "<p><i>%s</i>:\n" % _("synonyms").capitalize(),
 					# Translators: Field name in a dictionary entry
-					'ex': "<p><i>%s</i>:\n" % _("Examples")
+					'ex': "<p><i>%s</i>:\n" % _("examples").capitalize()
 					}.get(key, '')
 				if key == 'def':
 					if not self.resp['def']:

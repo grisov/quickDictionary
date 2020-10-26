@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: NVDA Quick Dictionary 1.2\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
 "POT-Creation-Date: 2020-10-09 18:47+0300\n"
-"PO-Revision-Date: 2020-10-12 14:20+0300\n"
+"PO-Revision-Date: 2020-10-26 17:49+0200\n"
 "Last-Translator: Cagri Dogan <cagrid@hotmail.com>\n"
 "Language-Team: cagrid@hotmail.com\n"
 "Language: tr\n"
@@ -172,15 +172,15 @@ msgid "gender"
 msgstr "Cinsiyet"
 
 #. Translators: Field name in a dictionary entry
-msgid "Mean"
+msgid "mean"
 msgstr "Ek anlam"
 
 #. Translators: Field name in a dictionary entry
-msgid "Synonyms"
+msgid "synonyms"
 msgstr "Eş anlamlı"
 
 #. Translators: Field name in a dictionary entry
-msgid "Examples"
+msgid "examples"
 msgstr "Örnekler"
 
 #. Translators: The name of the language, which may not be in the main list

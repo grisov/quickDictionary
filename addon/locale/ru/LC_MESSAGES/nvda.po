@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 'quickDictionary' '1.2'\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
 "POT-Creation-Date: 2020-10-09 18:47+0300\n"
-"PO-Revision-Date: 2020-10-09 18:59+0300\n"
+"PO-Revision-Date: 2020-10-26 17:51+0200\n"
 "Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -169,15 +169,15 @@ msgid "gender"
 msgstr "пол"
 
 #. Translators: Field name in a dictionary entry
-msgid "Mean"
+msgid "mean"
 msgstr "Значение"
 
 #. Translators: Field name in a dictionary entry
-msgid "Synonyms"
+msgid "synonyms"
 msgstr "Синонимы"
 
 #. Translators: Field name in a dictionary entry
-msgid "Examples"
+msgid "examples"
 msgstr "Примеры"
 
 #. Translators: The name of the language, which may not be in the main list
