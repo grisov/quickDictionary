@@ -11,6 +11,7 @@ import base64
 from urllib.request import Request, urlopen
 from urllib.parse import quote as urlencode
 from json import loads
+from datetime import datetime, timedelta
 import config
 from .. import _addonName
 from ..service import secrets
@@ -109,9 +110,9 @@ class Lapi(object):
 			response['error'] = "HTTP error: %s" % str(e)
 			return response
 		if resp:
-			stat['limit'] = resp.getheader('X-RateLimit-DailyLimit')
-			stat['remain'] = resp.getheader('X-RateLimit-DailyLimit-Remaining')
-			#stat['date'] = datefstr(resp.getheader('date'))
+			stat['remain'] = resp.getheader('X-RateLimit-DailyLimit-Remaining', 0)
+			stat['count'] = int(resp.getheader('X-RateLimit-DailyLimit', 0)) - int(stat['remain'])
+			stat['delta'] = datetime.now() - self.parseDate(resp.getheader('date', ''))
 			if resp.getcode()==200:
 				text = resp.read().decode(encoding='utf-8', errors='ignore')
 				try:
@@ -175,3 +176,18 @@ class Lapi(object):
 		@rtype: dict
 		"""
 		return self.get('test')
+
+	def parseDate(self, datestr:str) -> datetime:
+		"""Analyze a date string and convert it to a datetime object.
+		@param datestr: the date as a text string
+		@type datestr: str
+		@return: datetime object
+		@rtype: datetime
+		"""
+		try:
+			date = datestr.split(' ')[1:-1]
+			date[1] = "%02d" % (['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].index(date[1])+1)
+			date = datetime.strptime(' '.join(date), "%d %m %Y %H:%M:%S")
+		except Exception as e:
+			return datetime.now() - timedelta(days=100)
+		return date

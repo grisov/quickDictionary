@@ -130,6 +130,7 @@ class Yapi(object):
 				continue
 			break
 		if resp:
+			stat['count'] = stat.get('count', 0) + 1
 			try:
 				response = loads(resp.read().decode(encoding='utf-8', errors='ignore'))
 			except Exception as e:

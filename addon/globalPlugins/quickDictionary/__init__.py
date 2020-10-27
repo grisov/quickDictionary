@@ -56,6 +56,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._slot = 1
 		# to switch between services
 		self._gate = config.conf[_addonName]['active']+1
+		# storing information about the state of the cache
+		self._cacheInfo = None
 		# Sequence of messages
 		self._messages = []
 
@@ -261,6 +263,41 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		Thread(target=downloadLanguages).start()
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
+	@script(description="Q - %s" % _("statistics on the using the online service"))
+	def script_dictionaryStatistics(self, gesture):
+		"""Available statistical information on the use of the current online service.
+		Service summary, the number of executed requests in the current session, the balance of the daily quota,
+		time remaining until the daily quota is updated, cache status information.
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
+		service = services[config.conf[_addonName]['active']]
+		ui.message(service.summary)
+		# Translators: Information about the online service
+		ui.message(_("supports {number} languages").format(number=len(service.langs.all)))
+		if not service.stat:
+			# Translators: Information about the online service
+			ui.message(_("There is no dictionary queries"))
+		if service.stat.get('count'):
+			# Translators: Information about the online service
+			ui.message(_("performed {count} requests").format(count=service.stat['count']))
+		if service.stat.get('remain'):
+			# Translators: Information about the online service
+			ui.message(_("available {remain}").format(remain=service.stat['remain']))
+		from datetime import datetime, timedelta
+		if isinstance(service.stat.get('delta'), timedelta):
+			tomorrow = datetime.now() + timedelta(days=1)
+			middle = datetime(tomorrow.year, tomorrow.month, tomorrow.day)
+			hours, seconds = divmod((middle + service.stat['delta'] - datetime.now()).seconds, 3600)
+			minutes, seconds = divmod(seconds, 60)
+			# Translators: Information about the online service
+			ui.message(_("the limit will be reset in {hours} hours {minutes} minutes").format(
+				hours=hours, minutes=minutes))
+		if self._cacheInfo:
+			# Translators: Information about the cache state
+			ui.message("%s: %s" % (_("state of cache"), str(self._cacheInfo)))
+
+	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="H - %s" % _("add-on help page"))
 	def script_help(self, gesture):
 		"""Retrieves a description of all add-ons methods and presents them.
@@ -434,7 +471,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			translator = translateWithCaching(lFrom, lInto, text, active,
 				hash(config.conf[_addonName][serviceName]['username'] + config.conf[_addonName][serviceName]['password']),
 				hash(config.conf[_addonName][serviceName].get('source', '')))
-			#cache_state = translateWithCaching.cache_info() # - to check the current status of the queries cache
+			self._cacheInfo = translateWithCaching.cache_info() # - to check the current status of the queries cache
 			if translator.plaintext:
 				break
 		else:
@@ -470,6 +507,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:s": "swapLanguages",
 		"kb:c": "copyLastResult",
 		"kb:u": "updateLanguages",
+		"kb:q": "dictionaryStatistics",
 		# General
 		"kb:o": "showSettings",
 		"kb:h": "help",

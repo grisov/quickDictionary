@@ -67,3 +67,11 @@ class YandexDictionary(DictionaryService):
 		@rtype: wx.Panel
 		"""
 		return import_module('.settings', package=PACKAGE).ServicePanel
+
+	@property
+	def stat(self) -> dict:
+		"""Statistics of using the online service.
+		@return: various statistics data
+		@rtype: dict
+		"""
+		return import_module('.api', package=PACKAGE).stat

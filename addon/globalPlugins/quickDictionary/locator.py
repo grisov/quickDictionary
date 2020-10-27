@@ -142,6 +142,14 @@ class DictionaryService(object):
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
 
+	@property
+	def stat(self) -> dict:
+		"""Statistics of using the online service.
+		@return: various statistical data
+		@rtype: dict
+		"""
+		raise NotImplementedError("This property must be overridden in the child class!")
+
 
 # Discover all available services for use in the add-on
 discover_services()
