@@ -12,32 +12,26 @@ try:
 except addonHandler.AddonError:
 	log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
 
-import os
 import re
-import ssl
-from urllib.request import Request, urlopen
-from urllib.parse import quote as urlencode
-from json import loads
-import config
 from .. import _addonName
 from ..service import Translator, secrets
 from ..shared import htmlTemplate
+from .api import serviceName, Yapi
 from .languages import langs
 
 
 # Translators: The name of the online dictionary service
 _serviceSummary = _("Yandex Dictionaries")
-_serviceName = os.path.basename(os.path.dirname(__file__))
+
 confspec = {
 	"from": "string(default=%s)" % langs.defaultFrom.code,
 	"into": "string(default=%s)" % langs.defaultInto.code,
 	"autoswap": "boolean(default=false)",
 	"copytoclip": "boolean(default=false)",
 	"username": 'string(default="")',
-	"password": "string(default=%s)" % secrets[_serviceName]._password,
+	"password": "string(default=%s)" % secrets[serviceName]._password,
 	"mirror": "boolean(default=false)"
 }
-ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class ServiceTranslator(Translator):
@@ -56,47 +50,20 @@ class ServiceTranslator(Translator):
 
 	# The list of getters defining parameters for working with the dictionary
 	uiLang = lambda self: self._langTo or langs.locale
-	token = lambda self: secrets[_serviceName].decode(config.conf[_addonName][_serviceName]['password'])
-	mirror = lambda self: config.conf[_addonName][_serviceName]['mirror']
 
 	# Define class properties
 	uiLang = property(uiLang)
-	token = property(token)
-	mirror = property(mirror)
 
 	def run(self):
 		"""Query the remote dictionary and save the processed response.
 		Should run in a separate thread to avoid blocking.
 		"""
-		headers = {
-			'User-Agent': 'Mozilla 5.0'}
-		directUrl = 'https://dictionary.yandex.net'
-		mirrorUrl = 'https://info.alwaysdata.net'
-		servers = [directUrl, mirrorUrl]
-		if self.mirror:
-			servers.reverse()
-		lang = '%s-%s' % (self.langFrom, self.langTo)
-		urlTemplate = "{server}/api/v1/dicservice.json/lookup?{key}lang={lang}&text={text}{ui}"
-		for server in servers:
-			url = urlTemplate.format(server=server, lang=lang,
-				text=urlencode(self.text),
-				key = 'key=%s&' % self.token or '',
-				ui = '&ui=%s' % self.uiLang or '')
-			rq = Request(url, method='GET', headers=headers)
-			try:
-				resp = urlopen(rq, timeout=8)
-			except Exception as e:
-				log.error("%s, %s", str(e), server)
-				self._html = 'Error: %s [%s]' % (str(e), server)
-				continue
-			if resp.status!=200:
-				self._html = 'Error: incorrect response code %d from the server %s' % (resp.status, server)
-				continue
-			parser = Parser(loads(resp.read().decode()))
-			html = parser.to_html()
-			self._html = htmlTemplate.format(body=html) if html else html
-			self._plaintext = parser.to_text()
-			return
+		resp = Yapi(text=self.text, langFrom=self.langFrom, langTo=self.langTo, uiLang=self.uiLang).lookup()
+		parser = Parser(resp)
+		html = parser.to_html()
+		self._html = htmlTemplate.format(body=html) if html else html
+		self._plaintext = parser.to_text()
+		return
 
 
 class Parser(object):
@@ -132,12 +99,15 @@ class Parser(object):
 			return " (%s)" % ', '.join(attrs)
 		return ''
 
-	def to_html(self):
-		"""Convert data received from a remote dictionary to HTML format."""
+	def to_html(self) -> str:
+		"""Convert data received from a remote dictionary to HTML format.
+		@return: converted to HTML deserialized response from server
+		@rtype: str
+		"""
 		if not isinstance(self.resp, dict): # incorrect response
 			return ''
-		if self.resp.get('message', None): # Error message
-			return '<h1>%s</h1>' % self.resp['message']
+		if self.resp.get('error', ''): # Error message
+			return '<h1>%s</h1>' % self.resp['error']
 		html = ''
 		for key in ['def', 'tr', 'mean', 'syn', 'ex']:
 			if key in self.resp:

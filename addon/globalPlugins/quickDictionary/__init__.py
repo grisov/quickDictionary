@@ -432,7 +432,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				pairs.append((self.target, self.source))
 		for lFrom, lInto in pairs:
 			translator = translateWithCaching(lFrom, lInto, text, active,
-				hash(config.conf[_addonName][serviceName]['username'] + config.conf[_addonName][serviceName]['password']))
+				hash(config.conf[_addonName][serviceName]['username'] + config.conf[_addonName][serviceName]['password']),
+				hash(config.conf[_addonName][serviceName].get('source', '')))
 			#cache_state = translateWithCaching.cache_info() # - to check the current status of the queries cache
 			if translator.plaintext:
 				break

@@ -8,7 +8,7 @@
 import os
 import ssl
 import base64
-from urllib import request
+from urllib.request import Request, urlopen
 from urllib.parse import quote as urlencode
 from json import loads
 import config
@@ -17,7 +17,7 @@ from ..service import secrets
 
 ssl._create_default_https_context = ssl._create_unverified_context
 serviceName = os.path.basename(os.path.dirname(__file__))
-h = {} # Temporary object for store statistics
+stat = {} # Object for store statistics
 
 
 class Lapi(object):
@@ -92,9 +92,9 @@ class Lapi(object):
 		@return: deserialized response from the online dictionary
 		@rtype: dict
 		"""
-		response = {}
+		response, resp = {}, None
 		url = self._url + query
-		rq = request.Request(url)
+		rq = Request(url)
 		for name, value in self._headers.items():
 			rq.add_header(name, value)
 		base64string = base64.b64encode(bytes('%s:%s' % (
@@ -103,20 +103,23 @@ class Lapi(object):
 			), 'ascii'))
 		rq.add_header("Authorization", "Basic %s" % base64string.decode('utf-8'))
 		try:
-			resp = request.urlopen(rq, timeout=8)
+			resp = urlopen(rq, timeout=8)
 		except Exception as e:
 			# e.getcode()==429 -> "To date, the number of allowed queries to the dictionary is exhausted!"
-			response['error'] = str(e)
+			response['error'] = "HTTP error: %s" % str(e)
 			return response
-		h['limit'] = resp.getheader('X-RateLimit-DailyLimit')
-		h['remain'] = resp.getheader('X-RateLimit-DailyLimit-Remaining')
-		#h['date'] = datefstr(resp.getheader('date'))
-		#h['tomiddle'] = remains(h['date'])
-		if resp.getcode()==200:
-			text = resp.read().decode(encoding='utf-8', errors='ignore')
-			response = loads(text)
-		else:
-			response['error'] = "Response code: %d" % resp.getcode()
+		if resp:
+			stat['limit'] = resp.getheader('X-RateLimit-DailyLimit')
+			stat['remain'] = resp.getheader('X-RateLimit-DailyLimit-Remaining')
+			#stat['date'] = datefstr(resp.getheader('date'))
+			if resp.getcode()==200:
+				text = resp.read().decode(encoding='utf-8', errors='ignore')
+				try:
+					response = loads(text)
+				except Exception as e:
+					response['error'] = "JSON error: %s" % str(e)
+			else:
+				response['error'] = "Response code: %d" % resp.getcode()
 		return response
 
 	def search(self) -> dict:

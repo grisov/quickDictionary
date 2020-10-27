@@ -31,7 +31,7 @@ from .synthesizers import profiles
 
 
 @lru_cache(maxsize=100)
-def translateWithCaching(langFrom: str, langInto: str, text: str, service_id:int, credentials:int):
+def translateWithCaching(langFrom: str, langInto: str, text: str, service_id:int, credentials:int, others:int):
 	"""Call the request procedure to the remote server on a separate thread.
 	Wait for the request to complete and return a prepared response.
 	All function values are cached to reduce the number of requests to the server.
@@ -46,6 +46,8 @@ def translateWithCaching(langFrom: str, langInto: str, text: str, service_id:int
 	@type service_id: int
 	@param credentials: hash of credentials used to access the online service
 	@type credentials: int, hash(username + password)
+		@param others: hash of other parameters to be considered when caching
+		@type others: int
 	@return: object containing the prepared response from the remote dictionary
 	@rtype: <service>.dictionary.Translator
 	"""

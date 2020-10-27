@@ -7,7 +7,6 @@
 
 import os
 import config
-from logHandler import log
 from .. import _addonName
 from ..service import Language, Languages, secrets
 from .api import Lapi, serviceName
@@ -28,21 +27,38 @@ class ServiceLanguages(Languages):
 		self._all = []
 
 	@property
-	def sources(self):
+	def sources(self) -> list:
+		"""List of source dictionary names available in the online service.
+		@return: list of source dictionaries
+		@rtype: list of str
+		"""
 		return list(self._langs.get('resources', []))
 
 	@property
-	def source(self):
+	def source(self) -> str:
+		"""Return the name of the currently selected source dictionary.
+		@return: name of the selected source dictionary
+		@rtype: str
+		"""
 		return config.conf.get(_addonName, {}).get(serviceName, {}).get('source') or self.defaultSource
 
 	@source.setter
-	def source(self, source):
+	def source(self, source:str):
+		"""Set the name of the source dictionary as selected for translations.
+		@param source: name of the source dictionary
+		@type source: str
+		"""
 		if source in self.sources:
 			config.conf[_addonName][serviceName]['source'] = source
 
 	@property
-	def defaultSource(self):
-		return next(iter(self.sources), 'password')
+	def defaultSource(self) -> str:
+		"""Return the default source dictionary name required for service initialization.
+		@return: name of source dictionary
+		@rtype: str
+		"""
+		favorite = 'password'
+		return favorite if favorite in self.sources else next(iter(self.sources), 'global')
 
 	def update(self) -> bool:
 		"""Get a list of available language pairs from a remote server and save them in an external file.
@@ -100,7 +116,6 @@ class ServiceLanguages(Languages):
 		@rtype: str
 		"""
 		return self.locale if self.locale.code in self._langs['resources'][self.defaultSource]['target_languages'] else Language(next(iter(self._langs['resources'][self.defaultSource]['target_languages']), ''))
-		return self.locale if next(filter(lambda l: l.code==self.locale.code, self.intoList()), None) else next(self.intoList())
 
 	@property
 	def all(self) -> list:

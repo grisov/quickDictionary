@@ -6,15 +6,9 @@
 # Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 import os
-import json
-import config
-import ssl
-from urllib.request import Request, urlopen
-from logHandler import log
 from .. import _addonName
 from ..service import Language, Languages, secrets
-
-ssl._create_default_https_context = ssl._create_unverified_context
+from .api import serviceName, Yapi
 
 
 class ServiceLanguages(Languages):
@@ -38,29 +32,7 @@ class ServiceLanguages(Languages):
 		@rtype: bool
 		"""
 		self.updated = False
-		langs = []
-		headers = {
-			'User-Agent': 'Mozilla 5.0'}
-		directUrl = 'https://dictionary.yandex.net'
-		mirrorUrl = 'https://info.alwaysdata.net'
-		servers = [directUrl, mirrorUrl]
-		_serviceName = os.path.basename(os.path.dirname(__file__))
-		if config.conf[_addonName][_serviceName]['mirror']:
-			servers.reverse()
-		urlTemplate = "{server}/api/v1/dicservice.json/getLangs?key={key}"
-		for server in servers:
-			url = urlTemplate.format(server=server, key = secrets[_serviceName].decode(config.conf[_addonName][_serviceName]['password']))
-			rq = Request(url, method='GET', headers=headers)
-			try:
-				resp = urlopen(rq, timeout=8)
-			except Exception as e:
-				log.exception(e)
-				continue
-			if resp.status!=200:
-				log.error("Incorrect response code %d from the server %s", resp.status, server)
-				continue
-			break
-		langs = json.loads(resp.read().decode())
+		langs = Yapi().languages()
 		if len(langs)>10:
 			self.updated = self.save(langs)
 		return self.updated

@@ -15,7 +15,7 @@ from importlib import import_module
 def discover_services() -> None:
 	"""Discover and import all valid services."""
 	matches = []
-	dir = 'dictionaries'
+	dir = 'services'
 	dir_path = os.path.join(os.path.dirname(__file__), dir)
 	filenames = [file.name for file in os.scandir(dir_path) if file.is_file()]
 	for filename in fnmatch.filter(filenames, '*.py'):

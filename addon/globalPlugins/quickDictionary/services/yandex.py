@@ -26,7 +26,7 @@ class YandexDictionary(DictionaryService):
 		@return: service name
 		@rtype: str
 		"""
-		return import_module('.dictionary', package=PACKAGE)._serviceName
+		return import_module('.api', package=PACKAGE).serviceName
 
 	@property
 	def summary(self) -> str:
