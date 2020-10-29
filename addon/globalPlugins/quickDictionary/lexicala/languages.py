@@ -12,6 +12,28 @@ from ..service import Language, Languages, secrets
 from .api import Lapi, serviceName
 
 
+class Language(Language):
+	"""Overriding a class due to a non-compliance of the some language codes with the ISO standard."""
+
+	def __init__(self, *args, **kwargs):
+		"""Language initialization by its code."""
+		super(Language, self).__init__(*args, **kwargs)
+
+	@property
+	def name(self) -> str:
+		"""Full language name.
+		@return: language name
+		@rtype: str
+		"""
+		code = {	# a detailed list of used languages can be found in the <languages.json> file
+			'br': 'pt_br',	# Brazilian Portuguese
+			'da': 'fr_ca',	# Canadian French
+			'dk': 'da',	# Danish
+			'tw': 'zh_tw',	# Traditional Chinese
+			}.get(self.code, self.code)
+		return super(Language, self).getName(code)
+
+
 class ServiceLanguages(Languages):
 	"""Represents a list of languages available in the dictionary service."""
 
@@ -127,7 +149,7 @@ class ServiceLanguages(Languages):
 			for source in self.sources:
 				self._all.extend(self._langs.get('resources', {}).get(source, {}).get('source_languages', []))
 				self._all.extend(self._langs.get('resources', {}).get(source, {}).get('target_languages', []))
-			self._all = list(frozenset(self._all))
+			self._all = [Language(lang) for lang in frozenset(self._all)]
 		return self._all
 
 

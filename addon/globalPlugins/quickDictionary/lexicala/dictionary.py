@@ -33,7 +33,8 @@ confspec = {
 	"username": 'string(default=%s)' % secrets[serviceName]._username,
 	"password": "string(default=%s)" % secrets[serviceName]._password,
 	"morph": "boolean(default=false)",
-	"analyzed": "boolean(default=false)"
+	"analyzed": "boolean(default=false)",
+	"switchsynth": "boolean(default=false)"
 }
 
 

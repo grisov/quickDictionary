@@ -42,7 +42,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		super(GlobalPlugin, self).__init__(*args, **kwargs)
 		confspec = {
 			"active": "integer(default=0,min=0,max=9)",
-			"switchsynth": "boolean(default=true)"
 		}
 		config.conf.spec[_addonName] = confspec
 		for service in services:
@@ -275,6 +274,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message(service.summary)
 		# Translators: Information about the online service
 		ui.message(_("supports {number} languages").format(number=len(service.langs.all)))
+		if config.conf[_addonName][service.name].get('source'):
+			# Translators: The name of the field displayed in the statistics and in the settings panel
+			ui.message("{title} - {source}".format(title=_("s&ource").replace('&', ''), source=config.conf[_addonName][service.name]['source']))
 		if not service.stat:
 			# Translators: Information about the online service
 			ui.message(_("There is no dictionary queries"))
@@ -321,7 +323,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.script_announceLanguages.__doc__,
 			self.script_copyLastResult.__doc__,
 			self.script_updateLanguages.__doc__,
-			self.script_selectService.__doc__]:
+			self.script_selectService.__doc__,
+			self.script_dictionaryStatistics.__doc__]:
 			lines.append("<li>%s</li>" % method)
 		lines += ["</ul>", "<br>",
 			# Translators: Message in the add-on short help

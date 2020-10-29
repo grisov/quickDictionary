@@ -30,7 +30,7 @@ from .locator import services
 from .synthesizers import profiles
 
 
-@lru_cache(maxsize=100)
+@lru_cache(maxsize=64)
 def translateWithCaching(langFrom: str, langInto: str, text: str, service_id:int, credentials:int, others:int):
 	"""Call the request procedure to the remote server on a separate thread.
 	Wait for the request to complete and return a prepared response.

@@ -15,6 +15,7 @@ except addonHandler.AddonError:
 import gui
 import wx
 import config
+from tones import beep
 from .. import _addonName
 from ..service import secrets
 from .api import serviceName
@@ -135,12 +136,14 @@ class ServicePanel(wx.Panel):
 			self._tokenInput = self._tokenInputText
 			# Translators: Button label that show or hide password
 			self._tokenButton.SetLabel(_("Hide"))
+			beep(400, 5)
 		else:
 			self._tokenInputStars.SetValue(self._tokenInputText.GetValue())
 			self._tokenInputStars.SetFocus()
 			self._tokenInput = self._tokenInputStars
 			# Translators: Button label that show or hide password
 			self._tokenButton.SetLabel(_("Show"))
+			beep(300, 5)
 		self._tokenInputText.GetParent().Layout()
 
 	def save(self) -> None:

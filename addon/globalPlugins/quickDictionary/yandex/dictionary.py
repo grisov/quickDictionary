@@ -30,7 +30,8 @@ confspec = {
 	"copytoclip": "boolean(default=false)",
 	"username": 'string(default="")',
 	"password": "string(default=%s)" % secrets[serviceName]._password,
-	"mirror": "boolean(default=false)"
+	"mirror": "boolean(default=false)",
+	"switchsynth": "boolean(default=false)"
 }
 
 

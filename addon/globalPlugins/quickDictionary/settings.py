@@ -104,7 +104,7 @@ class ServicePanel(wx.Panel):
 		# Translators: A setting in addon settings dialog.
 		self._switchSynthChk = wx.CheckBox(self, label=_("Switch between &voice synthesizers for selected languages"))
 		sizer.Add(self._switchSynthChk)
-		self._switchSynthChk.SetValue(config.conf[_addonName]['switchsynth'])
+		self._switchSynthChk.SetValue(config.conf[_addonName][services[self._active].name]['switchsynth'])
 		self._switchSynthChk.Bind(wx.EVT_CHECKBOX, self.onSwitchSynth)
 
 		if self._switchSynthChk.GetValue():
@@ -126,13 +126,13 @@ class ServicePanel(wx.Panel):
 		else:
 			self._synthPanel = wx.StaticText(parent=self)
 		self._sizer.Fit(self)
-		config.conf[_addonName]['switchsynth'] = self._switchSynthChk.GetValue()
+		self._synthPanel.GetParent().Layout()
 
 	def save(self) -> None:
 		"""Save the state of the panel settings."""
 		self._servPanel.save()
-		config.conf[_addonName]['switchsynth'] = self._switchSynthChk.GetValue()
-		if config.conf[_addonName]['switchsynth']:
+		config.conf[_addonName][services[self._active].name]['switchsynth'] = self._switchSynthChk.GetValue()
+		if self._switchSynthChk.GetValue():
 			self._synthPanel.save()
 
 

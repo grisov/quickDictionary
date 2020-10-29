@@ -89,16 +89,28 @@ class Language(object):
 	@property
 	def name(self) -> str:
 		"""Full language name.
-		If it is not possible to determine, a short language code is returned.
 		@return: language name
 		@rtype: str
 		"""
-		name = getLanguageDescription(self._lang)
+		return self.getName()
+
+	def getName(self, code:str='') -> str:
+		"""Full language name.
+		If it is not possible to determine, a short language code is returned.
+		It is designed as a separate method for redefining it in child classes of services
+		because some services use language codes that do not comply with the ISO standard.
+		@param code: language code if not specified, the value of the internal field of the class is taken
+		@type code: str
+		@return: language name
+		@rtype: str
+		"""
+		lang = code or self._lang
+		name = getLanguageDescription(lang)
 		if self._lang=='':
 			name = "- %s -" % name
 		if not name:
-			name = self._names.get(self._lang, None)
-		return name or self._lang
+			name = self._names.get(lang)
+		return name or lang
 
 
 class Languages(object):
