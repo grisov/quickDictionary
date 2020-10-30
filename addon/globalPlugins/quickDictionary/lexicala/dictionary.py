@@ -67,6 +67,8 @@ class ServiceTranslator(Translator):
 		Should run in a separate thread to avoid blocking.
 		"""
 		resp = Lapi(text=self.text, lang=self.langFrom, source=self.source, morph=self.morph, analyzed=self.analyzed).search()
+		if resp.get('error'):
+			self._error = True
 		parser = Parser(response=resp, target=self.langTo)
 		html = parser.to_html()
 		self._html = htmlTemplate.format(body=html) if html else html

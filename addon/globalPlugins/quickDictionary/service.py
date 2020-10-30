@@ -248,6 +248,7 @@ class Translator(Thread):
 		self._text = text
 		self._html = ''
 		self._plaintext = ''
+		self._error = False
 
 	# The list of getters defining parameters for working with the dictionary
 	langFrom = lambda self: self._langFrom
@@ -255,6 +256,7 @@ class Translator(Thread):
 	text = lambda self: self._text
 	html = lambda self: self._html
 	plaintext = lambda self: self._plaintext
+	error = lambda self: self._error
 
 	# Define class properties
 	langFrom = property(langFrom)
@@ -262,6 +264,7 @@ class Translator(Thread):
 	text = property(text)
 	html = property(html)
 	plaintext = property(plaintext)
+	error = property(error)
 
 	def _stop(self, *args, **kwargs):
 		"""Executed when a process terminates in a thread."""

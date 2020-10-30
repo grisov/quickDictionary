@@ -474,6 +474,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			translator = translateWithCaching(lFrom, lInto, text, active,
 				hash(config.conf[_addonName][serviceName]['username'] + config.conf[_addonName][serviceName]['password']),
 				hash(config.conf[_addonName][serviceName].get('source', '')))
+			if translator.error:
+				translateWithCaching.cache_clear()	# reset cache when HTTP errors occur
 			self._cacheInfo = translateWithCaching.cache_info() # - to check the current status of the queries cache
 			if translator.plaintext:
 				break

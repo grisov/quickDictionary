@@ -60,6 +60,8 @@ class ServiceTranslator(Translator):
 		Should run in a separate thread to avoid blocking.
 		"""
 		resp = Yapi(text=self.text, langFrom=self.langFrom, langTo=self.langTo, uiLang=self.uiLang).lookup()
+		if resp.get('error'):
+			self._error = True
 		parser = Parser(resp)
 		html = parser.to_html()
 		self._html = htmlTemplate.format(body=html) if html else html
