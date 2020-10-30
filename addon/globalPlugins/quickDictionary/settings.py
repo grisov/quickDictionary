@@ -107,47 +107,22 @@ class ServicePanel(wx.Panel):
 		self._switchSynthChk.SetValue(config.conf[_addonName][services[self._active].name]['switchsynth'])
 		self._switchSynthChk.Bind(wx.EVT_CHECKBOX, self.onSwitchSynth)
 
-		if self._switchSynthChk.GetValue():
-			self._synthPanel = AssociateSynthPanel(self._active, parent=self)
-		else:
-			self._synthPanel = wx.StaticText(parent=self)
+		# Display a list of voice synthesizers and the choice of languages with which they are associated
+		self._synthPanel = self.synthsGrid()
 		sizer.Add(self._synthPanel)
+		# Blank sizer, which will be dynamically replaced by the _synthPanel block
+		self._blankSizer = self.blankPanel()
+		sizer.Add(self._blankSizer)
+		sizer.Show(self._blankSizer, show=not self._switchSynthChk.GetValue())
+		sizer.Show(self._synthPanel, show=self._switchSynthChk.GetValue())
 		sizer.Fit(self)
 
-	def onSwitchSynth(self, event) -> None:
-		"""Executed when enable or disable the check box for switching voice synthesizers to selected languages.
-		@param event: event binder object that specifies the check or uncheck the wx.CheckBox
-		@type event: wx.core.PyEventBinder
+	def synthsGrid(self) -> wx._core.BoxSizer:
+		"""Build a panel with a list of profiles of voice synthesizers and associated languages.
+		@return: formed BoxSizer object
+		@rtype: wx._core.BoxSizer
 		"""
-		event.Skip()
-		self._synthPanel.Destroy()
-		if self._switchSynthChk.GetValue():
-			self._synthPanel = AssociateSynthPanel(self._active, parent=self)
-		else:
-			self._synthPanel = wx.StaticText(parent=self)
-		self._sizer.Fit(self)
-		#self._synthPanel.GetParent().Layout()
-
-	def save(self) -> None:
-		"""Save the state of the panel settings."""
-		self._servPanel.save()
-		config.conf[_addonName][services[self._active].name]['switchsynth'] = self._switchSynthChk.GetValue()
-		if self._switchSynthChk.GetValue():
-			self._synthPanel.save()
-
-
-class AssociateSynthPanel(wx.Panel):
-	"""Panel of association of voice synthesizers with selected languages."""
-
-	def __init__(self, active: int, parent=None, id=wx.ID_ANY):
-		"""Create a settings block to associate voice synthesizer profiles with languages.
-		@param active: index of the selected service
-		@type active: int
-		"""
-		super(AssociateSynthPanel, self).__init__(parent, id)
-		self._active = active
 		sizer = wx.BoxSizer(wx.VERTICAL)
-		self.SetSizer(sizer)
 		# Output of the list of synthesizers for language binding
 		synthSizer = wx.GridSizer(cols=0, vgap=1, hgap=3)
 		self._synthLangsChoice = {}
@@ -179,6 +154,28 @@ class AssociateSynthPanel(wx.Panel):
 				item = self._synthLangsChoice[slot].FindString(langs[''].name)
 			self._synthLangsChoice[slot].Select(item)
 			self._synthLangsChoice[slot].Bind(wx.EVT_CHOICE, lambda evt, sl=slot: self.onSelectSynthLang(evt, sl))
+		return sizer
+
+	def blankPanel(self) -> wx._core.BoxSizer:
+		"""Empty panel required for correct dynamic display of the hidden panel with the list of synthesizers.
+		@return: BoxSizer is filled with blank lines equal to the number of voice synthesizer profiles
+		@rtype: wx._core.BoxSizer
+		"""
+		blankSizer = wx.BoxSizer(wx.VERTICAL)
+		blankLabel = wx.StaticText(self, label="\n"*len(profiles))
+		blankSizer.Add(blankLabel)
+		return blankSizer
+
+	def onSwitchSynth(self, event) -> None:
+		"""Executed when enable or disable the check box for switching voice synthesizers to selected languages.
+		@param event: event binder object that specifies the check or uncheck the wx.CheckBox
+		@type event: wx.core.PyEventBinder
+		"""
+		event.Skip()
+		self._sizer.Show(self._blankSizer, show=not self._switchSynthChk.GetValue())
+		self._sizer.Show(self._synthPanel, show=self._switchSynthChk.GetValue())
+		self._sizer.Fit(self)
+		self._sizer.Layout()
 
 	def widgetMakerExclude(self, widget, slot: int) -> None:
 		"""Creating a widget based on the sequence of Language classes to display it in a wx.Choice object.
@@ -214,6 +211,9 @@ class AssociateSynthPanel(wx.Panel):
 
 	def save(self) -> None:
 		"""Save the state of the panel settings."""
-		for slot, profile in profiles:
-			profiles[slot].lang = self._choices[slot]
-		profiles.save()
+		self._servPanel.save()
+		config.conf[_addonName][services[self._active].name]['switchsynth'] = self._switchSynthChk.GetValue()
+		if self._switchSynthChk.GetValue():
+			for slot, profile in profiles:
+				profiles[slot].lang = self._choices[slot]
+			profiles.save()
