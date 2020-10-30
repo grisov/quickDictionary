@@ -152,6 +152,15 @@ class ServiceLanguages(Languages):
 			self._all = [Language(lang) for lang in frozenset(self._all)]
 		return self._all
 
+	def __getitem__(self, lang: str) -> Language:
+		"""Returns the Language object for the given language code.
+		@param lang: two-character language code
+		@type lang: str
+		@return: the Language object for the given code
+		@rtype: Language
+		"""
+		return Language(lang)
+
 
 # An instance of the Languages object for use in the add-on
 langs = ServiceLanguages()

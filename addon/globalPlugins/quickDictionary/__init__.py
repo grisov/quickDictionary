@@ -394,7 +394,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		langs = services[config.conf[_addonName]['active']].langs
 		for slot, profile in profiles:
 			if profile.name:
-				ui.message("%d: %s" % (slot, ', '.join([profile.title, langs[profile.lang].name])))
+				lang = langs[profile.lang] if langs[profile.lang] in langs else langs['']
+				ui.message("%d: %s" % (slot, ', '.join([profile.title, lang.name])))
 
 	# Translators: Method description is displayed in the NVDA gestures dialog
 	@script(description="Del - %s" % _("delete the selected voice synthesizer profile"))

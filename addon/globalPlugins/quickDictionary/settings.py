@@ -126,7 +126,7 @@ class ServicePanel(wx.Panel):
 		else:
 			self._synthPanel = wx.StaticText(parent=self)
 		self._sizer.Fit(self)
-		self._synthPanel.GetParent().Layout()
+		#self._synthPanel.GetParent().Layout()
 
 	def save(self) -> None:
 		"""Save the state of the panel settings."""

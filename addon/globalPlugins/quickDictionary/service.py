@@ -159,6 +159,15 @@ class Languages(object):
 		code = getdefaultlocale()[0].split('_')[0]
 		return Language(code)
 
+	def __contains__(self, lang:Language) -> bool:
+		"""Implementation of checking the presence of an Language in the current collection.
+		@param lang: language is represented as a Language object
+		@type lang: Language
+		@return: whether the specified language is available in the current list
+		@rtype: bool
+		"""
+		return bool(next(filter(lambda l: l.code==lang.code, self.all), None))
+
 	def __getitem__(self, lang: str) -> Language:
 		"""Returns the Language object for the given language code.
 		@param lang: two-character language code
