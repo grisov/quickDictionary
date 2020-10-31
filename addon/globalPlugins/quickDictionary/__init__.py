@@ -276,7 +276,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message(_("supports {number} languages").format(number=len(service.langs.all)))
 		if config.conf[_addonName][service.name].get('source'):
 			# Translators: The name of the field displayed in the statistics and in the settings panel
-			ui.message("{title} - {source}".format(title=_("s&ource").replace('&', ''), source=config.conf[_addonName][service.name]['source']))
+			ui.message("{title} - {source}".format(title=_("&Dictionary:").replace('&', ''), source=config.conf[_addonName][service.name]['source']))
 		if not service.stat:
 			# Translators: Information about the online service
 			ui.message(_("There is no dictionary queries"))

@@ -264,7 +264,7 @@ msgid "Copy dictionary response to clip&board"
 msgstr "Sözlük yanıtını &panoya kopyala"
 
 #. Translators: A setting in addon settings dialog.
-msgid "Auto-&swap languages"
+msgid "Auto-s&wap languages"
 msgstr "Dilleri otomatik de&ğiştir"
 
 #. Translators: A setting in addon settings dialog.

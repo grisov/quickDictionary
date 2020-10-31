@@ -15,7 +15,6 @@ except addonHandler.AddonError:
 import gui
 import wx
 import config
-from tones import beep
 from .. import _addonName
 from ..service import secrets
 from .api import serviceName
@@ -31,6 +30,17 @@ class ServicePanel(wx.Panel):
 		"""Populate the service panel with settings controls."""
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		self.SetSizer(sizer)
+		sourceSizer = wx.BoxSizer(wx.HORIZONTAL)
+		# Translators: A setting in addon settings dialog.
+		sourceLabel = wx.StaticText(self, label=_("&Dictionary:"))
+		sourceSizer.Add(sourceLabel)
+		self._sourceChoice = wx.Choice(self, choices=langs.sources, style=wx.CB_SORT)
+		sourceSizer.Add(self._sourceChoice)
+		sizer.Add(sourceSizer)
+		currentSource = self._sourceChoice.FindString(config.conf[_addonName][serviceName]['source'])
+		self._sourceChoice.Select(currentSource)
+		self._sourceChoice.Bind(wx.EVT_CHOICE, self.onSelectSource)
+
 		# Translators: Help message for a dialog.
 		helpLabel = wx.StaticText(self, label=_("Select dictionary source and target language:"), style=wx.ALIGN_LEFT)
 		helpLabel.Wrap(helpLabel.GetSize()[0])
@@ -50,14 +60,22 @@ class ServicePanel(wx.Panel):
 		self._intoChoice = wx.Choice(self, choices=[], style=wx.CB_SORT)
 		intoSizer.Add(self._intoChoice)
 		languageSizer.Add(intoSizer)
-		self.widgetMaker(self._fromChoice, langs.fromList())
-		self._fromChoice.Bind(wx.EVT_CHOICE, self.onSelectFrom)
-		self.widgetMaker(self._intoChoice, langs.intoList(config.conf[_addonName][serviceName]['from']))
+		self.widgetMaker(self._fromChoice, langs.fromList(source=config.conf[_addonName][serviceName]['source']))
+		self.widgetMaker(self._intoChoice, langs.intoList(source=config.conf[_addonName][serviceName]['source']))
 		sizer.Add(languageSizer, flag=wx.EXPAND)
 		langFrom = self._fromChoice.FindString(langs[config.conf[_addonName][serviceName]['from']].name)
 		langTo = self._intoChoice.FindString(langs[config.conf[_addonName][serviceName]['into']].name)
 		self._fromChoice.Select(langFrom)
 		self._intoChoice.Select(langTo)
+
+		# Translators: A setting in addon settings dialog.
+		self._morphChk = wx.CheckBox(self, label=_("Search in both headwords and &inflections"))
+		self._morphChk.SetValue(config.conf[_addonName][serviceName]['morph'])
+		sizer.Add(self._morphChk)
+		# Translators: A setting in addon settings dialog.
+		self._analyzedChk = wx.CheckBox(self, label=_("St&rip words to their stem"))
+		self._analyzedChk.SetValue(config.conf[_addonName][serviceName]['analyzed'])
+		sizer.Add(self._analyzedChk)
 		# Translators: A setting in addon settings dialog.
 		self._copyToClipboardChk = wx.CheckBox(self, label=_("Copy dictionary response to clip&board"))
 		self._copyToClipboardChk.SetValue(config.conf[_addonName][serviceName]['copytoclip'])
@@ -66,38 +84,49 @@ class ServicePanel(wx.Panel):
 		self._autoSwapChk = wx.CheckBox(self, label=_("Auto-s&wap languages"))
 		self._autoSwapChk.SetValue(config.conf[_addonName][serviceName]['autoswap'])
 		sizer.Add(self._autoSwapChk)
-		# Translators: A setting in addon settings dialog.
-		self._useMirrorChk = wx.CheckBox(self, label=_("Use &alternative server"))
-		self._useMirrorChk.SetValue(config.conf[_addonName][serviceName]['mirror'])
-		sizer.Add(self._useMirrorChk)
 
-		# Field for input access token and link to registration
+		# Field for input user credentials and link to registration
 		secret = secrets[serviceName]
-		tokenSizer = wx.BoxSizer(wx.HORIZONTAL)
+		authSizer = wx.BoxSizer(wx.HORIZONTAL)
+		userSizer = wx.BoxSizer(wx.HORIZONTAL)
 		# Translators: A setting in addon settings dialog.
-		tokenLabel = wx.StaticText(self, label=_("&Dictionary Access Token:"), style=wx.ALIGN_LEFT)
-		tokenSizer.Add(tokenLabel)
+		nameLabel = wx.StaticText(self, label=_("&Username:"), style=wx.ALIGN_LEFT)
+		userSizer.Add(nameLabel)
+		self._usernameInput = wx.TextCtrl(self, value=secret.decode(config.conf[_addonName][serviceName]['username']), style=wx.TE_LEFT)
+		userSizer.Add(self._usernameInput)
+		authSizer.Add(userSizer)
 		passwordSizer = wx.BoxSizer(wx.HORIZONTAL)
-		self._tokenInputStars = wx.TextCtrl(self, value=secret.decode(config.conf[_addonName][serviceName]['password']), style=wx.TE_LEFT | wx.TE_PASSWORD)
-		passwordSizer.Add(self._tokenInputStars)
-		self._tokenInputText = wx.TextCtrl(self, style=wx.TE_LEFT)
-		self._tokenInputText.Hide()
-		passwordSizer.Add(self._tokenInputText)
-		tokenSizer.Add(passwordSizer)
-		# Translators: Button label that show or hide password
-		self._tokenButton= wx.Button(self, label=_("Show"))
-		tokenSizer.Add(self._tokenButton)
-		self._tokenButton.Bind(wx.EVT_BUTTON, self.onTokenButton)
-		sizer.Add(tokenSizer, flag=wx.EXPAND)
-		self._tokenInput = self._tokenInputStars
-		self._tokenShown = False
+		# Translators: A setting in addon settings dialog.
+		passwordLabel = wx.StaticText(self, label=_("&Password:"), style=wx.ALIGN_LEFT)
+		passwordSizer.Add(passwordLabel)
+		self._passwordInput = wx.TextCtrl(self, value=secret.decode(config.conf[_addonName][serviceName]['password']), style=wx.TE_LEFT | wx.TE_PASSWORD)
+		passwordSizer.Add(self._passwordInput)
+		authSizer.Add(passwordSizer)
+		sizer.Add(authSizer)
 
 		# Translators: A setting in addon settings dialog.
 		self._linkHref = wx.adv.HyperlinkCtrl(self, -1, label=_("Register your own access token"), url=secret.url, style=wx.adv.HL_CONTEXTMENU | wx.adv.HL_DEFAULT_STYLE | wx.adv.HL_ALIGN_RIGHT)
 		self._linkHref.Update()
 		sizer.Add(self._linkHref, flag=wx.EXPAND)
-		sizer.Show(self._linkHref, show=self._tokenInput.GetValue()==secret.password)
+		sizer.Show(self._linkHref, show=self._usernameInput.GetValue()==secret.username and self._passwordInput.GetValue()==secret.password)
 		sizer.Fit(self)
+
+	def onSelectSource(self, event):
+		"""Fill in the lists of source and target languages when selecting source dictionary.
+		@param event: event indicating the selection of an item in the wx.Choice object
+		@type event: wx.core.PyEventBinder
+		"""
+		source = event.GetString()
+		self._fromChoice.Clear()
+		self.widgetMaker(self._fromChoice, langs.fromList(source=source))
+		self._intoChoice.Clear()
+		self.widgetMaker(self._intoChoice, langs.intoList(source=source))
+		langFrom = self._fromChoice.FindString(langs[config.conf[_addonName][serviceName]['from']].name)
+		langTo = self._intoChoice.FindString(langs[config.conf[_addonName][serviceName]['into']].name)
+		langFrom = max(0, langFrom)
+		langTo = max(0, langTo)
+		self._fromChoice.Select(langFrom)
+		self._intoChoice.Select(langTo)
 
 	def widgetMaker(self, widget, languages) -> None:
 		"""Creating a widget based on the sequence of Language classes to display it in a wx.Choice object.
@@ -106,53 +135,19 @@ class ServicePanel(wx.Panel):
 		@param languages: list of languages available in the dictionary
 		@type languages: languages.Languages
 		"""
-		# Translators: This displayed by default in the language selection choice list
-		widget.SetLabel(_("-- select language --"))
 		for lang in languages:
 			widget.Append(lang.name, lang)
 
-	def onSelectFrom(self, event) -> None:
-		"""Filling in the list of available destination languages when selecting the source language.
-		@param event: event indicating the selection of an item in the wx.Choice object
-		@type event: wx.core.PyEventBinder
-		"""
-		fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
-		self._intoChoice.Clear()
-		self.widgetMaker(self._intoChoice, langs.intoList(fromLang))
-		intoLang = self._intoChoice.FindString(langs[config.conf[_addonName][serviceName]['into']].name)
-		self._intoChoice.Select(intoLang if intoLang>=0 else 0)
-
-	def onTokenButton(self, event) -> None:
-		"""Toggle TextCtrl fields that show or hide the entered password.
-		@param event: event that occurs when a wx.Button is pressed
-		@type event: wx.core.PyEventBinder
-		"""
-		self._tokenShown = not self._tokenShown
-		self._tokenInputText.Show(self._tokenShown)
-		self._tokenInputStars.Show(not self._tokenShown)
-		if self._tokenShown:
-			self._tokenInputText.SetValue(self._tokenInputStars.GetValue())
-			self._tokenInputText.SetFocus()
-			self._tokenInput = self._tokenInputText
-			# Translators: Button label that show or hide password
-			self._tokenButton.SetLabel(_("Hide"))
-			beep(400, 5)
-		else:
-			self._tokenInputStars.SetValue(self._tokenInputText.GetValue())
-			self._tokenInputStars.SetFocus()
-			self._tokenInput = self._tokenInputStars
-			# Translators: Button label that show or hide password
-			self._tokenButton.SetLabel(_("Show"))
-			beep(300, 5)
-		self._tokenInputText.GetParent().Layout()
-
 	def save(self) -> None:
 		"""Save the state of the service panel settings."""
+		config.conf[_addonName][serviceName]['source'] = self._sourceChoice.GetString(self._sourceChoice.GetSelection())
 		fromLang = self._fromChoice.GetClientData(self._fromChoice.GetSelection()).code
 		intoLang = self._intoChoice.GetClientData(self._intoChoice.GetSelection()).code
 		config.conf[_addonName][serviceName]['from'] = fromLang
 		config.conf[_addonName][serviceName]['into'] = intoLang
+		config.conf[_addonName][serviceName]['morph'] = self._morphChk.GetValue()
+		config.conf[_addonName][serviceName]['analyzed'] = self._analyzedChk.GetValue()
 		config.conf[_addonName][serviceName]['copytoclip'] = self._copyToClipboardChk.GetValue()
 		config.conf[_addonName][serviceName]['autoswap'] = self._autoSwapChk.GetValue()
-		config.conf[_addonName][serviceName]['mirror'] = self._useMirrorChk.GetValue()
-		config.conf[_addonName][serviceName]['password'] = secrets[serviceName].encode(self._tokenInput.GetValue() or secrets[serviceName].password)
+		config.conf[_addonName][serviceName]['username'] = secrets[serviceName].encode(self._usernameInput.GetValue() or secrets[serviceName].username)
+		config.conf[_addonName][serviceName]['password'] = secrets[serviceName].encode(self._passwordInput.GetValue() or secrets[serviceName].password)

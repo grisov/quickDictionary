@@ -94,22 +94,26 @@ class ServiceLanguages(Languages):
 			self.updated = self.save(langs)
 		return self.updated
 
-	def fromList(self) -> list:
+	def fromList(self, source:str='') -> list:
 		"""Sequence of available source languages.
+		@param source: source dictionary name, if not specified, the current is used
+		@type source: str
 		@return: sequence of available source languages
 		@rtype: list of Language objects
 		"""
-		for lang in self._langs.get('resources', {}).get(self.source, {}).get('source_languages', []):
+		source = source or self.source
+		for lang in self._langs.get('resources', {}).get(source, {}).get('source_languages', []):
 			yield Language(lang)
 
-	def intoList(self, lang: str='') -> list:
+	def intoList(self, source:str='') -> list:
 		"""Sequence of available target languages.
-		@param ***lang: source language code
-		@type lang: str
+		@param source: source dictionary name, if not specified, the current is used
+		@type source: str
 		@return: sequence of available target languages
 		@rtype: list of Language objects
 		"""
-		for lang in self._langs.get('resources', {}).get(self.source, {}).get('target_languages', []):
+		source = source or self.source
+		for lang in self._langs.get('resources', {}).get(source, {}).get('target_languages', []):
 			yield Language(lang)
 
 	def isAvailable(self, source: str, target: str) -> bool:

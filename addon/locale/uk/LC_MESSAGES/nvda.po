@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 'quickDictionary' '1.2'\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
 "POT-Creation-Date: 2020-10-09 18:47+0300\n"
-"PO-Revision-Date: 2020-10-26 17:47+0200\n"
+"PO-Revision-Date: 2020-10-31 15:01+0200\n"
 "Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
 "Language-Team: \n"
 "Language: uk_UA\n"
@@ -261,7 +261,7 @@ msgid "Copy dictionary response to clip&board"
 msgstr "Копіювати результат запиту до словника до &буфера обміну"
 
 #. Translators: A setting in addon settings dialog.
-msgid "Auto-&swap languages"
+msgid "Auto-s&wap languages"
 msgstr "Автоматична з&мінювати порядок мов"
 
 #. Translators: A setting in addon settings dialog.
