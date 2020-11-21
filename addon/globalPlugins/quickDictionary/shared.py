@@ -166,7 +166,7 @@ def messageWithLangDetection(msg: dict):
 	if config.conf['speech']['autoLanguageSwitching']:
 		speechSequence.append(LangChangeCommand(msg['lang']))
 	speechSequence.append(msg['text'])
-	if config.conf[_addonName]['switchsynth']:
+	if config.conf[_addonName][services[config.conf[_addonName]['active']].name]['switchsynth']:
 		previous = profiles.getCurrent()
 		speechSequence.append(CallbackCommand(callback=profiles.restorePrevious))
 		speechSequence.append(CallbackCommand(callback=lambda prev=previous: profiles.rememberCurrent(prev)))

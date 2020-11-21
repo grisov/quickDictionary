@@ -391,13 +391,13 @@ class Parser(object):
 
 	def text(self, resp:dict) -> str:
 		"""Get the value of the "text" field.
-		Doc: "text": string
+		Doc: "text": string or list of strings
 		@param resp: branch of the deserialized response from the server
 		@type resp: dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		return resp.get('text', '')
+		return self.strList(resp.get('text', ''))
 
 	def id(self, resp:dict) -> str:
 		"""Get the value of the "id" field.
@@ -667,7 +667,7 @@ class Parser(object):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: <b>{value}</b></p>", _("source dictionary"), resp.get('source', ''))
+		return self.withPrefix("<p><i>{name}</i>: <b>{value}</b></p>", _("&Dictionary:").replace('&', '').replace(':', ''), resp.get('source', ''))
 
 	def error(self, resp:dict) -> str:
 		"""Convert errors received when connecting to the dictionary service into a text string.
