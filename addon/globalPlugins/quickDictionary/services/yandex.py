@@ -1,6 +1,6 @@
 #yandex.py
 # Online dictionary service description
-# A part of NonVisual Desktop Access (NVDA)
+# A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 # Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>

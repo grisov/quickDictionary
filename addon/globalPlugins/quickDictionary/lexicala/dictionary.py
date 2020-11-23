@@ -1,6 +1,6 @@
 #dictionary.py
 # Service summary, configuration scheme and objects for executing translation requests and processing the received answers
-# A part of NonVisual Desktop Access (NVDA)
+# A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 # Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
@@ -32,8 +32,9 @@ confspec = {
 	"copytoclip": "boolean(default=false)",
 	"username": 'string(default=%s)' % secrets[serviceName]._username,
 	"password": "string(default=%s)" % secrets[serviceName]._password,
-	"morph": "boolean(default=false)",
-	"analyzed": "boolean(default=false)",
+	"morph": "boolean(default=false)",	# Strip words to their stem
+	"analyzed": "boolean(default=false)",	# Searching both headwords and inflections
+	"all": "boolean(default=false)",	# Show all available translations
 	"switchsynth": "boolean(default=false)"
 }
 
@@ -272,7 +273,7 @@ class Parser(object):
 		else:
 			ifs = self.withPrefix("<span>{value}</span>", '', self.inflection(rsp))
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i> {value}</p>", _("inflections"), ifs)
+		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("inflections"), ifs)
 
 	def inflection(self, resp:dict) -> str:
 		"""Analysis of the "inflection" object.
@@ -320,7 +321,22 @@ class Parser(object):
 		@rtype: str
 		"""
 		rsp = resp.get('translations')
-		if not rsp or not rsp.get(self._langInto) or len(rsp.get(self._langInto))==0:
+		if not rsp:
+			return ''
+		if config.conf[_addonName][serviceName]['all']:
+			trs = []
+			for lng,cnt in rsp.items():
+				lng = langs[lng].name
+				if isinstance(cnt, list):
+					tr = [self.withPrefix("{value}", '', self.translation(r)) for r in cnt]
+					tr = filter(lambda s: s!='', tr)
+					tr = ', '.join(tr)
+				else:
+					tr = self.withPrefix("{value}", '', self.translation(cnt))
+				trs.append(self.withPrefix("{name} - <b>{value}</b>", lng, tr))
+			trs = ',<br>\n'.join(sorted(trs, key=lambda k: k.lower()))
+			return self.withPrefix("\n<p>{value}.</p>", '', trs)
+		if not rsp.get(self._langInto) or len(rsp.get(self._langInto))==0:
 			return ''
 		rsp = rsp[self._langInto]
 		trs = ''
@@ -695,7 +711,7 @@ class Parser(object):
 			self.tense(resp),
 			self.homograph_number(resp),
 			self.inflections(resp),
-			self.alternative_scripts(resp),
+			#self.alternative_scripts(resp),
 			self.collocate(resp),
 			self.semantic_category(resp),
 			self.semantic_subcategory(resp),

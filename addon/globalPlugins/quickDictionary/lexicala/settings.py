@@ -1,6 +1,6 @@
 #settings.py
 # Contains a description of the settings panel of a specific service
-# A part of NonVisual Desktop Access (NVDA)
+# A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 # Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
@@ -77,6 +77,10 @@ class ServicePanel(wx.Panel):
 		self._analyzedChk.SetValue(config.conf[_addonName][serviceName]['analyzed'])
 		sizer.Add(self._analyzedChk)
 		# Translators: A setting in addon settings dialog.
+		self._allChk = wx.CheckBox(self, label=_("Show a&ll available translations"))
+		self._allChk.SetValue(config.conf[_addonName][serviceName]['all'])
+		sizer.Add(self._allChk)
+		# Translators: A setting in addon settings dialog.
 		self._copyToClipboardChk = wx.CheckBox(self, label=_("Copy dictionary response to clip&board"))
 		self._copyToClipboardChk.SetValue(config.conf[_addonName][serviceName]['copytoclip'])
 		sizer.Add(self._copyToClipboardChk)
@@ -147,6 +151,7 @@ class ServicePanel(wx.Panel):
 		config.conf[_addonName][serviceName]['into'] = intoLang
 		config.conf[_addonName][serviceName]['morph'] = self._morphChk.GetValue()
 		config.conf[_addonName][serviceName]['analyzed'] = self._analyzedChk.GetValue()
+		config.conf[_addonName][serviceName]['all'] = self._allChk.GetValue()
 		config.conf[_addonName][serviceName]['copytoclip'] = self._copyToClipboardChk.GetValue()
 		config.conf[_addonName][serviceName]['autoswap'] = self._autoSwapChk.GetValue()
 		config.conf[_addonName][serviceName]['username'] = secrets[serviceName].encode(self._usernameInput.GetValue() or secrets[serviceName].username)
