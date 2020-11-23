@@ -448,7 +448,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description=_("From F1 to F{endgate} - select online dictionary service").format(endgate=len(services)))
 	def script_selectService(self, gesture):
-		"""
+		"""Select target online service.
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
@@ -490,7 +490,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if isHtml:
 			ui.browseableMessage(translator.html, title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name), isHtml=isHtml)
 		else:
-			if config.conf[_addonName]['switchsynth']:
+			if config.conf[_addonName][serviceName]['switchsynth']:
 				profile = next(filter(lambda x: x.lang==translator.langTo, (p for s,p in profiles)), None)
 				if profile:
 					profiles.rememberCurrent()

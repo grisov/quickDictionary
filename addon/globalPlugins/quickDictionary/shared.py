@@ -17,7 +17,7 @@ import re
 import api
 import ui
 import braille
-from speech import speak
+import speech
 from speech.commands import LangChangeCommand, CallbackCommand
 from textInfos import POSITION_SELECTION
 from time import sleep
@@ -156,7 +156,18 @@ htmlTemplate = ''.join(["&nbsp;",
 	"</html>"
 ])
 
-def messageWithLangDetection(msg: dict):
+def restoreSynthIfSpeechBeenCanceled() -> None:
+	"""Restore the previous voice synthesizer if speech is canceled or finished.
+	Must be run in a separate thread which will control the main process.
+	"""
+	previous = profiles.getCurrent()
+	while not speech.beenCanceled:
+		sleep(0.1)
+	else:
+		profiles.restorePrevious()
+		profiles.rememberCurrent(previous)
+
+def messageWithLangDetection(msg: dict) -> None:
 	"""Pronounce text in a given language if enabled the setting for auto-switching languages of the synthesizer.
 	After the speech, switche to the previous synthesizer, if the corresponding option is enabled.
 	@param msg: language code and text to be spoken in the specified language
@@ -165,10 +176,10 @@ def messageWithLangDetection(msg: dict):
 	speechSequence=[]
 	if config.conf['speech']['autoLanguageSwitching']:
 		speechSequence.append(LangChangeCommand(msg['lang']))
+	if config.conf[_addonName][services[config.conf[_addonName]['active']].name]['switchsynth']:
+		speechSequence.append(CallbackCommand(callback=Thread(target=restoreSynthIfSpeechBeenCanceled).start))
 	speechSequence.append(msg['text'])
 	if config.conf[_addonName][services[config.conf[_addonName]['active']].name]['switchsynth']:
-		previous = profiles.getCurrent()
-		speechSequence.append(CallbackCommand(callback=profiles.restorePrevious))
-		speechSequence.append(CallbackCommand(callback=lambda prev=previous: profiles.rememberCurrent(prev)))
-	speak(speechSequence)
+		speechSequence.append(CallbackCommand(callback=lambda: speech.cancelSpeech() ))
+	speech.speak(speechSequence)
 	braille.handler.message(msg['text'])
