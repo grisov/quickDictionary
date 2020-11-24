@@ -31,7 +31,7 @@ from .synthesizers import profiles
 
 
 @lru_cache(maxsize=64)
-def translateWithCaching(langFrom: str, langInto: str, text: str, service_id:int, credentials:int, others:int):
+def translateWithCaching(langFrom: str, langInto: str, text: str, hashForCache: int):
 	"""Call the request procedure to the remote server on a separate thread.
 	Wait for the request to complete and return a prepared response.
 	All function values are cached to reduce the number of requests to the server.
@@ -41,13 +41,9 @@ def translateWithCaching(langFrom: str, langInto: str, text: str, service_id:int
 	@type langInto: str
 	@param text: word or phrase to translate
 	@type text: str
-	* the following parameters are not used in the function, but are required for to properly caching
-	@param service_id: the ID of the service used for translation
-	@type service_id: int
-	@param credentials: hash of credentials used to access the online service
-	@type credentials: int, hash(username + password)
-		@param others: hash of other parameters to be considered when caching
-		@type others: int
+	* this parameter is not used in the function, but is required for to properly caching
+	@param hashForCache: hash of all parameters that must be considered when caching
+	@type hashForCache: int
 	@return: object containing the prepared response from the remote dictionary
 	@rtype: <service>.dictionary.Translator
 	"""
@@ -62,6 +58,13 @@ def translateWithCaching(langFrom: str, langInto: str, text: str, service_id:int
 		i+=1
 	translator.join()
 	return translator
+
+def hashForCache(active: int) -> int:
+	"""Hash sum of the values of all service parameters that must be taken into account when caching requests."""
+	hashes = active
+	for opt, value in config.conf[_addonName][services[active].name].items():
+		hashes += hash(value)
+	return hashes
 
 def waitingFor(target, args:list=[]):
 	"""Waiting for the function to complete, beeps are output while waiting.

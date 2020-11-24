@@ -28,7 +28,7 @@ from tones import beep
 from time import sleep
 from threading import Thread
 from .locator import services
-from .shared import copyToClipboard, getSelectedText, translateWithCaching, waitingFor, messageWithLangDetection, finally_, htmlTemplate
+from .shared import copyToClipboard, getSelectedText, translateWithCaching, hashForCache, waitingFor, messageWithLangDetection, finally_, htmlTemplate
 from .synthesizers import profiles
 from .settings import QDSettingsPanel
 
@@ -472,9 +472,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if langs.isAvailable(self.target, self.source):
 				pairs.append((self.target, self.source))
 		for lFrom, lInto in pairs:
-			translator = translateWithCaching(lFrom, lInto, text, active,
-				hash(config.conf[_addonName][serviceName]['username'] + config.conf[_addonName][serviceName]['password']),
-				hash(config.conf[_addonName][serviceName].get('source', '')))
+			translator = translateWithCaching(lFrom, lInto, text, hashForCache(active))
 			if translator.error:
 				translateWithCaching.cache_clear()	# reset cache when HTTP errors occur
 			self._cacheInfo = translateWithCaching.cache_info() # - to check the current status of the queries cache
