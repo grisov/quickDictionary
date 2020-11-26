@@ -30,7 +30,7 @@ from threading import Thread
 from .locator import services
 from .shared import copyToClipboard, getSelectedText, translateWithCaching, hashForCache, waitingFor, messageWithLangDetection, finally_, htmlTemplate
 from .synthesizers import profiles
-from .settings import QDSettingsPanel
+from .settings import QDSettingsPanel, SynthesizersDialog
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
@@ -381,21 +381,23 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message("%d - %s" % (self._slot, profiles[self._slot].title))
 
 	# Translators: Method description is displayed in the NVDA gestures dialog
-	@script(description="P - %s" % _("announce a list of all customized voice synthesizers profiles"))
-	def script_announceAllSynthProfiles(self, gesture):
-		"""Announce a list of of all configured voice synthesizers profiles and the associated languages.
+	@script(description="P - %s" % _("display a list of all customized voice synthesizers profiles"))
+	def script_displayAllSynthProfiles(self, gesture):
+		"""Display a list of of all configured voice synthesizers profiles and the associated languages.
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
-		if len(profiles)==0:
-			# Translators: Notification of no configured profiles
-			ui.message(_("Please set up voice synthesizers profiles."))
-			return
-		langs = services[config.conf[_addonName]['active']].langs
-		for slot, profile in profiles:
-			if profile.name:
-				lang = langs[profile.lang] if langs[profile.lang] in langs else langs['']
-				ui.message("%d: %s" % (slot, ', '.join([profile.title, lang.name])))
+		def handleDialogComplete(dialogResult: int) -> None:
+			"""Callback function to retrieve data from the dialog."""
+			if dialogResult in range(10):
+				self._slot = dialogResult
+		# Translators: The title of the dialog box with a list of voice synthesizers profiles
+		sd = SynthesizersDialog(parent=gui.mainFrame, id=wx.ID_ANY, title=_("Voice synthesizers profiles"))
+		index = max(0, sd.synthsList.FindItem(-1, str(self._slot)))
+		sd.refreshProfiles()
+		sd.synthsList.Focus(index)
+		sd.synthsList.Select(index)
+		gui.runScriptModalDialog(sd, callback=handleDialogComplete)
 
 	# Translators: Method description is displayed in the NVDA gestures dialog
 	@script(description="Del - %s" % _("delete the selected voice synthesizer profile"))
@@ -517,7 +519,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:h": "help",
 		# Profiles of voice synthesizers
 		"kb:g": "announceSelectedSynthProfile",
-		"kb:p": "announceAllSynthProfiles",
+		"kb:p": "displayAllSynthProfiles",
 		"kb:delete": "removeSynthProfile",
 		"kb:b": "restorePreviousSynth",
 		"kb:r": "restoreDefaultSynth",
