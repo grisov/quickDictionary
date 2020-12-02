@@ -490,11 +490,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if isHtml:
 			ui.browseableMessage(translator.html, title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name), isHtml=isHtml)
 		else:
-			if config.conf[_addonName][serviceName]['switchsynth']:
-				profile = next(filter(lambda x: x.lang==translator.langTo, (p for s,p in profiles)), None)
-				if profile:
-					profiles.rememberCurrent()
-					profile.set()
 			self._messages.append('%s - %s' % (langs[translator.langFrom].name, langs[translator.langTo].name))
 			self._messages.append(translator.plaintext)
 			message = '...'.join(self._messages)

@@ -220,6 +220,62 @@ class ServicePanel(wx.Panel):
 			profiles.save()
 
 
+class ChangeProfileDialog(wx.Dialog):
+	"""Request to save changes to the selected voice synthesizer profile."""
+
+	def __init__(self, parent, slot: int):
+		"""Layout of dialog box elements.
+		@param parent: parent top level window
+		@type parent: wx._core.Dialog
+		@param slot: the number of the slot in which the current profile is saved
+		@type slot: int
+		"""
+		# Translators: The title of the modal dialog box
+		super(ChangeProfileDialog, self).__init__(parent, title=_("Changing the profile of the voice synthesizer"))
+		self.slot = slot
+		sizer = wx.BoxSizer(wx.VERTICAL)
+		sHelper = gui.guiHelper.BoxSizerHelper(self, orientation=wx.VERTICAL)
+		# Translators: The message displayed in the voice synthesizer profile change dialog box
+		sHelper.addItem(wx.StaticText(self, label=_("Do you want to save changes in profile %d?") % slot))
+		bHelper = sHelper.addDialogDismissButtons(gui.guiHelper.ButtonHelper(wx.HORIZONTAL))
+		saveButton = bHelper.addButton(self, id=wx.ID_SAVE)
+		saveButton.Bind(wx.EVT_BUTTON, self.onSaveButton)
+		cancelButton = bHelper.addButton(self, wx.ID_CLOSE)
+		cancelButton.Bind(wx.EVT_BUTTON, lambda evt: self.Close())
+		saveButton.SetFocus()
+		self.Bind(wx.EVT_CLOSE, self.onClose)
+		self.EscapeId = wx.ID_CLOSE
+		sizer.Add(sHelper.sizer, border=gui.guiHelper.BORDER_FOR_DIALOGS, flag=wx.ALL)
+		self.Sizer = sizer
+		sizer.Fit(self)
+		self.CentreOnScreen()
+		profiles.rememberCurrent()
+		profiles[self.slot].set()
+		wx.CallAfter(gui.mainFrame.onSpeechSettingsCommand, None)
+
+	def onSaveButton(self, eventt) -> None:
+		"""Executed when the <Save> button in the dialog box is pressed.
+		@param event: event that occurs when a wx.Button is pressed
+		@type event: wx.core.PyEventBinder
+		"""
+		profiles[self.slot].update()
+		profiles.save()
+		previous = profiles.getCurrent()
+		profiles.restorePrevious()
+		profiles.rememberCurrent(previous)
+		self.Destroy()
+
+	def onClose(self, event) -> None:
+		"""Executed when the dialog box closes.
+		@param event: event that occurs when dialog box is closes
+		@type event: wx.core.PyEventBinder
+		"""
+		previous = profiles.getCurrent()
+		profiles.restorePrevious()
+		profiles.rememberCurrent(previous)
+		self.Destroy()
+
+
 class SynthesizersDialog(wx.Dialog):
 	"""A dialog box that allows to manipulate the profiles of voice synthesizers."""
 
@@ -332,11 +388,7 @@ class SynthesizersDialog(wx.Dialog):
 		if len(profiles)==0:
 			return
 		item = int(self.synthsList.GetItem(itemIdx=self.synthsList.GetFocusedItem(), col=0).GetText())
-		profiles[item].set()
-		wx.CallAfter(gui.mainFrame.onSpeechSettingsCommand, None)
-		# ***
-		#profiles[item].update()
-		#self.displayContent()
+		ChangeProfileDialog(self, item).ShowModal()
 
 	def refreshProfiles(self) -> None:
 		"""Update the list of saved voice synthesizers profiles on the screen."""
@@ -356,9 +408,11 @@ class SynthesizersDialog(wx.Dialog):
 		@type event: wx.core.PyEventBinder
 		"""
 		{
-			wx.WXK_DELETE: self.deleteProfile,
+			wx.WXK_F2: self.saveProfiles,
+			wx.WXK_F4: self.changeProfile,
 			wx.WXK_F5: self.refreshProfiles,
-			wx.WXK_F2: self.saveProfiles
+			wx.WXK_F8: self.deleteProfile,
+			wx.WXK_DELETE: self.deleteProfile
 		}.get(event.GetKeyCode(), lambda: None)()
 		event.Skip()
 
@@ -370,5 +424,6 @@ class SynthesizersDialog(wx.Dialog):
 		"""
 		event.Skip()
 		item = int(self.synthsList.GetItem(itemIdx=self.synthsList.GetFocusedItem(), col=0).GetText())
+		profiles.rememberCurrent()
 		profiles[item].set()
 		self.EndModal(item)

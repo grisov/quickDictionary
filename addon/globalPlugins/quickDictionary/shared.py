@@ -176,13 +176,18 @@ def messageWithLangDetection(msg: dict) -> None:
 	@param msg: language code and text to be spoken in the specified language
 	@type msg: dict -> {'lang': str, 'text': str}
 	"""
+	switchSynth = config.conf[_addonName][services[config.conf[_addonName]['active']].name]['switchsynth']
+	profile = next(filter(lambda x: x.lang==msg['lang'], (p for s,p in profiles)), None)
+	if switchSynth and profile:
+		profiles.rememberCurrent()
+		profile.set()
 	speechSequence=[]
 	if config.conf['speech']['autoLanguageSwitching']:
 		speechSequence.append(LangChangeCommand(msg['lang']))
-	if config.conf[_addonName][services[config.conf[_addonName]['active']].name]['switchsynth']:
+	if switchSynth and profile:
 		speechSequence.append(CallbackCommand(callback=Thread(target=restoreSynthIfSpeechBeenCanceled).start))
 	speechSequence.append(msg['text'])
-	if config.conf[_addonName][services[config.conf[_addonName]['active']].name]['switchsynth']:
+	if switchSynth and profile:
 		speechSequence.append(CallbackCommand(callback=lambda: speech.cancelSpeech() ))
 	speech.speak(speechSequence)
 	braille.handler.message(msg['text'])
