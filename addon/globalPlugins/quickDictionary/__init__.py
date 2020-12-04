@@ -60,6 +60,23 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		# Sequence of messages
 		self._messages = []
 
+		# Build a submenu in the "tools" menu
+		menu = gui.mainFrame.sysTrayIcon.toolsMenu
+		subMenu = wx.Menu()
+		self.mainItem = menu.AppendSubMenu(subMenu, _addonSummary)
+		# Translators: the name of a submenu item (also used as method description).
+		chooseServiceItem = subMenu.Append(wx.ID_ANY, _("choose online service").capitalize() + '...')
+		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.chooseServiceDialog(), chooseServiceItem)
+		# Translators: the name of a submenu item (also used as dialog title).
+		synthsProfilesItem = subMenu.Append(wx.ID_ANY, _("Voice synthesizers profiles") + '...')
+		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.synthsProfilesDialog(), synthsProfilesItem)
+		# Translators: the name of a submenu item
+		settingsItem = subMenu.Append(wx.ID_ANY, _("&Options..."))
+		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonSettingsDialog(), settingsItem)
+		# Translators: the name of a submenu item (also used as dialog title).
+		helpItem = subMenu.Append(wx.ID_ANY, _("add-on help page").capitalize())
+		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonHelpPage(), helpItem)
+
 	@property
 	def source(self) -> str:
 		"""Source language for translation.
@@ -123,6 +140,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			gui.settingsDialogs.NVDASettingsDialog.categoryClasses.remove(QDSettingsPanel)
 		except IndexError:
 			log.warning("Can't remove %s Settings panel from NVDA settings dialogs", _addonSummary)
+		try:
+			self.menu.Remove(self.mainItem)
+		except IndexError:
+			log.warning("Can't remove %s submenu from NVDA menu", _addonSummary)
 
 	def getScript(self, gesture):
 		"""Retrieve the script bound to a given gesture.
@@ -306,6 +327,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
+		self.addonHelpPage()
+
+	def addonHelpPage(self) -> None:
+		"""Display the add-on help page.
+		Called using keyboard commands and menu items.
+		"""
 		lines = [
 			"<h1>%s</h1>" % _addonSummary,
 			# Translators: Message in the add-on short help
@@ -357,6 +384,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
+		self.addonSettingsDialog()
+
+	def addonSettingsDialog(self) -> None:
+		"""Display the add-on settings dialog.
+		Called using keyboard commands and menu items.
+		"""
 		wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, QDSettingsPanel)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
@@ -387,6 +420,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""Display a list of of all configured voice synthesizers profiles and the associated languages.
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
+		"""
+		self.synthsProfilesDialog()
+
+	def synthsProfilesDialog(self) -> None:
+		"""Dialog for manipulation of voice synthesizers profiles.
+		Called using keyboard commands and menu items.
 		"""
 		def handleDialogComplete(dialogResult: int) -> None:
 			"""Callback function to retrieve data from the dialog."""
@@ -460,11 +499,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message(': '.join([gesture.displayName, services[self._gate-1].summary]))
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
-	@script(description="F - %s" % _("online services selection dialog"))
+	@script(description="F - %s" % _("choose online service"))
 	def script_servicesDialog(self, gesture):
 		"""Dialog for selecting an online service from the list of available.
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
+		"""
+		self.chooseServiceDialog()
+
+	def chooseServiceDialog(self) -> None:
+		"""Dialog for selecting an online service from the list of available.
+		Called using keyboard commands and menu items.
 		"""
 		# Translators: The title of the online service selection dialog
 		sd = ServicesDialog(parent=gui.mainFrame, id=wx.ID_ANY, title=_("Online services"))
