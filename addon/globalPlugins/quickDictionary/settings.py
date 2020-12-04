@@ -220,6 +220,80 @@ class ServicePanel(wx.Panel):
 			profiles.save()
 
 
+class ServicesDialog(wx.Dialog):
+	"""Online service selection dialog."""
+
+	def __init__(self, parent, id: int, title: str, *args, **kwargs):
+		"""Create a dialog box for selecting an available online service.
+		@param parent: parent top level window
+		@type parent: wx._core.Dialog
+		@param id: identifier of the window
+		@type id: int
+		@param title: title of the window
+		@type title: str
+		"""
+		super(ServicesDialog, self).__init__(parent, id, title=title, *args, **kwargs)
+		sizer = wx.BoxSizer(wx.VERTICAL)
+		sHelper = gui.guiHelper.BoxSizerHelper(self, sizer=sizer)
+		self.servicesList = sHelper.addLabeledControl(
+			# Translators: Label in the online service selection dialog
+			_("Select an online service from the list"),
+			AutoWidthColumnListCtrl,
+			autoSizeColumn=1, # The replacement column is likely to need the most space
+			itemTextCallable=None,
+			style=wx.LC_REPORT | wx.LC_SINGLE_SEL
+		)
+		# Translators: The label for a column in the list of online services
+		self.servicesList.InsertColumn(0, _("ID"), width=30)
+		# Translators: The label for a column in the list of online services
+		self.servicesList.InsertColumn(1, _("Online service"))
+		# Translators: The label for a column in the list of online services
+		self.servicesList.InsertColumn(2, _("Supported languages"), width=100)
+
+		# Buttons at the bottom of the dialog box
+		buttons = wx.BoxSizer(wx.HORIZONTAL)
+		self.okButton = wx.Button(self, id=wx.ID_OK)
+		buttons.Add(self.okButton)
+		cancelButton = wx.Button(self, id=wx.ID_CANCEL)
+		buttons.Add(cancelButton)
+		sizer.Add(buttons, flag=wx.BOTTOM)
+		sizer.Fit(self)
+		self.SetSizer(sizer)
+		self.Center(wx.BOTH | wx.Center)
+
+		# Fill in the list of available services
+		for i in range(len(services)):
+			self.servicesList.Append((i+1, services[i].summary, len(services[i].langs.all)))
+		self.servicesList.SetFocus()
+		self.servicesList.Focus(config.conf[_addonName]['active'])
+		self.servicesList.Select(config.conf[_addonName]['active'])
+
+		# Binding dialog box elements to handler methods
+		self.servicesList.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.onSelectService)
+		self.okButton.Bind(wx.EVT_BUTTON, self.onSelectService)
+		self.Bind(wx.EVT_CHAR_HOOK, self.onKeyPress)
+
+	def onKeyPress(self, event) -> None:
+		"""Performed when pressing keys.
+		@param event: event binder object that handles keystrokes
+		@type event: wx.core.PyEventBinder
+		"""
+		key = event.GetKeyCode()-ord('1')
+		event.Skip()
+		if key in range(min(len(services), 12)):
+			config.conf[_addonName]['active'] = key
+			self.Close()
+
+	def onSelectService(self, event) -> None:
+		"""Activation of the selected online service.
+		@param event: event binder object that handles the activation of the button or ListItem element
+		@type event: wx.core.PyEventBinder
+		"""
+		event.Skip()
+		config.conf[_addonName]['active'] = self.servicesList.GetFocusedItem()
+		self.Close()
+
+
 class ChangeProfileDialog(wx.Dialog):
 	"""Request to save changes to the selected voice synthesizer profile."""
 
@@ -407,14 +481,22 @@ class SynthesizersDialog(wx.Dialog):
 		@param event: event binder object that handles keystrokes
 		@type event: wx.core.PyEventBinder
 		"""
+		key = event.GetKeyCode()
 		{
 			wx.WXK_F2: self.saveProfiles,
 			wx.WXK_F4: self.changeProfile,
 			wx.WXK_F5: self.refreshProfiles,
 			wx.WXK_F8: self.deleteProfile,
 			wx.WXK_DELETE: self.deleteProfile
-		}.get(event.GetKeyCode(), lambda: None)()
+		}.get(key, lambda: None)()
 		event.Skip()
+		# Activate the profile at the specified slot number
+		key = key-ord('1')+1
+		slots = [slot for slot,profile in profiles]
+		if key in slots:
+			item = slots.index(key)
+			self.synthsList.Focus(item)
+			self.onActivateProfile(event=event)
 
 	def onActivateProfile(self, event) -> None:
 		"""Activation of the selected voice synthesizer profile.

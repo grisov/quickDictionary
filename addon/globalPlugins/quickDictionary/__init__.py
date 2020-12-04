@@ -30,7 +30,7 @@ from threading import Thread
 from .locator import services
 from .shared import copyToClipboard, getSelectedText, translateWithCaching, hashForCache, waitingFor, messageWithLangDetection, finally_, htmlTemplate
 from .synthesizers import profiles
-from .settings import QDSettingsPanel, SynthesizersDialog
+from .settings import QDSettingsPanel, SynthesizersDialog, ServicesDialog
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
@@ -333,7 +333,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		for method in [
 			self.script_selectSynthProfile.__doc__,
 			self.script_announceSelectedSynthProfile.__doc__,
-			self.script_announceAllSynthProfiles.__doc__,
+			self.script_displayAllSynthProfiles.__doc__,
 			self.script_restorePreviousSynth.__doc__,
 			self.script_restoreDefaultSynth.__doc__,
 			self.script_removeSynthProfile.__doc__,
@@ -341,6 +341,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			lines.append("<li>%s</li>" % method)
 		lines += ["</ul>", "<br>"]
 		for line in [
+			self.script_servicesDialog.__doc__,
 			self.script_showSettings.__doc__,
 			self.script_help.__doc__,
 			# Translators: Message in the add-on short help
@@ -458,6 +459,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		config.conf[_addonName]['active'] = self._gate - 1
 		ui.message(': '.join([gesture.displayName, services[self._gate-1].summary]))
 
+	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
+	@script(description="F - %s" % _("online services selection dialog"))
+	def script_servicesDialog(self, gesture):
+		"""Dialog for selecting an online service from the list of available.
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
+		# Translators: The title of the online service selection dialog
+		sd = ServicesDialog(parent=gui.mainFrame, id=wx.ID_ANY, title=_("Online services"))
+		gui.runScriptModalDialog(sd)
+
 	def translate(self, text:str, isHtml:bool=False) -> None:
 		"""Retrieve the dictionary entry for the given word or phrase and display/announce the result.
 		This method must always be called in a separate thread so as not to block NVDA.
@@ -510,6 +522,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:u": "updateLanguages",
 		"kb:q": "dictionaryStatistics",
 		# General
+		"kb:F": "servicesDialog",
+		"kb:`": "servicesDialog",
 		"kb:o": "showSettings",
 		"kb:h": "help",
 		# Profiles of voice synthesizers
