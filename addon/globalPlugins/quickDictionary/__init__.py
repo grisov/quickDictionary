@@ -74,7 +74,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		settingsItem = subMenu.Append(wx.ID_ANY, _("&Options..."))
 		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonSettingsDialog(), settingsItem)
 		# Translators: the name of a submenu item (also used as dialog title).
-		helpItem = subMenu.Append(wx.ID_ANY, _("add-on help page").capitalize())
+		helpItem = subMenu.Append(wx.ID_ANY, _("help on add-on commands").capitalize())
 		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonHelpPage(), helpItem)
 
 	@property
@@ -321,7 +321,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			ui.message("%s: %s" % (_("state of cache"), str(self._cacheInfo)))
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
-	@script(description="H - %s" % _("add-on help page"))
+	@script(description="H - %s" % _("help on add-on commands"))
 	def script_help(self, gesture):
 		"""Retrieves a description of all add-ons methods and presents them.
 		@param gesture: gesture assigned to this method
@@ -360,11 +360,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		for method in [
 			self.script_selectSynthProfile.__doc__,
 			self.script_announceSelectedSynthProfile.__doc__,
-			self.script_displayAllSynthProfiles.__doc__,
 			self.script_restorePreviousSynth.__doc__,
 			self.script_restoreDefaultSynth.__doc__,
 			self.script_removeSynthProfile.__doc__,
-			self.script_saveSynthProfile.__doc__]:
+			self.script_saveSynthProfile.__doc__,
+			self.script_displayAllSynthProfiles.__doc__]:
 			lines.append("<li>%s</li>" % method)
 		lines += ["</ul>", "<br>"]
 		for line in [
@@ -375,7 +375,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			_("for any of the listed features you can customize the keyboard shortcut in NVDA input gestures dialog")]:
 			lines.append("<p>%s.</p>" % line.capitalize())
 		ui.browseableMessage(htmlTemplate.format(body=''.join(lines)),
-			_("add-on help page").capitalize(), True)
+			_("help on add-on commands").capitalize(), True)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="O - %s" % _("open add-on settings dialog"))

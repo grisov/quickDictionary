@@ -309,7 +309,7 @@ class ChangeProfileDialog(wx.Dialog):
 		self.slot = slot
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		sHelper = gui.guiHelper.BoxSizerHelper(self, orientation=wx.VERTICAL)
-		# Translators: The message displayed in the voice synthesizer profile change dialog box
+		# Translators: The message is displayed in the voice synthesizer profile change dialog
 		sHelper.addItem(wx.StaticText(self, label=_("Do you want to save changes in profile %d?") % slot))
 		bHelper = sHelper.addDialogDismissButtons(gui.guiHelper.ButtonHelper(wx.HORIZONTAL))
 		saveButton = bHelper.addButton(self, id=wx.ID_SAVE)
@@ -317,6 +317,7 @@ class ChangeProfileDialog(wx.Dialog):
 		cancelButton = bHelper.addButton(self, wx.ID_CLOSE)
 		cancelButton.Bind(wx.EVT_BUTTON, lambda evt: self.Close())
 		saveButton.SetFocus()
+		saveButton.SetDefault()
 		self.Bind(wx.EVT_CLOSE, self.onClose)
 		self.EscapeId = wx.ID_CLOSE
 		sizer.Add(sHelper.sizer, border=gui.guiHelper.BORDER_FOR_DIALOGS, flag=wx.ALL)
@@ -327,7 +328,7 @@ class ChangeProfileDialog(wx.Dialog):
 		profiles[self.slot].set()
 		wx.CallAfter(gui.mainFrame.onSpeechSettingsCommand, None)
 
-	def onSaveButton(self, eventt) -> None:
+	def onSaveButton(self, event) -> None:
 		"""Executed when the <Save> button in the dialog box is pressed.
 		@param event: event that occurs when a wx.Button is pressed
 		@type event: wx.core.PyEventBinder
@@ -347,6 +348,60 @@ class ChangeProfileDialog(wx.Dialog):
 		previous = profiles.getCurrent()
 		profiles.restorePrevious()
 		profiles.rememberCurrent(previous)
+		self.Destroy()
+
+
+class CreateProfileDialog(wx.Dialog):
+	"""Request to create new voice synthesizer profile."""
+
+	def __init__(self, parent):
+		"""Layout of dialog box elements.
+		@param parent: parent top level window
+		@type parent: wx._core.Dialog
+		"""
+		# Translators: The title of the modal dialog box
+		super(CreateProfileDialog, self).__init__(parent, title=_("Create a new voice synthesizer profile"))
+		sizer = wx.BoxSizer(wx.VERTICAL)
+		sHelper = gui.guiHelper.BoxSizerHelper(self, orientation=wx.VERTICAL)
+		slotSizer = wx.BoxSizer(wx.HORIZONTAL)
+		# Translators: The message is displayed in the voice synthesizer profile create dialog
+		slotLabel = wx.StaticText(self, label=_("Please select the &number for new profile:"))
+		slotSizer.Add(slotLabel)
+		self.slotChoice = wx.Choice(self, choices=[], style=wx.CB_SORT)
+		slotSizer.Add(self.slotChoice)
+		sHelper.addItem(slotSizer)
+		slots = list(set(range(1,10))^set([slot for slot,prof in profiles]))
+		self.slotChoice.AppendItems([str(slot) for slot in slots])
+		self.slotChoice.SetSelection(0)
+		bHelper = sHelper.addDialogDismissButtons(gui.guiHelper.ButtonHelper(wx.HORIZONTAL))
+		okButton = bHelper.addButton(self, id=wx.ID_OK)
+		okButton.Bind(wx.EVT_BUTTON, self.onOkButton)
+		okButton.SetDefault()
+		cancelButton = bHelper.addButton(self, wx.ID_CLOSE)
+		cancelButton.Bind(wx.EVT_BUTTON, lambda evt: self.Close())
+		self.slotChoice.SetFocus()
+		self.Bind(wx.EVT_CLOSE, self.onClose)
+		self.EscapeId = wx.ID_CLOSE
+		sizer.Add(sHelper.sizer, border=gui.guiHelper.BORDER_FOR_DIALOGS, flag=wx.ALL)
+		self.Sizer = sizer
+		sizer.Fit(self)
+		self.CentreOnScreen()
+
+	def onOkButton(self, event) -> None:
+		"""Executed when the <OK> button in the dialog box is pressed.
+		@param event: event that occurs when a wx.Button is pressed
+		@type event: wx.core.PyEventBinder
+		"""
+		slot = int(self.slotChoice.GetStringSelection())
+		event.Skip()
+		ChangeProfileDialog(self, slot).ShowModal()
+		self.Destroy()
+
+	def onClose(self, event) -> None:
+		"""Executed when the dialog box closes.
+		@param event: event that occurs when dialog box is closes
+		@type event: wx.core.PyEventBinder
+		"""
 		self.Destroy()
 
 
@@ -390,6 +445,8 @@ class SynthesizersDialog(wx.Dialog):
 		# Translators: Label of the button that activates the selected voice synthesizer profile
 		self.activateButton = wx.Button(self, label=_("&Activate"))
 		buttons.Add(self.activateButton)
+		self.createButton = wx.Button(self, id=wx.ID_NEW)
+		buttons.Add(self.createButton)
 		# Translators: Label of the button that opens the dialog for changing the selected profile
 		self.changeButton = wx.Button(self, label=_("&Change"))
 		buttons.Add(self.changeButton)
@@ -410,6 +467,7 @@ class SynthesizersDialog(wx.Dialog):
 		# Binding dialog box elements to handler methods
 		self.synthsList.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.onActivateProfile)
 		self.activateButton.Bind(wx.EVT_BUTTON, self.onActivateProfile)
+		self.createButton.Bind(wx.EVT_BUTTON, handler=lambda evt: self.createProfile())
 		self.changeButton.Bind(wx.EVT_BUTTON, handler=lambda evt: self.changeProfile())
 		self.deleteButton.Bind(wx.EVT_BUTTON, handler=lambda evt: self.deleteProfile())
 		refreshButton.Bind(wx.EVT_BUTTON, handler=lambda evt: self.refreshProfiles())
@@ -424,6 +482,7 @@ class SynthesizersDialog(wx.Dialog):
 			self.synthsWarning.Hide()
 			self.synthsList.Show()
 			self.activateButton.Show()
+			self.createButton.Show(show=len(profiles)<9)
 			self.changeButton.Show()
 			self.deleteButton.Show()
 			self.fillInList()
@@ -431,6 +490,7 @@ class SynthesizersDialog(wx.Dialog):
 		else:
 			self.synthsList.Hide()
 			self.activateButton.Hide()
+			self.createButton.Show()
 			self.changeButton.Hide()
 			self.deleteButton.Hide()
 			self.synthsWarning.Show()
@@ -447,6 +507,18 @@ class SynthesizersDialog(wx.Dialog):
 			self.synthsList.Focus(0)
 			self.synthsList.Select(0)
 
+	def createProfile(self) -> None:
+		"""Open dialog for creating new voice synthesizer profile."""
+		CreateProfileDialog(self).ShowModal()
+		self.refreshProfiles()
+
+	def changeProfile(self) -> None:
+		"""Open dialog for changing selected voice synthesizer profile."""
+		if len(profiles)==0:
+			return
+		item = int(self.synthsList.GetItem(itemIdx=self.synthsList.GetFocusedItem(), col=0).GetText())
+		ChangeProfileDialog(self, item).ShowModal()
+
 	def deleteProfile(self) -> None:
 		"""Delete selected voice synthesizer profile."""
 		if len(profiles)==0:
@@ -456,13 +528,6 @@ class SynthesizersDialog(wx.Dialog):
 		self.displayContent()
 		# Translators: Message that displayed after deleting the profile (also this is the script description)
 		gui.messageBox(message=_("Profile %d successfully deleted") % item, caption=_("delete the selected voice synthesizer profile").capitalize(), parent=self)
-
-	def changeProfile(self) -> None:
-		"""Open dialog for changing selected voice synthesizer profile."""
-		if len(profiles)==0:
-			return
-		item = int(self.synthsList.GetItem(itemIdx=self.synthsList.GetFocusedItem(), col=0).GetText())
-		ChangeProfileDialog(self, item).ShowModal()
 
 	def refreshProfiles(self) -> None:
 		"""Update the list of saved voice synthesizers profiles on the screen."""
@@ -486,10 +551,10 @@ class SynthesizersDialog(wx.Dialog):
 			wx.WXK_F2: self.saveProfiles,
 			wx.WXK_F4: self.changeProfile,
 			wx.WXK_F5: self.refreshProfiles,
+			wx.WXK_F7: self.createProfile,
 			wx.WXK_F8: self.deleteProfile,
 			wx.WXK_DELETE: self.deleteProfile
-		}.get(key, lambda: None)()
-		event.Skip()
+		}.get(key, event.Skip)()
 		# Activate the profile at the specified slot number
 		key = key-ord('1')+1
 		slots = [slot for slot,profile in profiles]
