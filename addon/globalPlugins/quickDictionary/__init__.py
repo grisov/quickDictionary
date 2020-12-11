@@ -511,8 +511,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""Dialog for selecting an online service from the list of available.
 		Called using keyboard commands and menu items.
 		"""
-		# Translators: The title of the online service selection dialog
-		sd = ServicesDialog(parent=gui.mainFrame, id=wx.ID_ANY, title=_("Online services"))
+		# Translators: The title of the online service selection dialog and menu item
+		sd = ServicesDialog(parent=gui.mainFrame, id=wx.ID_ANY, title=_("choose online service").capitalize())
 		gui.runScriptModalDialog(sd)
 
 	def translate(self, text:str, isHtml:bool=False) -> None:

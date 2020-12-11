@@ -1,22 +1,39 @@
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 'quickDictionary' '1.2'\n"
+"Project-Id-Version: 'quickDictionary' '2.0'\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2020-10-09 18:47+0300\n"
-"PO-Revision-Date: 2020-10-31 15:01+0200\n"
+"POT-Creation-Date: 2020-12-11 18:13+0200\n"
+"PO-Revision-Date: 2020-12-11 20:43+0200\n"
 "Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
-"Language-Team: \n"
+"Language-Team: Ukrainian Language Team\n"
 "Language: uk_UA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.2\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+
+#. Translators: the name of a submenu item (also used as method description).
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+#. Translators: The title of the online service selection dialog and menu item
+msgid "choose online service"
+msgstr "вибір онлайн-сервісу"
+
+#. Translators: the name of a submenu item (also used as dialog title).
+#. Translators: The title of the dialog box with a list of voice synthesizers profiles
+msgid "Voice synthesizers profiles"
+msgstr "Профілі синтезаторів голосу"
+
+#. Translators: the name of a submenu item
+msgid "&Options..."
+msgstr "Па&раметри..."
+
+#. Translators: the name of a submenu item (also used as dialog title).
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "help on add-on commands"
+msgstr "довідка по командах додатку"
 
 #. Translators: Method description is displayed in the NVDA input gestures dialog
 #, python-format
@@ -61,6 +78,7 @@ msgid "copy last dictionary entry to the clipboard"
 msgstr "скопіювати результати останнього запиту до буфера обміну"
 
 #. Translators: Notification that no dictionary entries have been received in the current session
+#. Translators: Information about the online service
 msgid "There is no dictionary queries"
 msgstr "Ще не виконувались запити до словника"
 
@@ -81,8 +99,34 @@ msgid "Warning! The list of available languages could not be loaded."
 msgstr "Увага! Не вдалось завантажити список доступних мов."
 
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
-msgid "announce the add-on help message"
-msgstr "оголосити коротку довідкову інформацію"
+msgid "statistics on the using the online service"
+msgstr "статистика використання віддаленого сервісу"
+
+#. Translators: Information about the online service
+msgid "supports {number} languages"
+msgstr "підтримує {number} мов"
+
+#. Translators: The name of the field displayed in the statistics and in the settings panel
+#. Translators: Field name in a dictionary entry
+#. Translators: A setting in addon settings dialog.
+msgid "&Dictionary:"
+msgstr "С&ловник:"
+
+#. Translators: Information about the online service
+msgid "performed {count} requests"
+msgstr "виконано {count} запитів"
+
+#. Translators: Information about the online service
+msgid "available {remain}"
+msgstr "доступно {remain}"
+
+#. Translators: Information about the online service
+msgid "the limit will be reset in {hours} hours {minutes} minutes"
+msgstr "ліміт буде оновлено через {hours} годин {minutes} хвилин"
+
+#. Translators: Information about the cache state
+msgid "state of cache"
+msgstr "стан кешу"
 
 #. Translators: Message in the add-on short help
 msgid "switch to add-on control mode"
@@ -127,19 +171,15 @@ msgid "announce the selected profile of voice synthesizers"
 msgstr "оголосити вибраний профіль голосових синтезаторів"
 
 #. Translators: Method description is displayed in the NVDA gestures dialog
-msgid "announce a list of all customized voice synthesizers profiles"
-msgstr "повідомити список всіх налаштованих профілів голосових синтезаторів"
-
-#. Translators: Notification of no configured profiles
-#. Translators: A warning in addon settings dialog.
-msgid "Please set up voice synthesizers profiles."
-msgstr "Будь-ласка налаштуйте профілі голосових синтезаторів"
+msgid "display a list of all customized voice synthesizers profiles"
+msgstr "відобразити список усіх налаштованих профілів синтезаторів голосу"
 
 #. Translators: Method description is displayed in the NVDA gestures dialog
 msgid "delete the selected voice synthesizer profile"
 msgstr "видалити вибраний профіль голосового синтезатора"
 
 #. Translators: Message when deleting a profile
+#. Translators: Message that displayed after deleting the profile (also this is the script description)
 #, python-format
 msgid "Profile %d successfully deleted"
 msgstr "Профіль %d успішно видалено"
@@ -149,36 +189,25 @@ msgid "restore default voice synthesizer"
 msgstr "повернутись до голосового синтезатора за замовчуванням"
 
 #. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "back to previous voice synthesizer"
+msgstr "повернутись до попереднього синтезатора голосу"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
 msgid "save configured voice synthesizer profile"
 msgstr "зберегти налаштований профіль синтезатора голосу"
 
 #. Translators: Announcing after saving synthesizer profile
+#. Translators: Display the message after saving the voice synthesizers profiles
 msgid "Voice synthesizer profile saved successfully"
 msgstr "Профіль синтезатора голосу успішно збережено"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "From F1 to F{endgate} - select online dictionary service"
+msgstr "Від F1 до F{endgate} - вибір служби онлайн-словників"
 
 #. Translators: Notification of missing dictionary entry for current request
 msgid "No results"
 msgstr "Відсутні дані"
-
-#. Translators: Field name in a dictionary entry
-msgid "number"
-msgstr "число"
-
-#. Translators: Field name in a dictionary entry
-msgid "gender"
-msgstr "стать"
-
-#. Translators: Field name in a dictionary entry
-msgid "mean"
-msgstr "Значення"
-
-#. Translators: Field name in a dictionary entry
-msgid "synonyms"
-msgstr "Синоніми"
-
-#. Translators: Field name in a dictionary entry
-msgid "examples"
-msgstr "Приклади"
 
 #. Translators: The name of the language, which may not be in the main list
 msgid "Cebuano"
@@ -244,45 +273,82 @@ msgstr "Тагальська"
 msgid "Yiddish"
 msgstr "Їдиш"
 
-#. Translators: Help message for a dialog.
-msgid "Select dictionary source and target language:"
-msgstr "Оберіть вихідну та цільову мови словника:"
-
 #. Translators: A setting in addon settings dialog.
-msgid "&Source language:"
-msgstr "Початко&ва мова:"
-
-#. Translators: A setting in addon settings dialog.
-msgid "&Target language:"
-msgstr "Мова &перекладу:"
-
-#. Translators: A setting in addon settings dialog.
-msgid "Copy dictionary response to clip&board"
-msgstr "Копіювати результат запиту до словника до &буфера обміну"
-
-#. Translators: A setting in addon settings dialog.
-msgid "Auto-s&wap languages"
-msgstr "Автоматична з&мінювати порядок мов"
-
-#. Translators: A setting in addon settings dialog.
-msgid "Use &alternative server"
-msgstr "Використовувати &альтернативний сервер"
+msgid "Select &online service:"
+msgstr "Виберіть &онлайн-сервіс:"
 
 #. Translators: A setting in addon settings dialog.
 msgid "Switch between &voice synthesizers for selected languages"
 msgstr "Перемикати &голосові синтезатори для вибраних мов"
 
-#. Translators: A setting in addon settings dialog.
-msgid "&Dictionary Access Token:"
-msgstr "Код &доступу до словника:"
+#. Translators: A warning in addon settings dialog.
+#. Translators: The message that is displayed when the configured synthesizers profiles are missing
+msgid "Please set up voice synthesizers profiles."
+msgstr "Будь-ласка налаштуйте профілі голосових синтезаторів"
 
-#. Translators: A setting in addon settings dialog.
-msgid "Register your own access token"
-msgstr "Зареєструвати власний код доступу"
+#. Translators: Label in the online service selection dialog
+msgid "Select an online service from the list"
+msgstr "Виберіть онлайн-сервіс зі списку"
 
-#. Translators: This displayed by default in the language selection choice list
-msgid "-- select language --"
-msgstr "-- оберіть мову --"
+#. Translators: The label for a column in the list of online services
+msgid "ID"
+msgstr "ID"
+
+#. Translators: The label for a column in the list of online services
+msgid "Online service"
+msgstr "Віддалений сервіс"
+
+#. Translators: The label for a column in the list of online services
+msgid "Supported languages"
+msgstr "Кількість підтримуваних мов"
+
+#. Translators: The title of the modal dialog box
+msgid "Changing the profile of the voice synthesizer"
+msgstr "Зміна профілю синтезатора голосу"
+
+#. Translators: The message is displayed in the voice synthesizer profile change dialog
+#, python-format
+msgid "Do you want to save changes in profile %d?"
+msgstr "Чи бажаєте Ви зберегти зміни у профілі %d?"
+
+#. Translators: The title of the modal dialog box
+msgid "Create a new voice synthesizer profile"
+msgstr "Створення нового профілю голосового синтезатора"
+
+#. Translators: The message is displayed in the voice synthesizer profile create dialog
+msgid "Please select the &number for new profile:"
+msgstr "Будь-ласка оберіть &номер для нового профілю:"
+
+#. Translators: The label in dialog with the list of voice synthesizers profiles
+msgid "Select a voice synthesizer &profile from the list"
+msgstr "Виберіть &профіль голосового синтезатора зі списку"
+
+#. Translators: The label for a column in the list of voice synthesizers profiles
+msgid "Slot"
+msgstr "Слот"
+
+#. Translators: The label for a column in the list of voice synthesizers profiles
+msgid "Voice synthesizer"
+msgstr "Синтезатор голосу"
+
+#. Translators: The label for a column in the list of voice synthesizers profiles
+msgid "Associated language"
+msgstr "Асоційована мова"
+
+#. Translators: Label of the button that activates the selected voice synthesizer profile
+msgid "&Activate"
+msgstr "&Активувати"
+
+#. Translators: Label of the button that opens the dialog for changing the selected profile
+msgid "&Change"
+msgstr "&Змінити"
+
+msgid "Profiles list could not be saved"
+msgstr "Не вдалось зберегти список профілів"
+
+#. Translators: The title of the messageBox that appears after saving the list of voice synthesizers profiles
+msgid "Saving voice synthesizers profiles list"
+msgstr "Збереження списку профілів синтезаторів голосу"
 
 #. Translators: Message if the text was successfully copied to the clipboard
 msgid "Copied to clipboard."
@@ -298,6 +364,174 @@ msgid ""
 "not text!"
 msgstr "Немає виділеного тексту та буфер обміну не містить текстових даних!"
 
+#. Translators: The name of the online dictionary service
+msgid "Lexicala Dictionaries"
+msgstr "Словники Lexicala"
+
+#. Translators: Field name in a dictionary entry
+msgid "mean"
+msgstr "Значення"
+
+#. Translators: Field name in a dictionary entry
+msgid "compositional phrases"
+msgstr "композиційні вирази"
+
+#. Translators: Field name in a dictionary entry
+msgid "examples"
+msgstr "Приклади"
+
+#. Translators: Field name in a dictionary entry
+msgid "inflections"
+msgstr "словоформи"
+
+#. Translators: Field name in a dictionary entry
+msgid "pronunciation"
+msgstr "вимова"
+
+#. Translators: Field name in a dictionary entry
+msgid "subcategorization"
+msgstr "підкатегорізація"
+
+#. Translators: Field name in a dictionary entry
+msgid "case"
+msgstr "відмінок"
+
+#. Translators: Field name in a dictionary entry
+msgid "register"
+msgstr "реєстр"
+
+#. Translators: Field name in a dictionary entry
+msgid "geographical usage"
+msgstr "географічне застосування"
+
+#. Translators: Field name in a dictionary entry
+msgid "mood"
+msgstr "відтінок"
+
+#. Translators: Field name in a dictionary entry
+msgid "tense"
+msgstr "час"
+
+#. Translators: Field name in a dictionary entry
+msgid "homograph number"
+msgstr "кількість гомографів"
+
+#. Translators: Field name in a dictionary entry
+msgid "semantic category"
+msgstr "семантична категорія"
+
+#. Translators: Field name in a dictionary entry
+msgid "semantic subcategory"
+msgstr "семантична підкатегорія"
+
+#. Translators: Field name in a dictionary entry
+msgid "range of application"
+msgstr "діапазон застосування"
+
+#. Translators: Field name in a dictionary entry
+msgid "sentiment"
+msgstr "настрій"
+
+#. Translators: Field name in a dictionary entry
+msgid "see"
+msgstr "дивіться"
+
+#. Translators: Field name in a dictionary entry
+msgid "see also"
+msgstr "дивіться також"
+
+#. Translators: Field name in a dictionary entry
+msgid "synonyms"
+msgstr "Синоніми"
+
+#. Translators: Field name in a dictionary entry
+msgid "antonyms"
+msgstr "антоніми"
+
+#. Translators: Field name in a dictionary entry
+msgid "collocate"
+msgstr "розміщено"
+
+#. Translators: Field name in a dictionary entry
+msgid "aspect"
+msgstr "вираз"
+
+#. Translators: Help message for a dialog.
+msgid "Select dictionary source and target language:"
+msgstr "Оберіть вихідну та цільову мови словника:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Source language:"
+msgstr "Початко&ва мова:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Target language:"
+msgstr "Мова &перекладу:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Search in both headwords and &inflections"
+msgstr "Виконувати пошук в зворо&тах"
+
+#. Translators: A setting in addon settings dialog.
+msgid "St&rip words to their stem"
+msgstr "Виконувати пошук одно&кореневих слів"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Show a&ll available translations"
+msgstr "Ві&дображати всі наявні переклади"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Copy dictionary response to clip&board"
+msgstr "Копіювати результат запиту до словника до &буфера обміну"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Auto-s&wap languages"
+msgstr "Автоматична змі&нювати порядок мов"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Username:"
+msgstr "Ім'&я користувача:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Password:"
+msgstr "Па&роль:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Register your own access token"
+msgstr "Зареєструвати власний код доступу"
+
+#. Translators: The name of the online dictionary service
+msgid "Yandex Dictionaries"
+msgstr "Словники Яндекс"
+
+#. Translators: Field name in a dictionary entry
+msgid "number"
+msgstr "число"
+
+#. Translators: Field name in a dictionary entry
+msgid "gender"
+msgstr "стать"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Use &alternative server"
+msgstr "Використовувати &альтернативний сервер"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Dictionary Access Token:"
+msgstr "Код &доступу до словника:"
+
+#. Translators: Button label that show or hide password
+msgid "Show"
+msgstr "Показати"
+
+#. Translators: This displayed by default in the language selection choice list
+msgid "-- select language --"
+msgstr "-- оберіть мову --"
+
+#. Translators: Button label that show or hide password
+msgid "Hide"
+msgstr "Приховати"
+
 #. Add-on summary, usually the user visible name of the addon.
 #. Translators: Summary for this add-on
 #. to be shown on installation and add-on information found in Add-ons Manager.
@@ -311,3 +545,9 @@ msgid ""
 msgstr ""
 "Дозволяє швидко отримувати дані з онлайн словників для обраних слів або "
 "словосполучень"
+
+#~ msgid "announce the add-on help message"
+#~ msgstr "оголосити коротку довідкову інформацію"
+
+#~ msgid "announce a list of all customized voice synthesizers profiles"
+#~ msgstr "повідомити список всіх налаштованих профілів голосових синтезаторів"
