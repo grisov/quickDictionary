@@ -3,23 +3,44 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: NVDA Quick Dictionary 1.2\n"
+"Project-Id-Version: NVDA Quick Dictionary 2.0\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2020-10-09 18:47+0300\n"
-"PO-Revision-Date: 2020-10-26 17:49+0200\n"
+"POT-Creation-Date: 2020-12-11 18:13+0200\n"
+"PO-Revision-Date: 2020-12-12 11:47+0200\n"
 "Last-Translator: Cagri Dogan <cagrid@hotmail.com>\n"
 "Language-Team: cagrid@hotmail.com\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.2\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 "X-Poedit-Basepath: ../../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: quickDictionary/globalPlugins/quickDictionary\n"
+
+#. Translators: the name of a submenu item (also used as method description).
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+#. Translators: The title of the online service selection dialog and menu item
+msgid "choose online service"
+msgstr "çevrimiçi hizmeti seçin"
+
+#. Translators: the name of a submenu item (also used as dialog title).
+#. Translators: The title of the dialog box with a list of voice synthesizers profiles
+#| msgid "Voice synthesizers profiles management:"
+msgid "Voice synthesizers profiles"
+msgstr "Ses sentezleyici profilleri"
+
+#. Translators: the name of a submenu item
+msgid "&Options..."
+msgstr "&Seçenekler..."
+
+#. Translators: the name of a submenu item (also used as dialog title).
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "help on add-on commands"
+msgstr "eklenti komutları hakkında yardım"
 
 #. Translators: Method description is displayed in the NVDA input gestures dialog
 #, python-format
@@ -63,6 +84,7 @@ msgid "copy last dictionary entry to the clipboard"
 msgstr "son sözlük girişini panoya kopyala"
 
 #. Translators: Notification that no dictionary entries have been received in the current session
+#. Translators: Information about the online service
 msgid "There is no dictionary queries"
 msgstr "Sözlük sorgusu yok"
 
@@ -82,8 +104,35 @@ msgid "Warning! The list of available languages could not be loaded."
 msgstr "Uyarı! Mevcut dil listesi yüklenemedi."
 
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
-msgid "announce the add-on help message"
-msgstr "eklenti yardım mesajını söyle"
+msgid "statistics on the using the online service"
+msgstr "çevrimiçi hizmetin kullanımına ilişkin istatistikler"
+
+#. Translators: Information about the online service
+msgid "supports {number} languages"
+msgstr "{number} dili destekler"
+
+#. Translators: The name of the field displayed in the statistics and in the settings panel
+#. Translators: Field name in a dictionary entry
+#. Translators: A setting in addon settings dialog.
+#| msgid "Quick Dictionary"
+msgid "&Dictionary:"
+msgstr "&Sözlük:"
+
+#. Translators: Information about the online service
+msgid "performed {count} requests"
+msgstr "{count} istek işlendi"
+
+#. Translators: Information about the online service
+msgid "available {remain}"
+msgstr "{remain} kaldı"
+
+#. Translators: Information about the online service
+msgid "the limit will be reset in {hours} hours {minutes} minutes"
+msgstr "Limit {hours} saat {minutes} dakika içinde sıfırlanacak"
+
+#. Translators: Information about the cache state
+msgid "state of cache"
+msgstr "önbellek durumu"
 
 #. Translators: Message in the add-on short help
 msgid "switch to add-on control mode"
@@ -130,19 +179,16 @@ msgid "announce the selected profile of voice synthesizers"
 msgstr "Seçili ses sesntezleme profilini bildir"
 
 #. Translators: Method description is displayed in the NVDA gestures dialog
-msgid "announce a list of all customized voice synthesizers profiles"
-msgstr "tüm özelleştirilmiş ses sentezleyici profillerinin listesini bildir"
-
-#. Translators: Notification of no configured profiles
-#. Translators: A warning in addon settings dialog.
-msgid "Please set up voice synthesizers profiles."
-msgstr "Lütfen ses sentezleyici profillerini ayarlayın."
+#| msgid "announce a list of all customized voice synthesizers profiles"
+msgid "display a list of all customized voice synthesizers profiles"
+msgstr "tüm özelleştirilmiş ses sentezleyici profillerinin listesini göster"
 
 #. Translators: Method description is displayed in the NVDA gestures dialog
 msgid "delete the selected voice synthesizer profile"
 msgstr "seçili ses sentezleyici profilini sil"
 
 #. Translators: Message when deleting a profile
+#. Translators: Message that displayed after deleting the profile (also this is the script description)
 #, python-format
 msgid "Profile %d successfully deleted"
 msgstr "Profil %d başarıyla silindi"
@@ -152,36 +198,25 @@ msgid "restore default voice synthesizer"
 msgstr "Varsayılan sentezleyiciye geri dön"
 
 #. Translators: Method description is displayed in the NVDA gestures dialog
+msgid "back to previous voice synthesizer"
+msgstr "Önceki sentezleyiciye geri dön"
+
+#. Translators: Method description is displayed in the NVDA gestures dialog
 msgid "save configured voice synthesizer profile"
 msgstr "yapılandırılmış ses sentezleyici profilini kaydet"
 
 #. Translators: Announcing after saving synthesizer profile
+#. Translators: Display the message after saving the voice synthesizers profiles
 msgid "Voice synthesizer profile saved successfully"
 msgstr "Ses sentezleyici profili başarıyla kaydedildi"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+msgid "From F1 to F{endgate} - select online dictionary service"
+msgstr "F1'den  F{endgate} e kadar - çevrimiçi sözlük hizmetini seçin"
 
 #. Translators: Notification of missing dictionary entry for current request
 msgid "No results"
 msgstr "Sonuç yok"
-
-#. Translators: Field name in a dictionary entry
-msgid "number"
-msgstr "numara"
-
-#. Translators: Field name in a dictionary entry
-msgid "gender"
-msgstr "Cinsiyet"
-
-#. Translators: Field name in a dictionary entry
-msgid "mean"
-msgstr "Ek anlam"
-
-#. Translators: Field name in a dictionary entry
-msgid "synonyms"
-msgstr "Eş anlamlı"
-
-#. Translators: Field name in a dictionary entry
-msgid "examples"
-msgstr "Örnekler"
 
 #. Translators: The name of the language, which may not be in the main list
 msgid "Cebuano"
@@ -247,45 +282,89 @@ msgstr "Tagalog"
 msgid "Yiddish"
 msgstr "Yidiş"
 
-#. Translators: Help message for a dialog.
-msgid "Select dictionary source and target language:"
-msgstr "Sözlük için kaynak ve hedef dili seçin:"
-
 #. Translators: A setting in addon settings dialog.
-msgid "&Source language:"
-msgstr "&Kaynak dil:"
-
-#. Translators: A setting in addon settings dialog.
-msgid "&Target language:"
-msgstr "&Hedef dil:"
-
-#. Translators: A setting in addon settings dialog.
-msgid "Copy dictionary response to clip&board"
-msgstr "Sözlük yanıtını &panoya kopyala"
-
-#. Translators: A setting in addon settings dialog.
-msgid "Auto-s&wap languages"
-msgstr "Dilleri otomatik de&ğiştir"
-
-#. Translators: A setting in addon settings dialog.
-msgid "Use &alternative server"
-msgstr "&Alternatif sunucu kullan"
+msgid "Select &online service:"
+msgstr "&Çevrimiçi hizmeti seçin:"
 
 #. Translators: A setting in addon settings dialog.
 msgid "Switch between &voice synthesizers for selected languages"
 msgstr "Seçilen diller için ses &sentezleyicileri arasında geçiş yap"
 
-#. Translators: A setting in addon settings dialog.
-msgid "&Dictionary Access Token:"
-msgstr "&Sözlük Erişim Jetonu:"
+#. Translators: A warning in addon settings dialog.
+#. Translators: The message that is displayed when the configured synthesizers profiles are missing
+msgid "Please set up voice synthesizers profiles."
+msgstr "Lütfen ses sentezleyici profillerini ayarlayın."
 
-#. Translators: A setting in addon settings dialog.
-msgid "Register your own access token"
-msgstr "Kendi erişim jetonunuzu alın"
+#. Translators: Label in the online service selection dialog
+msgid "Select an online service from the list"
+msgstr "Listeden bir çevrimiçi hizmet seçin"
 
-#. Translators: This displayed by default in the language selection choice list
-msgid "-- select language --"
-msgstr "-- Dil Seçin --"
+#. Translators: The label for a column in the list of online services
+msgid "ID"
+msgstr "ID"
+
+#. Translators: The label for a column in the list of online services
+msgid "Online service"
+msgstr "Çevrimiçi hizmet"
+
+#. Translators: The label for a column in the list of online services
+#| msgid "&Source language:"
+msgid "Supported languages"
+msgstr "Desteklenen diller"
+
+#. Translators: The title of the modal dialog box
+#| msgid "announce the selected profile of voice synthesizers"
+msgid "Changing the profile of the voice synthesizer"
+msgstr "Ses sentezleyici profilini değiştirme"
+
+#. Translators: The message is displayed in the voice synthesizer profile change dialog
+#, python-format
+msgid "Do you want to save changes in profile %d?"
+msgstr "Değişiklikleri %d profiline kaydetmek ister misiniz?"
+
+#. Translators: The title of the modal dialog box
+#| msgid "save configured voice synthesizer profile"
+msgid "Create a new voice synthesizer profile"
+msgstr "Yeni bir ses sentezleyici profili oluşturma"
+
+#. Translators: The message is displayed in the voice synthesizer profile create dialog
+msgid "Please select the &number for new profile:"
+msgstr "Yeni profil için lütfen bir &numara seçin"
+
+#. Translators: The label in dialog with the list of voice synthesizers profiles
+#| msgid "Please set up voice synthesizers profiles."
+msgid "Select a voice synthesizer &profile from the list"
+msgstr "Listeden bir ses sentezleyici ve profil seçin"
+
+#. Translators: The label for a column in the list of voice synthesizers profiles
+msgid "Slot"
+msgstr "Yuva"
+
+#. Translators: The label for a column in the list of voice synthesizers profiles
+#| msgid "restore default voice synthesizer"
+msgid "Voice synthesizer"
+msgstr "Ses sentezleyici"
+
+#. Translators: The label for a column in the list of voice synthesizers profiles
+#| msgid "&Source language:"
+msgid "Associated language"
+msgstr "İlişkili dil"
+
+#. Translators: Label of the button that activates the selected voice synthesizer profile
+msgid "&Activate"
+msgstr "&Etkinleştir"
+
+#. Translators: Label of the button that opens the dialog for changing the selected profile
+msgid "&Change"
+msgstr "&Değiştir"
+
+msgid "Profiles list could not be saved"
+msgstr "Profil listesi kaydedilemedi"
+
+#. Translators: The title of the messageBox that appears after saving the list of voice synthesizers profiles
+#| msgid "save configured voice synthesizer profile"
+msgid "Saving voice synthesizers profiles list"
+msgstr "Ses sentezleyicileri profil listesini kaydetme"
 
 #. Translators: Message if the text was successfully copied to the clipboard
 msgid "Copied to clipboard."
@@ -301,6 +380,176 @@ msgid ""
 "not text!"
 msgstr "Seçili metin yok, pano da boş veya içeriği metin değil!"
 
+#. Translators: The name of the online dictionary service
+#| msgid "Quick Dictionary"
+msgid "Lexicala Dictionaries"
+msgstr "Lexicala Sözlükleri"
+
+#. Translators: Field name in a dictionary entry
+msgid "mean"
+msgstr "Ek anlam"
+
+#. Translators: Field name in a dictionary entry
+msgid "compositional phrases"
+msgstr "kompozisyon ifadeleri"
+
+#. Translators: Field name in a dictionary entry
+msgid "examples"
+msgstr "Örnekler"
+
+#. Translators: Field name in a dictionary entry
+msgid "inflections"
+msgstr "çekimler"
+
+#. Translators: Field name in a dictionary entry
+msgid "pronunciation"
+msgstr "telaffuz"
+
+#. Translators: Field name in a dictionary entry
+msgid "subcategorization"
+msgstr "alt kategorizasyon"
+
+#. Translators: Field name in a dictionary entry
+msgid "case"
+msgstr "durum"
+
+#. Translators: Field name in a dictionary entry
+msgid "register"
+msgstr "Kayıt"
+
+#. Translators: Field name in a dictionary entry
+msgid "geographical usage"
+msgstr "coğrafi kullanım"
+
+#. Translators: Field name in a dictionary entry
+msgid "mood"
+msgstr "mod"
+
+#. Translators: Field name in a dictionary entry
+msgid "tense"
+msgstr "zaman"
+
+#. Translators: Field name in a dictionary entry
+msgid "homograph number"
+msgstr "homograf numarası"
+
+#. Translators: Field name in a dictionary entry
+msgid "semantic category"
+msgstr "anlamsal kategori"
+
+#. Translators: Field name in a dictionary entry
+msgid "semantic subcategory"
+msgstr "anlamsal alt kategori"
+
+#. Translators: Field name in a dictionary entry
+msgid "range of application"
+msgstr "uygulama aralığı"
+
+#. Translators: Field name in a dictionary entry
+msgid "sentiment"
+msgstr "duygu"
+
+#. Translators: Field name in a dictionary entry
+msgid "see"
+msgstr "bakın"
+
+#. Translators: Field name in a dictionary entry
+msgid "see also"
+msgstr "Ayrıca bakın"
+
+#. Translators: Field name in a dictionary entry
+msgid "synonyms"
+msgstr "Eş anlamlı"
+
+#. Translators: Field name in a dictionary entry
+#| msgid "synonyms"
+msgid "antonyms"
+msgstr "zıt anlamlı kelimeler"
+
+#. Translators: Field name in a dictionary entry
+msgid "collocate"
+msgstr "yerleştirilmiş"
+
+#. Translators: Field name in a dictionary entry
+msgid "aspect"
+msgstr "Görünüş"
+
+#. Translators: Help message for a dialog.
+msgid "Select dictionary source and target language:"
+msgstr "Sözlük için kaynak ve hedef dili seçin:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Source language:"
+msgstr "&Kaynak dil:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Target language:"
+msgstr "&Hedef dil:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Search in both headwords and &inflections"
+msgstr "Hem başlıklarda hem de &çekimlerde ara"
+
+#. Translators: A setting in addon settings dialog.
+msgid "St&rip words to their stem"
+msgstr "&Kelimeleri köklerine ayır"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Show a&ll available translations"
+msgstr "&Mevcut tüm çevirileri göster"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Copy dictionary response to clip&board"
+msgstr "Sözlük yanıtını &panoya kopyala"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Auto-s&wap languages"
+msgstr "Dilleri otomatik de&ğiştir"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Username:"
+msgstr "&Kullanıcı adı:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Password:"
+msgstr "&Parola:"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Register your own access token"
+msgstr "Kendi erişim jetonunuzu alın"
+
+#. Translators: The name of the online dictionary service
+msgid "Yandex Dictionaries"
+msgstr "Yandex Sözlükleri"
+
+#. Translators: Field name in a dictionary entry
+msgid "number"
+msgstr "numara"
+
+#. Translators: Field name in a dictionary entry
+msgid "gender"
+msgstr "Cinsiyet"
+
+#. Translators: A setting in addon settings dialog.
+msgid "Use &alternative server"
+msgstr "&Alternatif sunucu kullan"
+
+#. Translators: A setting in addon settings dialog.
+msgid "&Dictionary Access Token:"
+msgstr "&Sözlük Erişim Jetonu:"
+
+#. Translators: Button label that show or hide password
+msgid "Show"
+msgstr "Göster"
+
+#. Translators: This displayed by default in the language selection choice list
+msgid "-- select language --"
+msgstr "-- Dil Seçin --"
+
+#. Translators: Button label that show or hide password
+msgid "Hide"
+msgstr "Gizle"
+
 #. Add-on summary, usually the user visible name of the addon.
 #. Translators: Summary for this add-on
 #. to be shown on installation and add-on information found in Add-ons Manager.
@@ -314,3 +563,9 @@ msgid ""
 msgstr ""
 "Seçilen ya da seçim yoksa panoda bulunan kelime ya da ifadeler için çevrim "
 "içi çabuk sözlük eklentisi"
+
+#~ msgid "announce the add-on help message"
+#~ msgstr "eklenti yardım mesajını söyle"
+
+#~ msgid "announce a list of all customized voice synthesizers profiles"
+#~ msgstr "tüm özelleştirilmiş ses sentezleyici profillerinin listesini bildir"
