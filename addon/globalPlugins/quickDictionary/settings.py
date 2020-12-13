@@ -574,3 +574,74 @@ class SynthesizersDialog(wx.Dialog):
 		profiles.rememberCurrent()
 		profiles[item].set()
 		self.EndModal(item)
+
+
+class EditableInputDialog(wx.Dialog):
+	"""Dialog for edit source text before sending it for translation."""
+
+	def __init__(self, parent, id: int, title: str, text: str, *args, **kwargs):
+		"""Create a dialog box for edit source text before sending it for translation.
+		@param parent: parent top level window
+		@type parent: wx._core.Dialog
+		@param id: identifier of the window
+		@type id: int
+		@param title: title of the window
+		@type title: str
+		@param text: text to edit and send to a remote service
+		@type text: str
+		"""
+		super(EditableInputDialog, self).__init__(parent, id, title=title, *args, **kwargs)
+		self.text = text
+		sizer = wx.BoxSizer(wx.VERTICAL)
+		self.textCtrl = wx.TextCtrl(self, value=text, size=(200, 100),
+			style = wx.TE_NOHIDESEL | wx.TE_MULTILINE | wx.HSCROLL | wx.TE_LEFT | wx.TE_BESTWRAP)
+		sizer.Add(self.textCtrl)
+		# Buttons at the bottom of the dialog box
+		buttons = wx.BoxSizer(wx.HORIZONTAL)
+		self.okButton = wx.Button(self, id=wx.ID_OK)
+		buttons.Add(self.okButton)
+		cancelButton = wx.Button(self, id=wx.ID_CANCEL)
+		buttons.Add(cancelButton)
+		sizer.Add(buttons, flag=wx.BOTTOM)
+		self.SetSizerAndFit(sizer)
+		self.Center(wx.BOTH | wx.Center)
+		# Binding dialog box elements to handler methods
+		self.okButton.Bind(wx.EVT_BUTTON, self.onOkButton)
+		self.okButton.SetDefault()
+		self.Bind(wx.EVT_CHAR_HOOK, self.onKeyPress)
+		self.textCtrl.SetFocus()
+		self.textCtrl.SelectAll()
+
+	def onKeyPress(self, event) -> None:
+		"""Performed when pressing keys.
+		@param event: event binder object that handles keystrokes
+		@type event: wx.core.PyEventBinder
+		"""
+		key = event.GetKeyCode()
+		if event.CmdDown():
+			{
+			ord('A'): self.textCtrl.SelectAll,
+			ord('R'): self.textCtrl.Clear,
+			ord('E'): self.clearText,
+			ord('U'): self.updateText
+			}.get(key, lambda:None)()
+		event.Skip()
+
+	def clearText(self) -> None:
+		"""Clear the text in the editor from non-characters."""
+		from .shared import clearText
+		text = clearText(self.textCtrl.GetValue())
+		self.textCtrl.Clear()
+		self.textCtrl.SetValue(text)
+
+	def updateText(self) -> None:
+		self.textCtrl.Clear()
+		self.textCtrl.SetValue(self.text)
+
+	def onOkButton(self, event) -> None:
+		"""Sending edited text to a remote service.
+		@param event: event binder object that handles the activation of the button
+		@type event: wx.core.PyEventBinder
+		"""
+		event.Skip()
+		self.text = self.textCtrl.GetValue()

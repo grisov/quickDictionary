@@ -30,7 +30,7 @@ from threading import Thread
 from .locator import services
 from .shared import copyToClipboard, getSelectedText, translateWithCaching, hashForCache, waitingFor, messageWithLangDetection, finally_, htmlTemplate
 from .synthesizers import profiles
-from .settings import QDSettingsPanel, SynthesizersDialog, ServicesDialog
+from .settings import QDSettingsPanel, SynthesizersDialog, ServicesDialog, EditableInputDialog
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
@@ -212,6 +212,23 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		Thread(target=self.translate, args=[text, True]).start()
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
+	@script(description="E - %s" % _("edit text before sending"))
+	def script_editText(self, gesture):
+		"""Dialog to edit the selected word/phrase or text from the clipboard before sending it to the translation.
+		@param gesture: gesture assigned to this method
+		@type gesture: L{inputCore.InputGesture}
+		"""
+		def resultHandler(result: int, dlg: wx.Dialog) -> None:
+			"""Processing data obtained from the dialog."""
+			if result==wx.ID_OK:
+				if not dlg.text: return
+				Thread(target=self.translate, args=[dlg.text, True]).start()
+		text = getSelectedText()
+		# Translators: The title of the dialog to edit the text before sending it for translation
+		ed = EditableInputDialog(parent=gui.mainFrame, id=wx.ID_ANY, title=_("edit text before sending").capitalize(), text=text)
+		gui.runScriptModalDialog(ed, callback=lambda result: resultHandler(result, ed))
+
+	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="A - %s" % _("announce the current source and target languages"))
 	def script_announceLanguages(self, gesture):
 		"""Pronounce the current pair of selected languages.
@@ -349,6 +366,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.script_swapLanguages.__doc__,
 			self.script_announceLanguages.__doc__,
 			self.script_copyLastResult.__doc__,
+			self.script_editText.__doc__,
 			self.script_updateLanguages.__doc__,
 			self.script_selectService.__doc__,
 			self.script_dictionaryStatistics.__doc__]:
@@ -561,6 +579,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:NVDA+y": "dictionaryAnnounce",
 		"kb:d": "dictionaryAnnounce",
 		"kb:w": "dictionaryBox",
+		"kb:e": "editText",
 		"kb:a": "announceLanguages",
 		"kb:s": "swapLanguages",
 		"kb:c": "copyLastResult",

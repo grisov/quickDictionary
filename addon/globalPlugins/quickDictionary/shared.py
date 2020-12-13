@@ -120,8 +120,8 @@ def getSelectedText() -> str:
 			# Translators: user has pressed the shortcut key for translating selected text, but no text was actually selected and clipboard is clear
 			ui.message(_("There is no selected text, the clipboard is also empty, or its content is not text!"))
 			return ''
-		return clearText(text)
-	return clearText(info.text)
+		return text
+	return info.text
 
 def clearText(text: str) -> str:
 	"""Retrieve only text information from a string, containing only letters and whitespace.
