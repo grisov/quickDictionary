@@ -207,6 +207,10 @@ Several good solutions from other developments were used in the Quick Dictionary
 
 ## Change log
 
+### Version 2.0-dev
+* added a dialog to edit the text before sending to remote service;
+* Turkish translation added (thanks to Cagri Dogan).
+
 ### Version 2.0
 * added the ability to connect other online dictionary services;
 * added Lexicala service and its settings panel;
