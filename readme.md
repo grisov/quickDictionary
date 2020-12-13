@@ -44,6 +44,18 @@ An article from the dictionary can also be displayed in a separate window as a f
 
 Note: In this window, you can use standard commands to navigate web page elements. To close the window just press Escape or Alt+F4.
 
+## Text preparation
+Sometimes it is necessary to change the text before sending it for translation, or just enter the text yourself.
+To do this, you can use the text pre-edit command - press the E key in the add-on control mode (NVDA+Y). A dialog box opens with a multi-line field for editing text. After editing, just press Ctrl+Enter or the corresponding button.
+
+The following commands are also available in the edit field:
+* Ctrl+A - select all;
+* Ctrl+E - clear text from non-alphabetic characters;
+* Ctrl+R - clear editor field;
+* Ctrl+U - restore original text.
+
+Note: If before calling the dialog for editing text, the text was previously selected or copied to the clipboard, then it will be placed in the editor field in this dialog.
+
 ## Copy the results of the last request to the clipboard
 This can be done by following the steps below:
 1. Enable add-on control mode - NVDA+Y.
