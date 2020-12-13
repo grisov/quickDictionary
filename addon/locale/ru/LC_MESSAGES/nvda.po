@@ -1,9 +1,12 @@
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 'quickDictionary' '2.0'\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2020-12-11 18:13+0200\n"
-"PO-Revision-Date: 2020-12-11 22:18+0200\n"
+"POT-Creation-Date: 2020-12-13 23:33+0200\n"
+"PO-Revision-Date: 2020-12-13 23:42+0200\n"
 "Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -51,6 +54,11 @@ msgstr ""
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 msgid "show dictionary entry in a separate browseable window"
 msgstr "показать словарную статью в отдельном окне для просмотра"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+#. Translators: The title of the dialog to edit the text before sending it for translation
+msgid "edit text before sending"
+msgstr "редактировать текст перед отправкой"
 
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 msgid "announce the current source and target languages"
@@ -542,9 +550,3 @@ msgstr "Быстрый словарь"
 msgid ""
 "Online Dictionary add-on for quick translation selected words or phrases."
 msgstr "Позволяет быстро получить перевод выбранного слова или словосочетания."
-
-#~ msgid "announce the add-on help message"
-#~ msgstr "произнести краткую справочную информацию"
-
-#~ msgid "announce a list of all customized voice synthesizers profiles"
-#~ msgstr "произнести список всех настроенных профилей синтезаторов голоса"

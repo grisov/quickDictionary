@@ -65,6 +65,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		subMenu = wx.Menu()
 		self.mainItem = menu.AppendSubMenu(subMenu, _addonSummary)
 		# Translators: the name of a submenu item (also used as method description).
+		preEditItem = subMenu.Append(wx.ID_ANY, _("edit text before sending").capitalize() + '...')
+		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.preEditDialog(), preEditItem)
+		# Translators: the name of a submenu item (also used as method description).
 		chooseServiceItem = subMenu.Append(wx.ID_ANY, _("choose online service").capitalize() + '...')
 		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.chooseServiceDialog(), chooseServiceItem)
 		# Translators: the name of a submenu item (also used as dialog title).
@@ -218,6 +221,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: L{inputCore.InputGesture}
 		"""
+		self.preEditDialog()
+
+	def preEditDialog(self) -> None:
+		"""Dialog for pre-editing text before sending it for translation."""
 		def resultHandler(result: int, dlg: wx.Dialog) -> None:
 			"""Processing data obtained from the dialog."""
 			if result==wx.ID_OK:

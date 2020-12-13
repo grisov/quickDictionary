@@ -1,10 +1,12 @@
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: 'quickDictionary' '2.0'\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2020-12-11 18:13+0200\n"
-"PO-Revision-Date: 2020-12-11 20:43+0200\n"
+"POT-Creation-Date: 2020-12-13 23:33+0200\n"
+"PO-Revision-Date: 2020-12-13 23:45+0200\n"
 "Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
 "Language-Team: Ukrainian Language Team\n"
 "Language: uk_UA\n"
@@ -52,6 +54,11 @@ msgstr ""
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 msgid "show dictionary entry in a separate browseable window"
 msgstr "показати словникову статтю в окремому вікні для перегляду"
+
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+#. Translators: The title of the dialog to edit the text before sending it for translation
+msgid "edit text before sending"
+msgstr "редагувати текст перед відправкою"
 
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 msgid "announce the current source and target languages"
@@ -545,9 +552,3 @@ msgid ""
 msgstr ""
 "Дозволяє швидко отримувати дані з онлайн словників для обраних слів або "
 "словосполучень"
-
-#~ msgid "announce the add-on help message"
-#~ msgstr "оголосити коротку довідкову інформацію"
-
-#~ msgid "announce a list of all customized voice synthesizers profiles"
-#~ msgstr "повідомити список всіх налаштованих профілів голосових синтезаторів"
