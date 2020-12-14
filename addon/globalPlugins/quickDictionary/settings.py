@@ -594,7 +594,7 @@ class EditableInputDialog(wx.Dialog):
 		self.text = text
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		self.textCtrl = wx.TextCtrl(self, value=text, size=(200, 100),
-			style = wx.TE_NOHIDESEL | wx.TE_MULTILINE | wx.HSCROLL | wx.TE_LEFT | wx.TE_BESTWRAP)
+			style = wx.TE_NOHIDESEL | wx.TE_MULTILINE | wx.HSCROLL | wx.TE_LEFT | wx.TE_BESTWRAP | wx.TE_RICH2)
 		sizer.Add(self.textCtrl)
 		# Buttons at the bottom of the dialog box
 		buttons = wx.BoxSizer(wx.HORIZONTAL)
