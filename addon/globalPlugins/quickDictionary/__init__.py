@@ -61,9 +61,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._messages = []
 
 		# Build a submenu in the "tools" menu
-		menu = gui.mainFrame.sysTrayIcon.toolsMenu
+		self.menu = gui.mainFrame.sysTrayIcon.toolsMenu
 		subMenu = wx.Menu()
-		self.mainItem = menu.AppendSubMenu(subMenu, _addonSummary)
+		self.mainItem = self.menu.AppendSubMenu(subMenu, _addonSummary)
 		# Translators: the name of a submenu item (also used as method description).
 		preEditItem = subMenu.Append(wx.ID_ANY, _("edit text before sending").capitalize() + '...')
 		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.preEditDialog(), preEditItem)
