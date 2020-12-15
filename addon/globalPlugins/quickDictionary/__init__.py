@@ -20,6 +20,7 @@ _addonName = _curAddon.manifest['name']
 _addonSummary = _curAddon.manifest['summary']
 
 import globalPluginHandler
+from globalVars import appArgs
 from scriptHandler import script
 from queueHandler import queueFunction, eventQueue
 import api, ui, config
@@ -40,6 +41,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def __init__(self, *args, **kwargs):
 		"""Initializing initial configuration values ​​and other fields"""
 		super(GlobalPlugin, self).__init__(*args, **kwargs)
+		if appArgs.secure or config.isAppX:
+			return
 		confspec = {
 			"active": "integer(default=0,min=0,max=9)",
 		}

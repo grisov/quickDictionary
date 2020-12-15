@@ -5,11 +5,11 @@
 * Download [stable version][1]
 * Download [development version][2]
 
-Welcome to NVDA Quick Dictionary addon, which will allow you to quickly get a dictionary article with the translation of a word or phrase into your chosen language by pressing a key combination. There are few basic keyboard shortcuts and they are all intuitive and convenient so you will remember them quickly.
-Dictionary articles contain detailed information about a word, such as part of speech, gender, plural or singular, translation options, list of meanings, synonyms and detailed examples. Such information will be useful for people who are learning foreign languages, or seek to use in communication all the richness and diversity of their own language.
-The add-on supports several online dictionary services. You can select the desired remote dictionary in the appropriate dialog box or by using keyboard shortcuts. Each available service has its own settings panel.
-There are also advanced opportunities for working with profiles of the voice synthesizers. You can associate a voice synthesizer profile with a specific language, after that translations into this language will be automatically voiced by the selected synthesizer.
-Below are all the features of the add-on and keyboard shortcuts to control them. By default all functions are called using two-layer commands. But for any of these methods you can always assign convenient for you keyboard shortcuts. You can do it in the NVDA "Preferences" -> "Input gestures..." dialog.
+Welcome to NVDA Quick Dictionary addon, which will allow you to quickly get a dictionary article with the translation of a word or phrase into your chosen language by pressing a key combination. There are few basic keyboard shortcuts and they are all intuitive and convenient so you will remember them quickly.  
+Dictionary articles contain detailed information about a word, such as part of speech, gender, plural or singular, translation options, list of meanings, synonyms and detailed examples. Such information will be useful for people who are learning foreign languages, or seek to use in communication all the richness and diversity of their own language.  
+The add-on supports several online dictionary services. You can select the desired remote dictionary in the appropriate dialog box or by using keyboard shortcuts. Each available service has its own settings panel.  
+There are also advanced opportunities for working with profiles of the voice synthesizers. You can associate a voice synthesizer profile with a specific language, after that translations into this language will be automatically voiced by the selected synthesizer.  
+Below are all the features of the add-on and keyboard shortcuts to control them. By default all functions are called using two-layer commands. But for any of these methods you can always assign convenient for you keyboard shortcuts. You can do it in the NVDA "Preferences" -> "Input gestures..." dialog.  
 
 ## Receiving a dictionary article
 In order to get an article from the dictionary, you must first select the word you are interested in or copy it to the clipboard. Then just press NVDA+Y twice.
@@ -62,7 +62,7 @@ This can be done by following the steps below:
 2. Press C.
 You will then hear a message that the data has been successfully copied and the dictionary entry itself.
 
-Note: If you haven't previously made any requests to the remote dictionary, you will hear a warning.
+Note: If you haven't previously made any requests to the remote dictionary, you will hear a warning.  
 If option "Copy dictionary response to clipboard" in the add-on settings is enabled, the data will be automatically copied after each successful request.
 
 ## Download the current list of available languages
@@ -87,12 +87,12 @@ By pressing Q in the add-on control mode, you can listen to the following data:
 * state of the cache (hits/misses/size/used).
 
 ## Add-on settings dialog
-To change the add-on parameters you need to open the dialog box of its settings. This can be done this way: press NVDA+Y and then the key O.
-The standard NVDA settings dialog with the open section of our add-on will appear on the screen.
+To change the add-on parameters you need to open the dialog box of its settings. This can be done this way: press NVDA+Y and then the key O.  
+The standard NVDA settings dialog with the open section of our add-on will appear on the screen.  
 You can also open this dialog via the NVDA menu: press NVDA+N, go to the "Tools" submenu, then "Quick Dictionary" and activate menu item "Options...".
 
 ### Choose an online service
-When you open the add-on settings dialog, the NVDA cursor is immediately placed on the drop-down list of online service selection. You can select the service from the list and press Enter or Tab to go to the next parameter.
+When you open the add-on settings dialog, the NVDA cursor is immediately placed on the drop-down list of online service selection. You can select the service from the list and press Enter or Tab to go to the next parameter.  
 As mentioned above - each service has its own settings panel. Therefore, all subsequent parameters for each service may be different. Consider the most common of them.
 
 ### Choice of languages for translation
@@ -114,19 +114,19 @@ Note: If the reverse language combination isn't available, you will hear a warni
 After enabling this option, the add-on will not send requests directly to the remote dictionary, but will use an alternate intermediate server that forwards all requests further.
 
 ### Dictionary access token
-To use the remote dictionary service, it is recommended to get your own access token. By default, the add-on already uses a pre-registered access code. But the remote dictionary service used in the add-on imposes certain restrictions and query limits on each free user. Therefore, with the mass use of one access token - sooner or later it can be blocked. To avoid this, it is recommended to register your own access code and specify it in the add-on settings.
+To use the remote dictionary service, it is recommended to get your own access token. By default, the add-on already uses a pre-registered access code. But the remote dictionary service used in the add-on imposes certain restrictions and query limits on each free user. Therefore, with the mass use of one access token - sooner or later it can be blocked. To avoid this, it is recommended to register your own access code and specify it in the add-on settings.  
 You will find a link to register below the field for entering the access token, by clicking on it, you will go to the appropriate web page.
 
 Note: The registration link is displayed only when using the default access token. Once you enter your own access code in the settings, this link will be hidden. To restore the default access token, simply clear the field for entering it and click "OK". The default access code will be restored in the add-on configuration and you will see it the next time you open the settings dialog.
 
 ## Add and manage voice synthesizers profiles
-This add-on implements the ability to voice the received dictionary articles using associated and pre-configured voice synthesizers.
-To take advantage of this feature, you must first create and save voice synthesizers profiles, and then associate these profiles with the languages in the add-on settings dialog.
-After that, upon receipt of the translation, associated voice synthesizers will be automatically switched for each specified language.
+This add-on implements the ability to voice the received dictionary articles using associated and pre-configured voice synthesizers.  
+To take advantage of this feature, you must first create and save voice synthesizers profiles, and then associate these profiles with the languages in the add-on settings dialog.  
+After that, upon receipt of the translation, associated voice synthesizers will be automatically switched for each specified language.  
 To manage the profiles, you can use keyboard commands or the corresponding dialog box. To open a dialog with a list of voice synthesizers profiles - press NVDA+N, go to the "Tools" submenu, then - "Quick Dictionary" and activate the command "Voice synthesizers profiles..." or just press the P key in the add-on control mode (NVDA+Y).
 
 ### Creating a voice synthesizer profile
-You can create up to 9 configuration profiles for the various voice synthesizers available in NVDA.
+You can create up to 9 configuration profiles for the various voice synthesizers available in NVDA.  
 To switch between profiles, use the number keys 1 to 9 in the add-on control mode.
 
 For example, to create a profile number 5, follow these steps:
@@ -141,7 +141,7 @@ Note: You can also perform this and other operations in the dialog "Voice Synthe
 To return to using the voice synthesizer that was set when NVDA started, press NVDA+Y, then press R. This will restore the default voice synthesizer and you will hear its name and the selected voice.
 
 ### Switch between profiles
-As mentioned earlier, you can switch between voice synthesizers profiles using the number keys in the add-on control mode.
+As mentioned earlier, you can switch between voice synthesizers profiles using the number keys in the add-on control mode.  
 If the profile already has previously saved voice synthesizer settings, the corresponding voice will be activated and you will hear a message with information about the number of the activated profile, the name of the synthesizer and the name of the voice. Otherwise, if the selected profile does not yet contain any data - a message will be displayed only about its number and the synthesizer will not switch.
 
 Note: In either case, you can return to default voice using the R key in add-on control mode (NVDA+Y).
@@ -150,21 +150,21 @@ Note: In either case, you can return to default voice using the R key in add-on 
 You can quickly return to the previous voice synthesizer by pressing the B key in the addon control mode.
 
 ### Notification of the currently selected profile
-To hear which profile is currently selected, use the G key in add-on control mode (NVDA+Y).
+To hear which profile is currently selected, use the G key in add-on control mode (NVDA+Y).  
 If the profile contains voice synthesizer settings, the name of the synthesizer and voice will be announced in addition to the number. Otherwise, you will only hear the active profile number.
 
 ### Delete settings from the selected profile
-To delete the voice synthesizer settings from the currently selected profile, use the Delete key in add-on control mode (NVDA+Y).
+To delete the voice synthesizer settings from the currently selected profile, use the Delete key in add-on control mode (NVDA+Y).  
 You will hear a message about the successful deletion of the profile with the specified number.
 
 ### Save changes
-After each manipulation of the profile (create/update/delete) it is necessary to save changes using V key in the add-on control mode (NVDA+Y).
+After each manipulation of the profile (create/update/delete) it is necessary to save changes using V key in the add-on control mode (NVDA+Y).  
 By pressing this key you will hear the message about successful saving of the changes.
 
 ### Dialog "Voice Synthesizers Profiles"
-You can open a dialog with a list of voice synthesizers profiles from the NVDA menu - press NVDA+N, go to the "Tools" submenu, then - "Quick Dictionary" and activate the item "Voice synthesizers profiles..." or just press the P key in add-on control mode.
-For each profile in list specified its number, synthesizer name, voice name, and the language associated with that profile.
-To activate a profile, go to it with up or down arrow keys and press Enter, or just press the number that corresponds to the profile number.
+You can open a dialog with a list of voice synthesizers profiles from the NVDA menu - press NVDA+N, go to the "Tools" submenu, then - "Quick Dictionary" and activate the item "Voice synthesizers profiles..." or just press the P key in add-on control mode.  
+For each profile in list specified its number, synthesizer name, voice name, and the language associated with that profile.  
+To activate a profile, go to it with up or down arrow keys and press Enter, or just press the number that corresponds to the profile number.  
 Other operations with voice synthesizers profiles are also available in the specified dialog. To perform one of the following actions - go to the corresponding button in the dialog or use the key indicated in brackets:
 * create new profile (F7)
 * change selected profile (F4)
@@ -196,6 +196,9 @@ You can see a list of all the commands used in the add-on as follows:
 * Via the NVDA menu - by pressing NVDA+N, go to the submenu "Tools", then - "Quick Dictionary" and activate the menu item "Help on add-on commands".
 * Press the H key in add-on control mode (NVDA+Y).
 
+## Add-on help
+To open the add-on help - press NVDA+N, go to the "Tools" submenu, then - "Quick Dictionary" and activate the menu item "Help".
+
 ## Contributions
 We are very grateful to everyone who made the effort to develop, translate and maintain this add-on:
 * Cagri Dogan - Turkish translation;
@@ -207,8 +210,9 @@ Several good solutions from other developments were used in the Quick Dictionary
 
 ## Change log
 
-### Version 2.0-dev
+### Version 2.0.2
 * added a dialog to edit the text before sending to remote service;
+* separated add-on help page from ReadMe;
 * Turkish translation added (thanks to Cagri Dogan).
 
 ### Version 2.0
