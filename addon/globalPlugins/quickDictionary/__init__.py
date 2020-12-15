@@ -62,8 +62,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._cacheInfo = None
 		# Sequence of messages
 		self._messages = []
+		self.createSubMenu()
 
-		# Build a submenu in the "tools" menu
+	def createSubMenu(self) -> None:
+		"""Build a submenu in the "tools" menu."""
 		self.menu = gui.mainFrame.sysTrayIcon.toolsMenu
 		subMenu = wx.Menu()
 		self.mainItem = self.menu.AppendSubMenu(subMenu, _addonSummary)
@@ -80,8 +82,25 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		settingsItem = subMenu.Append(wx.ID_ANY, _("&Options..."))
 		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonSettingsDialog(), settingsItem)
 		# Translators: the name of a submenu item (also used as dialog title).
-		helpItem = subMenu.Append(wx.ID_ANY, _("help on add-on commands").capitalize())
-		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonHelpPage(), helpItem)
+		cmdHelpItem = subMenu.Append(wx.ID_ANY, _("help on add-on commands").capitalize())
+		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonHelpPage(), cmdHelpItem)
+		helpFile = _curAddon.getDocFilePath().replace("readme.html", "index.html")
+		# If there is no localized file - open the English version
+		if not os.path.isfile(helpFile):
+			locale = helpFile.split('\\')[-2]
+			helpFile = _curAddon.getDocFilePath().replace("\\%s\\readme.html" % locale, "\\en\\index.html")
+		if os.path.isfile(helpFile):
+			# Translators: the name of a submenu item
+			helpItem = subMenu.Append(wx.ID_ANY, _("he&lp"))
+			gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.openHelp(helpFile), helpItem)
+
+	def openHelp(self, helpFile: str) -> None:
+		"""Open the add-on help page in the default browser.
+		@param helpFile: HTML-file with complete help information on the add-on
+		@type helpFile: str
+		"""
+		import webbrowser
+		webbrowser.open(helpFile)
 
 	@property
 	def source(self) -> str:
