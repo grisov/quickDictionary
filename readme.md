@@ -1,7 +1,7 @@
 # NVDA Quick Dictionary
 
 * Author: Oleksandr Gryshchenko
-* Version: 2.0
+* Version: 2.1
 * Download [stable version][1]
 * Download [development version][2]
 
@@ -210,7 +210,7 @@ Several good solutions from other developments were used in the Quick Dictionary
 
 ## Change log
 
-### Version 2.0.2
+### Version 2.1
 * added a dialog to edit the text before sending to remote service;
 * separated add-on help page from ReadMe;
 * Turkish translation added (thanks to Cagri Dogan).
@@ -262,5 +262,5 @@ These can be installed with pip:
 1. Open a command line, change to the root of this repo
 2. Run the **scons** command. The created add-on, if there were no errors, is placed in the current directory.
 
-[1]: https://github.com/grisov/quickDictionary/releases/download/v2.0/quickDictionary-2.0.nvda-addon
-[2]: https://github.com/grisov/quickDictionary/releases/download/v2.0/quickDictionary-2.0.nvda-addon
+[1]: https://github.com/grisov/quickDictionary/releases/download/v2.1/quickDictionary-2.1.nvda-addon
+[2]: https://github.com/grisov/quickDictionary/releases/download/v2.1/quickDictionary-2.1.nvda-addon
