@@ -91,7 +91,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			helpFile = _curAddon.getDocFilePath().replace("\\%s\\readme.html" % locale, "\\en\\index.html")
 		if os.path.isfile(helpFile):
 			# Translators: the name of a submenu item
-			helpItem = subMenu.Append(wx.ID_ANY, _("he&lp"))
+			helpItem = subMenu.Append(wx.ID_ANY, _("He&lp"))
 			gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.openHelp(helpFile), helpItem)
 
 	def openHelp(self, helpFile: str) -> None:
