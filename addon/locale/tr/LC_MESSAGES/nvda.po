@@ -1,12 +1,11 @@
-# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: NVDA Quick Dictionary 2.0\n"
+"Project-Id-Version: NVDA Quick Dictionary 2.1\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2020-12-11 18:13+0200\n"
-"PO-Revision-Date: 2020-12-12 11:47+0200\n"
+"POT-Creation-Date: 2020-12-15 19:20+0200\n"
+"PO-Revision-Date: 2020-12-16 16:28+0200\n"
 "Last-Translator: Cagri Dogan <cagrid@hotmail.com>\n"
 "Language-Team: cagrid@hotmail.com\n"
 "Language: tr\n"
@@ -23,13 +22,18 @@ msgstr ""
 
 #. Translators: the name of a submenu item (also used as method description).
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
+#. Translators: The title of the dialog to edit the text before sending it for translation
+msgid "edit text before sending"
+msgstr "göndermeden önce metni Düzenle"
+
+#. Translators: the name of a submenu item (also used as method description).
+#. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 #. Translators: The title of the online service selection dialog and menu item
 msgid "choose online service"
 msgstr "çevrimiçi hizmeti seçin"
 
 #. Translators: the name of a submenu item (also used as dialog title).
 #. Translators: The title of the dialog box with a list of voice synthesizers profiles
-#| msgid "Voice synthesizers profiles management:"
 msgid "Voice synthesizers profiles"
 msgstr "Ses sentezleyici profilleri"
 
@@ -41,6 +45,10 @@ msgstr "&Seçenekler..."
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 msgid "help on add-on commands"
 msgstr "eklenti komutları hakkında yardım"
+
+#. Translators: the name of a submenu item
+msgid "He&lp"
+msgstr "&Yardım"
 
 #. Translators: Method description is displayed in the NVDA input gestures dialog
 #, python-format
@@ -114,7 +122,6 @@ msgstr "{number} dili destekler"
 #. Translators: The name of the field displayed in the statistics and in the settings panel
 #. Translators: Field name in a dictionary entry
 #. Translators: A setting in addon settings dialog.
-#| msgid "Quick Dictionary"
 msgid "&Dictionary:"
 msgstr "&Sözlük:"
 
@@ -179,7 +186,6 @@ msgid "announce the selected profile of voice synthesizers"
 msgstr "Seçili ses sesntezleme profilini bildir"
 
 #. Translators: Method description is displayed in the NVDA gestures dialog
-#| msgid "announce a list of all customized voice synthesizers profiles"
 msgid "display a list of all customized voice synthesizers profiles"
 msgstr "tüm özelleştirilmiş ses sentezleyici profillerinin listesini göster"
 
@@ -308,12 +314,10 @@ msgid "Online service"
 msgstr "Çevrimiçi hizmet"
 
 #. Translators: The label for a column in the list of online services
-#| msgid "&Source language:"
 msgid "Supported languages"
 msgstr "Desteklenen diller"
 
 #. Translators: The title of the modal dialog box
-#| msgid "announce the selected profile of voice synthesizers"
 msgid "Changing the profile of the voice synthesizer"
 msgstr "Ses sentezleyici profilini değiştirme"
 
@@ -323,7 +327,6 @@ msgid "Do you want to save changes in profile %d?"
 msgstr "Değişiklikleri %d profiline kaydetmek ister misiniz?"
 
 #. Translators: The title of the modal dialog box
-#| msgid "save configured voice synthesizer profile"
 msgid "Create a new voice synthesizer profile"
 msgstr "Yeni bir ses sentezleyici profili oluşturma"
 
@@ -332,7 +335,6 @@ msgid "Please select the &number for new profile:"
 msgstr "Yeni profil için lütfen bir &numara seçin"
 
 #. Translators: The label in dialog with the list of voice synthesizers profiles
-#| msgid "Please set up voice synthesizers profiles."
 msgid "Select a voice synthesizer &profile from the list"
 msgstr "Listeden bir ses sentezleyici ve profil seçin"
 
@@ -341,12 +343,10 @@ msgid "Slot"
 msgstr "Yuva"
 
 #. Translators: The label for a column in the list of voice synthesizers profiles
-#| msgid "restore default voice synthesizer"
 msgid "Voice synthesizer"
 msgstr "Ses sentezleyici"
 
 #. Translators: The label for a column in the list of voice synthesizers profiles
-#| msgid "&Source language:"
 msgid "Associated language"
 msgstr "İlişkili dil"
 
@@ -362,7 +362,6 @@ msgid "Profiles list could not be saved"
 msgstr "Profil listesi kaydedilemedi"
 
 #. Translators: The title of the messageBox that appears after saving the list of voice synthesizers profiles
-#| msgid "save configured voice synthesizer profile"
 msgid "Saving voice synthesizers profiles list"
 msgstr "Ses sentezleyicileri profil listesini kaydetme"
 
@@ -381,7 +380,6 @@ msgid ""
 msgstr "Seçili metin yok, pano da boş veya içeriği metin değil!"
 
 #. Translators: The name of the online dictionary service
-#| msgid "Quick Dictionary"
 msgid "Lexicala Dictionaries"
 msgstr "Lexicala Sözlükleri"
 
@@ -462,7 +460,6 @@ msgid "synonyms"
 msgstr "Eş anlamlı"
 
 #. Translators: Field name in a dictionary entry
-#| msgid "synonyms"
 msgid "antonyms"
 msgstr "zıt anlamlı kelimeler"
 
