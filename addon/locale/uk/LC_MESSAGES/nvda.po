@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 'quickDictionary' '2.1'\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
 "POT-Creation-Date: 2020-12-15 19:20+0200\n"
-"PO-Revision-Date: 2020-12-15 19:43+0200\n"
+"PO-Revision-Date: 2020-12-19 17:53+0200\n"
 "Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
 "Language-Team: Ukrainian Language Team\n"
 "Language: uk_UA\n"
@@ -68,7 +68,7 @@ msgstr "показати словникову статтю в окремому �
 
 #. Translators: Method description included in the add-on help message and NVDA input gestures dialog
 msgid "announce the current source and target languages"
-msgstr "оголосити поточну вихідну мову та мову перекладу"
+msgstr "оголосити поточну мову оригіналу та мову перекладу"
 
 #. Translators: message presented to announce the current source and target languages.
 msgid "Translate: from {langFrom} to {langInto}"
@@ -471,11 +471,11 @@ msgstr "вираз"
 
 #. Translators: Help message for a dialog.
 msgid "Select dictionary source and target language:"
-msgstr "Оберіть вихідну та цільову мови словника:"
+msgstr "Оберіть мову оригіналу та мову перекладу:"
 
 #. Translators: A setting in addon settings dialog.
 msgid "&Source language:"
-msgstr "Початко&ва мова:"
+msgstr "Мо&ва оригіналу:"
 
 #. Translators: A setting in addon settings dialog.
 msgid "&Target language:"
