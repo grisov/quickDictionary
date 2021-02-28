@@ -5,11 +5,16 @@
 # See the file COPYING for more details.
 # Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import List, Generator
+from typing import List, Iterator
 import os
 from .. import _addonName
-from ..service import Language, Languages, secrets
+from ..service import BaseLanguage, Languages, secrets
 from .api import serviceName, Yapi
+
+
+class Language(BaseLanguage):
+	"""Overriding a class due to a non-compliance of the some language codes with the ISO standard."""
+	pass
 
 
 class ServiceLanguages(Languages):
@@ -38,20 +43,20 @@ class ServiceLanguages(Languages):
 			self.updated = self.save(langs)
 		return self.updated
 
-	def fromList(self) -> Generator[Language, None, None]:
+	def fromList(self) -> Iterator[Language]:
 		"""Sequence of available source languages.
 		@return: sequence of available source languages
-		@rtype: Generator[Language, None, None]
+		@rtype: Iterator[Language]
 		"""
 		for lang in list({c.split('-')[0]: c for c in self._langs}):
 			yield Language(lang)
 
-	def intoList(self, lang: str) -> Generator[Language, None, None]:
+	def intoList(self, lang: str) -> Iterator[Language]:
 		"""Sequence of available target languages for a given source language.
 		@param lang: source language code
 		@type lang: str
 		@return: sequence of available target languages
-		@rtype: Generator[Language, None, None]
+		@rtype: Iterator[Language]
 		"""
 		if not lang: return
 		for lng in self._langs:
@@ -79,7 +84,7 @@ class ServiceLanguages(Languages):
 		return Language('en' if next(filter(lambda l: l.code=='en', self.fromList()), None) else self._langs[0].split('-')[0])
 
 	@property
-	def defaultInto(self) -> Language:
+	def defaultInto(self):
 		"""Default target language.
 		@return: locale language, if it is available as the target for the default source, otherwise the first one in the list
 		@rtype: Language
@@ -87,7 +92,7 @@ class ServiceLanguages(Languages):
 		return self.locale if next(filter(lambda l: l.code==self.locale.code, self.intoList(self.defaultFrom.code)), None) else [l for l in self.intoList(self.defaultFrom.code)][0]
 
 	@property
-	def all(self) -> List[Language]:
+	def all(self):
 		"""Full list of all supported source and target languages.
 		@return: list of all supported languages
 		@rtype: List[Language]

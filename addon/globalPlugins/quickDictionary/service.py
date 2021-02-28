@@ -13,7 +13,7 @@
 """
 
 from __future__ import annotations
-from typing import Callable, Union, List, Dict, Generator
+from typing import Callable, Union, List, Dict, Iterator
 import addonHandler
 from logHandler import log
 try:
@@ -70,20 +70,17 @@ langNames = {
 	"yi": _("Yiddish"),
 }
 
-class Language(object):
+class BaseLanguage(metaclass=ABCMeta):
 	"""Object representation of language."""
 
-	def __init__(self,
-		code: str,
-		langNames: Dict[str, str] = langNames) -> None:
+	def __init__(self, code: str) -> None:
 		"""Language object fields initialization.
 		@param code: usually two-character language code
 		@type code: str
-		@param langNames: additional languages, where key is a two-character code and value is name of the language
-		@type langNames: Dict[str, str]
 		"""
 		self._lang = code
-		self._names = langNames
+		# additional languages, where key is a two-character code and value is name of the language
+		self._names: Dict[str, str] = langNames
 
 	@property
 	def code(self) -> str:
@@ -158,21 +155,21 @@ class Languages(metaclass=ABCMeta):
 		return True
 
 	@property
-	def locale(self) -> Language:
+	def locale(self) -> BaseLanguage:
 		"""User locale language.
 		@return: locale language used on the user's computer
-		@rtype: Language
+		@rtype: BaseLanguage
 		"""
 		try:
 			code: str = getattr(getdefaultlocale()[0], 'split')('_')[0]
 		except (AttributeError, IndexError,):
 			code = ''
-		return Language(code)
+		return BaseLanguage(code)
 
-	def __contains__(self, lang: Language) -> bool:
+	def __contains__(self, lang: BaseLanguage) -> bool:
 		"""Implementation of checking the presence of an Language in the current collection.
 		@param lang: language is represented as a Language object
-		@type lang: Language
+		@type lang: BaseLanguage
 		@return: whether the specified language is available in the current list
 		@rtype: bool
 		"""
@@ -181,14 +178,14 @@ class Languages(metaclass=ABCMeta):
 				return True
 		return False
 
-	def __getitem__(self, lang: str) -> Language:
+	def __getitem__(self, lang: str) -> BaseLanguage:
 		"""Returns the Language object for the given language code.
 		@param lang: two-character language code
 		@type lang: str
 		@return: the Language object for the given code
-		@rtype: Language
+		@rtype: BaseLanguage
 		"""
-		return Language(lang)
+		return BaseLanguage(lang)
 
 	# The following methods and properties must be overridden in the child class
 	@abstractmethod
@@ -201,20 +198,20 @@ class Languages(metaclass=ABCMeta):
 		raise NotImplementedError("This method must be overridden in the child class!")
 
 	@abstractmethod
-	def fromList(self) -> Generator[Language, None, None]:
+	def fromList(self) -> Iterator[BaseLanguage]:
 		"""Sequence of available source languages.
 		@return: sequence of available source languages
-		@rtype: Generator[Language, None, None]
+		@rtype: Iterator[BaseLanguage]
 		"""
 		raise NotImplementedError("This method must be overridden in the child class!")
 
 	@abstractmethod
-	def intoList(self, lang: str) -> Generator[Language, None, None]:
+	def intoList(self, lang: str) -> Iterator[BaseLanguage]:
 		"""Sequence of available target languages for a given source language.
 		@param lang: source language code
 		@type lang: str
 		@return: sequence of available target languages
-		@rtype: Generator[Language, None, None]
+		@rtype: Iterator[BaseLanguage]
 		"""
 		raise NotImplementedError("This method must be overridden in the child class!")
 
@@ -232,28 +229,28 @@ class Languages(metaclass=ABCMeta):
 
 	@property
 	@abstractmethod
-	def defaultFrom(self) -> Language:
+	def defaultFrom(self) -> BaseLanguage:
 		"""Default source language.
 		@return: 'en' if available, else - the first language in list of source languages
-		@rtype: Language
+		@rtype: BaseLanguage
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
 
 	@property
 	@abstractmethod
-	def defaultInto(self) -> Language:
+	def defaultInto(self) -> BaseLanguage:
 		"""Default target language.
 		@return: locale language, if it is available as the target for the default source, otherwise the first one in the list
-		@rtype: Language
+		@rtype: BaseLanguage
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
 
 	@property
 	@abstractmethod
-	def all(self) -> List[Language]:
+	def all(self) -> List[BaseLanguage]:
 		"""Full list of all supported source and target languages.
 		@return: list of all supported languages
-		@rtype: List[Language]
+		@rtype: List[BaseLanguage]
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
 

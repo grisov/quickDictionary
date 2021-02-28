@@ -5,20 +5,20 @@
 # See the file COPYING for more details.
 # Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import List, Dict, Generator
+from typing import List, Dict, Iterator
 import os
 import config
 from .. import _addonName
-from ..service import Language as BaseLanguage, Languages, secrets
+from ..service import BaseLanguage, Languages, secrets
 from .api import Lapi, serviceName
 
 
 class Language(BaseLanguage):
 	"""Overriding a class due to a non-compliance of the some language codes with the ISO standard."""
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, code: str) -> None:
 		"""Language initialization by its code."""
-		super(Language, self).__init__(*args, **kwargs)
+		super(Language, self).__init__(code)
 
 	@property
 	def name(self) -> str:
@@ -96,23 +96,23 @@ class ServiceLanguages(Languages):
 			self.updated = self.save(langs)
 		return self.updated
 
-	def fromList(self, source: str='') -> Generator[Language, None, None]:
+	def fromList(self, source: str='') -> Iterator[Language]:
 		"""Sequence of available source languages.
 		@param source: source dictionary name, if not specified, the current is used
 		@type source: str
 		@return: sequence of available source languages
-		@rtype: Generator[Language, None, None]
+		@rtype: Iterator[Language]
 		"""
 		source = source or self.source
 		for lang in self._langs.get('resources', {}).get(source, {}).get('source_languages', []):
 			yield Language(lang)
 
-	def intoList(self, source: str='') -> Generator[Language, None, None]:
+	def intoList(self, source: str='') -> Iterator[Language]:
 		"""Sequence of available target languages.
 		@param source: source dictionary name, if not specified, the current is used
 		@type source: str
 		@return: sequence of available target languages
-		@rtype: Generator[Language, None, None]
+		@rtype: Iterator[Language]
 		"""
 		source = source or self.source
 		for lang in self._langs.get('resources', {}).get(source, {}).get('target_languages', []):
@@ -146,26 +146,18 @@ class ServiceLanguages(Languages):
 		return self.locale if self.locale.code in self._langs['resources'][self.defaultSource]['target_languages'] else Language(next(iter(self._langs['resources'][self.defaultSource]['target_languages']), ''))
 
 	@property
-	def all(self) -> List[Language]:
+	def all(self):
 		"""Full list of all supported source and target languages.
 		@return: list of all supported languages
 		@rtype: List[Language]
 		"""
 		if not self._all:
+			_all: List[str] = []
 			for source in self.sources:
-				self._all.extend(self._langs.get('resources', {}).get(source, {}).get('source_languages', []))
-				self._all.extend(self._langs.get('resources', {}).get(source, {}).get('target_languages', []))
-			self._all = [Language(lang) for lang in frozenset(self._all)]
+				_all.extend(self._langs.get('resources', {}).get(source, {}).get('source_languages', []))
+				_all.extend(self._langs.get('resources', {}).get(source, {}).get('target_languages', []))
+			self._all = [Language(lang) for lang in frozenset(_all)]
 		return self._all
-
-	def __getitem__(self, lang: str) -> Language:
-		"""Returns the Language object for the given language code.
-		@param lang: two-character language code
-		@type lang: str
-		@return: the Language object for the given code
-		@rtype: Language
-		"""
-		return Language(lang)
 
 
 # An instance of the Languages object for use in the add-on
