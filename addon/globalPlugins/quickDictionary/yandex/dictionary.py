@@ -3,14 +3,16 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
+from typing import Callable
 import addonHandler
 from logHandler import log
 try:
 	addonHandler.initTranslation()
 except addonHandler.AddonError:
 	log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
+_: Callable[[str], str]
 
 import re
 from .. import _addonName
@@ -21,7 +23,7 @@ from .languages import langs
 
 
 # Translators: The name of the online dictionary service
-_serviceSummary = _("Yandex Dictionaries")
+serviceSummary = _("Yandex Dictionaries")
 
 confspec = {
 	"from": "string(default=%s)" % langs.defaultFrom.code,
@@ -49,11 +51,9 @@ class ServiceTranslator(Translator):
 		"""
 		super(ServiceTranslator, self).__init__(langFrom, langTo, text, *args, **kwargs)
 
-	# The list of getters defining parameters for working with the dictionary
-	uiLang = lambda self: self._langTo or langs.locale
-
-	# Define class properties
-	uiLang = property(uiLang)
+	@property
+	def uiLang(self):
+		return self._langTo or langs.locale
 
 	def run(self):
 		"""Query the remote dictionary and save the processed response.

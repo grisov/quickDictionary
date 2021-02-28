@@ -3,14 +3,16 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
+from typing import Any, Callable, List, Dict
 import addonHandler
 from logHandler import log
 try:
 	addonHandler.initTranslation()
 except addonHandler.AddonError:
 	log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
+_: Callable[[str], str]
 
 import os
 import re
@@ -28,10 +30,11 @@ import config
 from . import _addonName
 from .locator import services
 from .synthesizers import profiles
+from .service import Translator
 
 
 @lru_cache(maxsize=64)
-def translateWithCaching(langFrom: str, langInto: str, text: str, hashForCache: int):
+def translateWithCaching(langFrom: str, langInto: str, text: str, hashForCache: int) -> Translator:
 	"""Call the request procedure to the remote server on a separate thread.
 	Wait for the request to complete and return a prepared response.
 	All function values are cached to reduce the number of requests to the server.
@@ -45,7 +48,7 @@ def translateWithCaching(langFrom: str, langInto: str, text: str, hashForCache: 
 	@param hashForCache: hash of all parameters that must be considered when caching
 	@type hashForCache: int
 	@return: object containing the prepared response from the remote dictionary
-	@rtype: <service>.dictionary.Translator
+	@rtype: Translator
 	"""
 	translator = services[config.conf[_addonName]['active']].translator(langFrom, langInto, text)
 	translator.start()
@@ -61,17 +64,17 @@ def translateWithCaching(langFrom: str, langInto: str, text: str, hashForCache: 
 
 def hashForCache(active: int) -> int:
 	"""Hash sum of the values of all service parameters that must be taken into account when caching requests."""
-	hashes = active
+	hashes: int = active
 	for opt, value in config.conf[_addonName][services[active].name].items():
 		hashes += hash(value)
 	return hashes
 
-def waitingFor(target, args:list=[]):
+def waitingFor(target: Callable, args: List[Any]=[]) -> None:
 	"""Waiting for the function to complete, beeps are output while waiting.
 	@param target: function that will be started and user will hear sounds during its execution
-	@type target: function
+	@type target: Callable
 	@param args: list of arguments to be passed to the function
-	@type args: list
+	@type args: List[Any]
 	"""
 	load = Thread(target=target, args=args)
 	load.start()
@@ -83,18 +86,6 @@ def waitingFor(target, args:list=[]):
 			i = 0
 		i+=1
 	load.join()
-
-def copyToClipboard(text: str) -> None:
-	"""Copy the received text to the clipboard and announce the completion status of the operation.
-	@param text: text to be copied to the clipboard
-	@type text: str
-	"""
-	if api.copyToClip(text):
-		# Translators: Message if the text was successfully copied to the clipboard
-		ui.message(_("Copied to clipboard."))
-	else:
-		# Translators: Message if the text could not be copied to the clipboard
-		ui.message(_("Copy failed."))
 
 def getSelectedText() -> str:
 	"""Retrieve the selected text.
@@ -134,11 +125,11 @@ def clearText(text: str) -> str:
 	return ' '.join(re.split('\s+', text))
 
 # Below toggle code came from Tyler Spivey's code, with enhancements by Joseph Lee (from Instant Translate add-on)
-def finally_(func, final):
+def finally_(func: Callable, final: Callable) -> Callable:
 	"""Calls final after func, even if it fails."""
-	def wrap(f):
+	def wrap(f) -> Callable:
 		@wraps(f)
-		def new(*args, **kwargs):
+		def new(*args, **kwargs) -> None:
 			try:
 				func(*args, **kwargs)
 			finally:
@@ -170,11 +161,11 @@ def restoreSynthIfSpeechBeenCanceled() -> None:
 		profiles.restorePrevious()
 		profiles.rememberCurrent(previous)
 
-def messageWithLangDetection(msg: dict) -> None:
+def messageWithLangDetection(msg: Dict[str, str]) -> None:
 	"""Pronounce text in a given language if enabled the setting for auto-switching languages of the synthesizer.
 	After the speech, switche to the previous synthesizer, if the corresponding option is enabled.
 	@param msg: language code and text to be spoken in the specified language
-	@type msg: dict -> {'lang': str, 'text': str}
+	@type msg: Dict[str, str] -> {'lang': str, 'text': str}
 	"""
 	switchSynth = config.conf[_addonName][services[config.conf[_addonName]['active']].name]['switchsynth']
 	profile = next(filter(lambda x: x.lang==msg['lang'], (p for s,p in profiles)), None)

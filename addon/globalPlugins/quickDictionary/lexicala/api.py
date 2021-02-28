@@ -3,8 +3,9 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
+from typing import Any, Dict
 import os
 import ssl
 import base64
@@ -17,14 +18,19 @@ from .. import _addonName
 from ..service import secrets
 
 ssl._create_default_https_context = ssl._create_unverified_context
-serviceName = os.path.basename(os.path.dirname(__file__))
-stat = {} # Object for store statistics
+serviceName: str = os.path.basename(os.path.dirname(__file__))
+stat: Dict[str, Any] = {} # Object for store statistics
 
 
 class Lapi(object):
 	"""Description of the Lexicala Online Dictionary API."""
 
-	def __init__(self, text:str='', lang:str='en', source:str='global', morph:bool=False, analyzed:bool=False):
+	def __init__(self,
+		text: str='',
+		lang: str='en',
+		source: str='global',
+		morph: bool=False,
+		analyzed: bool=False) -> None:
 		"""Input parameters for interacting with the online dictionary.
 		@param text: word or phrase to search in the dictionary
 		@type text: str
@@ -35,7 +41,7 @@ class Lapi(object):
 		@param morph: searches for the text in both headwords and inflections, including in supplemental morphological lists
 		@type morph: bool
 		@param analyzed: algorithm that strips words to their stem, and disregards diacritics and case (uppercase/lowercase)
-		@type analyzed:
+		@type analyzed: bool
 		"""
 		self._url = "https://dictapi.lexicala.com/"
 		self._text = text
@@ -187,7 +193,7 @@ class Lapi(object):
 		try:
 			date = datestr.split(' ')[1:-1]
 			date[1] = "%02d" % (['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].index(date[1])+1)
-			date = datetime.strptime(' '.join(date), "%d %m %Y %H:%M:%S")
+			dt: datetime = datetime.strptime(' '.join(date), "%d %m %Y %H:%M:%S")
 		except Exception as e:
 			return datetime.now() - timedelta(days=100)
-		return date
+		return dt

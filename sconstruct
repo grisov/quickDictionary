@@ -9,6 +9,13 @@ import os
 import os.path
 import zipfile
 import sys
+
+# While names imported below are available by default in every SConscript
+# Linters aren't aware about them.
+# To avoid Flake8 F821 warnings about them they are imported explicitly.
+# When using other  Scons functions please add them to the line below.
+from SCons.Script import BoolVariable, Builder, Copy, Environment, Variables
+
 sys.dont_write_bytecode = True
 
 # Bytecode should not be written for build vars module to keep the repository root folder clean.
@@ -17,9 +24,21 @@ import buildVars  # NOQA: E402
 
 def md2html(source, dest):
 	import markdown
+	# Temp: to be replaced by an extensions list in spring 2021.
+	import markdown.extensions.tables
+	mdTable = markdown.extensions.tables.TableExtension()
 	lang = os.path.basename(os.path.dirname(source)).replace('_', '-')
+	localeLang = os.path.basename(os.path.dirname(source))
+	try:
+		if sys.version_info.major == 2:
+			_ = gettext.translation("nvda", localedir=os.path.join("addon", "locale"), languages=[localeLang]).ugettext
+		else:
+			_ = gettext.translation("nvda", localedir=os.path.join("addon", "locale"), languages=[localeLang]).gettext
+		summary = _(buildVars.addon_info["addon_summary"])
+	except:
+		summary = buildVars.addon_info["addon_summary"]
 	title = "{addonSummary} {addonVersion}".format(
-		addonSummary=buildVars.addon_info["addon_summary"], addonVersion=buildVars.addon_info["addon_version"]
+		addonSummary=summary, addonVersion=buildVars.addon_info["addon_version"]
 	)
 	headerDic = {
 		"[[!meta title=\"": "# ",
@@ -29,7 +48,7 @@ def md2html(source, dest):
 		mdText = f.read()
 		for k, v in headerDic.items():
 			mdText = mdText.replace(k, v, 1)
-		htmlText = markdown.markdown(mdText)
+		htmlText = markdown.markdown(mdText, extensions=[mdTable])
 	# Optimization: build resulting HTML text in one go instead of writing parts separately.
 	docText = "\n".join([
 		"<!DOCTYPE html>",
@@ -60,7 +79,6 @@ def mdTool(env):
 	env['BUILDERS']['markdown'] = mdBuilder
 
 
-# If using Flake8, F821 should be ignored as 'Variables' and friends come from SCons.
 vars = Variables()
 vars.Add("version", "The version of this build", buildVars.addon_info["addon_version"])
 vars.Add(BoolVariable("dev", "Whether this is a daily development version", False))
@@ -124,7 +142,7 @@ def createAddonHelp(dir):
 		cssTarget = env.Command(cssPath, "style.css", Copy("$TARGET", "$SOURCE"))
 		env.Depends(addon, cssTarget)
 	if os.path.isfile("readme.md"):
-		readmePath = os.path.join(docsDir, "en", "readme.md")
+		readmePath = os.path.join(docsDir, buildVars.baseLanguage, "readme.md")
 		readmeTarget = env.Command(readmePath, "readme.md", Copy("$TARGET", "$SOURCE"))
 		env.Depends(addon, readmeTarget)
 
@@ -222,6 +240,5 @@ manifest = env.NVDAManifest(os.path.join("addon", "manifest.ini"), os.path.join(
 env.Depends(manifest, "buildVars.py")
 
 env.Depends(addon, manifest)
-
 env.Default(addon)
-env.Clean(addon, ['.sconsign.dblite', 'addon/doc/en/'])
+env.Clean(addon, ['.sconsign.dblite', 'addon/doc/' + buildVars.baseLanguage + '/'])

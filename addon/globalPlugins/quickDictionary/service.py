@@ -6,25 +6,30 @@
 	* credentials management for all connected services (class Secrets).
 	Relevant service classes must be inherited from Languages and Translator objects
 
-# A part of the NVDA Quick Dictionary add-on
+	A part of the NVDA Quick Dictionary add-on
 	This file is covered by the GNU General Public License.
 	See the file COPYING for more details.
-	Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+	Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 """
+
+from __future__ import annotations
+from typing import Callable, Union, List, Dict, Generator
 import addonHandler
 from logHandler import log
 try:
 	addonHandler.initTranslation()
 except addonHandler.AddonError:
 	log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
+_: Callable[[str], str]
 
-import os
+import os.path
 import json
 import zlib
 import binascii
 import zipfile
+from abc import ABCMeta, abstractmethod
+from threading import Thread
 from locale import getdefaultlocale
-from threading import Thread, Event
 from languageHandler import getLanguageDescription
 from . import _addonName
 
@@ -68,12 +73,14 @@ langNames = {
 class Language(object):
 	"""Object representation of language."""
 
-	def __init__(self, code:str, langNames:dict = langNames):
+	def __init__(self,
+		code: str,
+		langNames: Dict[str, str] = langNames) -> None:
 		"""Language object fields initialization.
 		@param code: usually two-character language code
 		@type code: str
 		@param langNames: additional languages, where key is a two-character code and value is name of the language
-		@type langNames: dict
+		@type langNames: Dict[str, str]
 		"""
 		self._lang = code
 		self._names = langNames
@@ -94,7 +101,7 @@ class Language(object):
 		"""
 		return self.getName()
 
-	def getName(self, code:str='') -> str:
+	def getName(self, code: str='') -> str:
 		"""Full language name.
 		If it is not possible to determine, a short language code is returned.
 		It is designed as a separate method for redefining it in child classes of services
@@ -113,21 +120,21 @@ class Language(object):
 		return name or lang
 
 
-class Languages(object):
+class Languages(metaclass=ABCMeta):
 	"""Represents a list of languages available in the dictionary service."""
 
-	def __init__(self, file: str):
+	def __init__(self, file: str) -> None:
 		"""Initialization of an object representing a list of available language pairs.
 		@param file: external file containing a list of available source and target languages
 		@type file: str
 		"""
 		self._file = file
-		self._langs = self.load()
+		self._langs: Union[List, Dict] = self.load()
 
-	def load(self):
+	def load(self) -> Union[List, Dict]:
 		"""Load a collection of available language pairs from an external json file.
 		@return: collection of language pairs available in the dictionary
-		@rtype: list or dict (depends on the service)
+		@rtype: Union[List, Dict] (depends on the service)
 		"""
 		data = {}
 		try:
@@ -137,10 +144,10 @@ class Languages(object):
 			log.exception(e)
 		return data.get('data', {})
 
-	def save(self, data) -> bool:
+	def save(self, data: Union[List, Dict]) -> bool:
 		"""Save a collection of available languages to an external file.
 		@param data: collection of available languages
-		@type data: list or dict
+		@type data: Union[List, Dict]
 		"""
 		try:
 			with open(self._file, 'w') as f:
@@ -156,17 +163,23 @@ class Languages(object):
 		@return: locale language used on the user's computer
 		@rtype: Language
 		"""
-		code = getdefaultlocale()[0].split('_')[0]
+		try:
+			code: str = getattr(getdefaultlocale()[0], 'split')('_')[0]
+		except (AttributeError, IndexError,):
+			code = ''
 		return Language(code)
 
-	def __contains__(self, lang:Language) -> bool:
+	def __contains__(self, lang: Language) -> bool:
 		"""Implementation of checking the presence of an Language in the current collection.
 		@param lang: language is represented as a Language object
 		@type lang: Language
 		@return: whether the specified language is available in the current list
 		@rtype: bool
 		"""
-		return bool(next(filter(lambda l: l.code==lang.code, self.all), None))
+		for language in self.all:
+			if language.code==lang.code:
+				return True
+		return False
 
 	def __getitem__(self, lang: str) -> Language:
 		"""Returns the Language object for the given language code.
@@ -178,6 +191,7 @@ class Languages(object):
 		return Language(lang)
 
 	# The following methods and properties must be overridden in the child class
+	@abstractmethod
 	def update(self) -> bool:
 		"""Get a list of available language pairs from a remote server and save them in an external file.
 		Also, this method should save the result of the operation in the logical field <self.updated>.
@@ -186,22 +200,25 @@ class Languages(object):
 		"""
 		raise NotImplementedError("This method must be overridden in the child class!")
 
-	def fromList(self) -> list:
+	@abstractmethod
+	def fromList(self) -> Generator[Language, None, None]:
 		"""Sequence of available source languages.
 		@return: sequence of available source languages
-		@rtype: list of Language objects
+		@rtype: Generator[Language, None, None]
 		"""
 		raise NotImplementedError("This method must be overridden in the child class!")
 
-	def intoList(self, lang: str) -> list:
+	@abstractmethod
+	def intoList(self, lang: str) -> Generator[Language, None, None]:
 		"""Sequence of available target languages for a given source language.
 		@param lang: source language code
 		@type lang: str
 		@return: sequence of available target languages
-		@rtype: list of Language objects
+		@rtype: Generator[Language, None, None]
 		"""
 		raise NotImplementedError("This method must be overridden in the child class!")
 
+	@abstractmethod
 	def isAvailable(self, source: str, target: str) -> bool:
 		"""Indicates whether the selected language pair is in the list of available languages.
 		@param source: source language code
@@ -214,26 +231,29 @@ class Languages(object):
 		raise NotImplementedError("This method must be overridden in the child class!")
 
 	@property
-	def defaultFrom(self) -> str:
+	@abstractmethod
+	def defaultFrom(self) -> Language:
 		"""Default source language.
 		@return: 'en' if available, else - the first language in list of source languages
-		@rtype: str
+		@rtype: Language
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
 
 	@property
-	def defaultInto(self) -> str:
+	@abstractmethod
+	def defaultInto(self) -> Language:
 		"""Default target language.
 		@return: locale language, if it is available as the target for the default source, otherwise the first one in the list
-		@rtype: str
+		@rtype: Language
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
 
 	@property
-	def all(self) -> list:
+	@abstractmethod
+	def all(self) -> List[Language]:
 		"""Full list of all supported source and target languages.
 		@return: list of all supported languages
-		@rtype: list of Language
+		@rtype: List[Language]
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
 
@@ -241,7 +261,11 @@ class Languages(object):
 class Translator(Thread):
 	"""Provides interaction with the online dictionary service."""
 
-	def __init__(self, langFrom:str, langTo:str, text:str, *args, **kwargs):
+	def __init__(self,
+		langFrom: str,
+		langTo: str,
+		text: str,
+		*args, **kwargs) -> None:
 		"""Initialization of the source and target language, as well as the word or phrase to search in the dictionary.
 		@param langFrom: source language
 		@type langFrom: str
@@ -251,7 +275,6 @@ class Translator(Thread):
 		@type text: str
 		"""
 		super(Translator, self).__init__(*args, **kwargs)
-		self._stopEvent = Event()
 		self._langFrom = langFrom
 		self._langTo = langTo
 		self._text = text
@@ -259,26 +282,53 @@ class Translator(Thread):
 		self._plaintext = ''
 		self._error = False
 
-	# The list of getters defining parameters for working with the dictionary
-	langFrom = lambda self: self._langFrom
-	langTo = lambda self: self._langTo
-	text = lambda self: self._text
-	html = lambda self: self._html
-	plaintext = lambda self: self._plaintext
-	error = lambda self: self._error
+	@property
+	def langFrom(self) -> str:
+		"""Source language code.
+		@return: language code
+		@rtype: str
+		"""
+		return self._langFrom
 
-	# Define class properties
-	langFrom = property(langFrom)
-	langTo = property(langTo)
-	text = property(text)
-	html = property(html)
-	plaintext = property(plaintext)
-	error = property(error)
+	@property
+	def langTo(self) -> str:
+		"""Target language code.
+		@return: language code
+		@rtype: str
+		"""
+		return self._langTo
 
-	def _stop(self, *args, **kwargs):
-		"""Executed when a process terminates in a thread."""
-		super(Translator, self)._stop(*args, **kwargs)
-		self._stopEvent.set()
+	@property
+	def text(self) -> str:
+		"""Text to send to a remote dictionary service.
+		@return: word or phrase
+		@rtype: str
+		"""
+		return self._text
+
+	@property
+	def html(self) -> str:
+		"""Response from the remote service in the HTML format.
+		@return: hypertext string
+		@rtype: str
+		"""
+		return self._html
+
+	@property
+	def plaintext(self) -> str:
+		"""Response from the remote service in the plain text format.
+		@return: plain text string
+		@rtype: str
+		"""
+		return self._plaintext
+
+	@property
+	def error(self) -> bool:
+		"""Were there any errors in the remote service request?
+		@return: a sign of errors
+		@rtype: bool
+		"""
+		return self._error
 
 	def __hash__(self) -> int:
 		"""Make the class hashable with a constant hash value.
@@ -288,7 +338,7 @@ class Translator(Thread):
 		"""
 		return 0
 
-	def run(self):
+	def run(self) -> None:
 		"""Query the remote dictionary and save the processed response.
 		Should run in a separate thread to avoid blocking.
 		"""
@@ -298,15 +348,15 @@ class Translator(Thread):
 class Secret(object):
 	"""An object that stores credentials for the selected service."""
 
-	def __init__(self, service:str):
+	def __init__(self, service: str) -> None:
 		"""Initialization of required fields.
 		@param service: online dictionary service name, determined by the module "locator"
 		@type service: str
 		"""
-		self._service = service
-		self._url = ''
-		self.username = ''
-		self.password = ''
+		self._service: str = service
+		self._url: str = ''
+		self.username: str = ''
+		self.password: str = ''
 
 	@property
 	def service(self) -> str:
@@ -325,15 +375,12 @@ class Secret(object):
 		return self.decode(self._username)
 
 	@username.setter
-	def username(self, name:str):
+	def username(self, name: str) -> None:
 		"""Set the username for the specified service.
 		@param name: name of user if necessary
 		@type name: str
-		@return: updated object with current username
-		@rtype: service.Secret
 		"""
 		self._username = self.encode(name)
-		return self
 
 	@property
 	def password(self) -> str:
@@ -344,15 +391,12 @@ class Secret(object):
 		return self.decode(self._password)
 
 	@password.setter
-	def password(self, pwd:str):
+	def password(self, pwd: str) -> None:
 		"""Set the password required to log in to the selected online service.
 		@param pwd: user password if necessary
 		@type pwd: str
-		@return: updated object with current password
-		@rtype: service.Secret
 		"""
 		self._password = self.encode(pwd)
-		return self
 
 	@property
 	def url(self) -> str:
@@ -363,17 +407,14 @@ class Secret(object):
 		return self._url
 
 	@url.setter
-	def url(self, link:str):
+	def url(self, link: str) -> None:
 		"""Set the url of the web page to register in the specified web service.
 		@param link: the URL of the registration web page
 		@type link: str
-		@return: updated object with current url-address
-		@rtype: service.Secret
 		"""
 		self._url = link
-		return self
 
-	def encode(self, cred:str) -> str:
+	def encode(self, cred: str) -> str:
 		"""Masking of input sensitive data for their further storage in the system.
 		@param cred: credentials or other sensitive data
 		@type cred: str
@@ -385,7 +426,7 @@ class Secret(object):
 		except Exception as e:
 			return ''
 
-	def decode(self, cred:str) -> str:
+	def decode(self, cred: str) -> str:
 		"""Restore the original data from the previously masked string.
 		@param cred: pre-hidden (masked) credentials or other sensitive data
 		@type cred: str
@@ -397,10 +438,10 @@ class Secret(object):
 		except Exception as e:
 			return ''
 
-	def toDict(self) -> dict:
+	def toDict(self) -> Dict[str, str]:
 		"""Convert a set of values stored in an object to a dict type.
 		@return: dict, which contains the values of all fields of the current object
-		@rtype: dict
+		@rtype: Dict[str, str]
 		"""
 		return {
 			"service": self._service,
@@ -409,13 +450,13 @@ class Secret(object):
 			"url": self._url
 		}
 
-	def fromDict(self, rec:dict):
+	def fromDict(self, rec: Dict[str, str]) -> Secret:
 		"""Initialize the fields of the current object from the obtained parameter.
 		The update occurs only when the name of the service in the corresponding field coincides with the current one.
 		@param rec: dict object with required keys
-		@type rec: dict
+		@type rec: Dict[str, str]
 		@return: updated object with the obtained data
-		@rtype: service.Secret
+		@rtype: Secret
 		"""
 		if self._service == rec.get('service'):
 			self._username = rec.get('username') or self._username
@@ -427,24 +468,26 @@ class Secret(object):
 class Secrets(object):
 	"""Manage the credentials required for all add-on services to work."""
 
-	def __init__(self, dir:str = os.path.dirname(__file__), file:str = 'qd'):
+	def __init__(self,
+		dir: str = os.path.dirname(__file__),
+		file: str = 'qd') -> None:
 		"""Initialize all required values.
 		@param dir: the directory where the credential file is stored
 		@type dir: str
 		@param file: file name without extension, as this json file will be stored in the zip archive of the same name
 		@type file: str
 		"""
-		self._path = os.path.join(dir, file)
-		self._file = file + '.json'
-		self._secrets = {}
+		self._path: str = os.path.join(dir, file)
+		self._file: str = file + '.json'
+		self._secrets: Dict[str, Secret] = {}
 		self.load()
 
-	def load(self):
+	def load(self) -> Secrets:
 		"""Load credentials from an archived file.
 		@return: updated object with loaded credentials
-		@rtype: service.Secrets
+		@rtype: Secrets
 		"""
-		data = {}
+		data: Dict[str, Dict[str, str]] = {}
 		try:
 			with zipfile.ZipFile(self._path+'.zip', mode='r') as zipArchive:
 				with zipArchive.open(name=self._file, mode='r', pwd=_addonName.encode('utf-8')) as unzippedFile:
@@ -452,13 +495,13 @@ class Secrets(object):
 		except Exception as e:
 			log.error("%s: %s, %s", str(e), self._path+'.zip', self._file)
 		for service in data:
-			self._secrets[service] = Secret(service).fromDict(data.get(service))
+			self._secrets[service] = Secret(service).fromDict(data.get(service, {}))
 		return self
 
-	def save(self):
+	def save(self) -> Secrets:
 		"""Save the current credentials of all services to an json file.
-		@return: current object
-		@rtype: service.Secrets
+		@return: current updated object
+		@rtype: Secrets
 		"""
 		data = {}
 		for service in self._secrets:
@@ -471,19 +514,19 @@ class Secrets(object):
 		return self
 
 	@property
-	def services(self) -> list:
+	def services(self) -> List[str]:
 		"""List of names of all services for which credentials are available.
 		@return: list of service names, determined by the module "locator"
-		@rtype: list of str
+		@rtype: List[str]
 		"""
 		return list(self._secrets)
 
-	def __getitem__(self, service:str) -> Secret:
+	def __getitem__(self, service: str) -> Secret:
 		"""Return the saved credentials for the service by its name.
 		@param service: service name, determined by the module "locator"
 		@type service: str
 		@return: credentials required for authorization in the selected service
-		@rtype: service.Secret
+		@rtype: Secret
 		"""
 		return self._secrets.get(service, Secret(service))
 

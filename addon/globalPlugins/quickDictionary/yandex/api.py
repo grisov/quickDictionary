@@ -3,8 +3,9 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
+from typing import Any, Dict
 import os
 import ssl
 from urllib.request import Request, urlopen
@@ -15,8 +16,8 @@ from .. import _addonName
 from ..service import secrets
 
 ssl._create_default_https_context = ssl._create_unverified_context
-serviceName = os.path.basename(os.path.dirname(__file__))
-stat = {} # Object for store statistics
+serviceName: str = os.path.basename(os.path.dirname(__file__))
+stat: Dict[str, Any] = {} # Object for store statistics
 
 
 class Yapi(object):
