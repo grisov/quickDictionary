@@ -9,16 +9,16 @@ from typing import List, Dict, Iterator
 import os
 import config
 from .. import _addonName
-from ..service import BaseLanguage, Languages, secrets
+from ..service import Language, Languages, secrets
 from .api import Lapi, serviceName
 
 
-class Language(BaseLanguage):
+class ServiceLanguage(Language):
 	"""Overriding a class due to a non-compliance of the some language codes with the ISO standard."""
 
 	def __init__(self, code: str) -> None:
 		"""Language initialization by its code."""
-		super(Language, self).__init__(code)
+		super(ServiceLanguage, self).__init__(code)
 
 	@property
 	def name(self) -> str:
@@ -32,7 +32,7 @@ class Language(BaseLanguage):
 			'dk': 'da',	# Danish
 			'tw': 'zh_tw',	# Traditional Chinese
 			}.get(self.code, self.code)
-		return super(Language, self).getName(code)
+		return super(ServiceLanguage, self).getName(code)
 
 
 class ServiceLanguages(Languages):
@@ -46,7 +46,7 @@ class ServiceLanguages(Languages):
 		@type file: str
 		"""
 		self.updated = False
-		self._all: List[Language] = []
+		self._all: List[ServiceLanguage] = []
 		self._langs: Dict = {}
 		super(ServiceLanguages, self).__init__(file)
 
@@ -96,27 +96,27 @@ class ServiceLanguages(Languages):
 			self.updated = self.save(langs)
 		return self.updated
 
-	def fromList(self, source: str='') -> Iterator[Language]:
+	def fromList(self, source: str='') -> Iterator[ServiceLanguage]:
 		"""Sequence of available source languages.
 		@param source: source dictionary name, if not specified, the current is used
 		@type source: str
 		@return: sequence of available source languages
-		@rtype: Iterator[Language]
+		@rtype: Iterator[ServiceLanguage]
 		"""
 		source = source or self.source
 		for lang in self._langs.get('resources', {}).get(source, {}).get('source_languages', []):
-			yield Language(lang)
+			yield ServiceLanguage(lang)
 
-	def intoList(self, source: str='') -> Iterator[Language]:
+	def intoList(self, source: str='') -> Iterator[ServiceLanguage]:
 		"""Sequence of available target languages.
 		@param source: source dictionary name, if not specified, the current is used
 		@type source: str
 		@return: sequence of available target languages
-		@rtype: Iterator[Language]
+		@rtype: Iterator[ServiceLanguage]
 		"""
 		source = source or self.source
 		for lang in self._langs.get('resources', {}).get(source, {}).get('target_languages', []):
-			yield Language(lang)
+			yield ServiceLanguage(lang)
 
 	def isAvailable(self, source: str, target: str) -> bool:
 		"""Indicates whether the selected language pair is in the list of available languages.
@@ -130,33 +130,33 @@ class ServiceLanguages(Languages):
 		return (source in [lang.code for lang in self.fromList()]) and (target in [lang.code for lang in self.intoList()])
 
 	@property
-	def defaultFrom(self) -> Language:
+	def defaultFrom(self) -> ServiceLanguage:
 		"""Default source language.
 		@return: English if available, else - the first language in list of source languages
-		@rtype: Language
+		@rtype: ServiceLanguage
 		"""
-		return Language('en' if 'en' in self._langs['resources'][self.defaultSource]['source_languages'] else next(iter(self._langs['resources'][self.defaultSource]['source_languages']), ''))
+		return ServiceLanguage('en' if 'en' in self._langs['resources'][self.defaultSource]['source_languages'] else next(iter(self._langs['resources'][self.defaultSource]['source_languages']), ''))
 
 	@property
-	def defaultInto(self):
+	def defaultInto(self) -> ServiceLanguage:
 		"""Default target language.
 		@return: locale language, if it is available as the target for the default source, otherwise the first one in the list
-		@rtype: Language
+		@rtype: ServiceLanguage
 		"""
-		return self.locale if self.locale.code in self._langs['resources'][self.defaultSource]['target_languages'] else Language(next(iter(self._langs['resources'][self.defaultSource]['target_languages']), ''))
+		return ServiceLanguage(self.locale.code if self.locale.code in self._langs['resources'][self.defaultSource]['target_languages'] else next(iter(self._langs['resources'][self.defaultSource]['target_languages']), ''))
 
 	@property
-	def all(self):
+	def all(self) -> List:
 		"""Full list of all supported source and target languages.
 		@return: list of all supported languages
-		@rtype: List[Language]
+		@rtype: List[ServiceLanguage]
 		"""
 		if not self._all:
 			_all: List[str] = []
 			for source in self.sources:
 				_all.extend(self._langs.get('resources', {}).get(source, {}).get('source_languages', []))
 				_all.extend(self._langs.get('resources', {}).get(source, {}).get('target_languages', []))
-			self._all = [Language(lang) for lang in frozenset(_all)]
+			self._all = [ServiceLanguage(lang) for lang in frozenset(_all)]
 		return self._all
 
 

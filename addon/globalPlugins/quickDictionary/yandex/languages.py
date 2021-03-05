@@ -8,11 +8,11 @@
 from typing import List, Iterator
 import os
 from .. import _addonName
-from ..service import BaseLanguage, Languages, secrets
+from ..service import Language, Languages, secrets
 from .api import serviceName, Yapi
 
 
-class Language(BaseLanguage):
+class ServiceLanguage(Language):
 	"""Overriding a class due to a non-compliance of the some language codes with the ISO standard."""
 	pass
 
@@ -29,7 +29,7 @@ class ServiceLanguages(Languages):
 		"""
 		super(ServiceLanguages, self).__init__(file)
 		self.updated = False
-		self._all: List[Language] = []
+		self._all: List[ServiceLanguage] = []
 
 	def update(self) -> bool:
 		"""Get a list of available language pairs from a remote server and save them in an external file.
@@ -43,26 +43,26 @@ class ServiceLanguages(Languages):
 			self.updated = self.save(langs)
 		return self.updated
 
-	def fromList(self) -> Iterator[Language]:
+	def fromList(self) -> Iterator[ServiceLanguage]:
 		"""Sequence of available source languages.
 		@return: sequence of available source languages
-		@rtype: Iterator[Language]
+		@rtype: Iterator[ServiceLanguage]
 		"""
 		for lang in list({c.split('-')[0]: c for c in self._langs}):
-			yield Language(lang)
+			yield ServiceLanguage(lang)
 
-	def intoList(self, lang: str) -> Iterator[Language]:
+	def intoList(self, lang: str) -> Iterator[ServiceLanguage]:
 		"""Sequence of available target languages for a given source language.
 		@param lang: source language code
 		@type lang: str
 		@return: sequence of available target languages
-		@rtype: Iterator[Language]
+		@rtype: Iterator[ServiceLanguage]
 		"""
 		if not lang: return
 		for lng in self._langs:
 			l = lng.split('-')
 			if l[0]==lang:
-				yield Language(l[1])
+				yield ServiceLanguage(l[1])
 
 	def isAvailable(self, source: str, target: str) -> bool:
 		"""Indicates whether the selected language pair is in the list of available languages.
@@ -76,26 +76,26 @@ class ServiceLanguages(Languages):
 		return "%s-%s" % (source, target) in self._langs
 
 	@property
-	def defaultFrom(self) -> Language:
+	def defaultFrom(self) -> ServiceLanguage:
 		"""Default source language.
 		@return: English if available, else - the first language in list of source languages
-		@rtype: Language
+		@rtype: ServiceLanguage
 		"""
-		return Language('en' if next(filter(lambda l: l.code=='en', self.fromList()), None) else self._langs[0].split('-')[0])
+		return ServiceLanguage('en' if next(filter(lambda l: l.code=='en', self.fromList()), None) else self._langs[0].split('-')[0])
 
 	@property
-	def defaultInto(self):
+	def defaultInto(self) -> ServiceLanguage:
 		"""Default target language.
 		@return: locale language, if it is available as the target for the default source, otherwise the first one in the list
-		@rtype: Language
+		@rtype: ServiceLanguage
 		"""
-		return self.locale if next(filter(lambda l: l.code==self.locale.code, self.intoList(self.defaultFrom.code)), None) else [l for l in self.intoList(self.defaultFrom.code)][0]
+		return ServiceLanguage(self.locale.code) if next(filter(lambda l: l.code==self.locale.code, self.intoList(self.defaultFrom.code)), None) else [l for l in self.intoList(self.defaultFrom.code)][0]
 
 	@property
-	def all(self):
+	def all(self) -> List:
 		"""Full list of all supported source and target languages.
 		@return: list of all supported languages
-		@rtype: List[Language]
+		@rtype: List[ServiceLanguage]
 		"""
 		if not self._all:
 			self._all = [lang for lang in self.fromList()]

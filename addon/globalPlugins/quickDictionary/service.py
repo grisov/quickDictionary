@@ -70,7 +70,7 @@ langNames = {
 	"yi": _("Yiddish"),
 }
 
-class BaseLanguage(metaclass=ABCMeta):
+class Language(metaclass=ABCMeta):
 	"""Object representation of language."""
 
 	def __init__(self, code: str) -> None:
@@ -155,21 +155,21 @@ class Languages(metaclass=ABCMeta):
 		return True
 
 	@property
-	def locale(self) -> BaseLanguage:
+	def locale(self) -> Language:
 		"""User locale language.
 		@return: locale language used on the user's computer
-		@rtype: BaseLanguage
+		@rtype: Language
 		"""
 		try:
 			code: str = getattr(getdefaultlocale()[0], 'split')('_')[0]
 		except (AttributeError, IndexError,):
 			code = ''
-		return BaseLanguage(code)
+		return Language(code)
 
-	def __contains__(self, lang: BaseLanguage) -> bool:
+	def __contains__(self, lang: Language) -> bool:
 		"""Implementation of checking the presence of an Language in the current collection.
 		@param lang: language is represented as a Language object
-		@type lang: BaseLanguage
+		@type lang: Language
 		@return: whether the specified language is available in the current list
 		@rtype: bool
 		"""
@@ -178,14 +178,14 @@ class Languages(metaclass=ABCMeta):
 				return True
 		return False
 
-	def __getitem__(self, lang: str) -> BaseLanguage:
+	def __getitem__(self, lang: str) -> Language:
 		"""Returns the Language object for the given language code.
 		@param lang: two-character language code
 		@type lang: str
 		@return: the Language object for the given code
-		@rtype: BaseLanguage
+		@rtype: Language
 		"""
-		return BaseLanguage(lang)
+		return Language(lang)
 
 	# The following methods and properties must be overridden in the child class
 	@abstractmethod
@@ -198,20 +198,20 @@ class Languages(metaclass=ABCMeta):
 		raise NotImplementedError("This method must be overridden in the child class!")
 
 	@abstractmethod
-	def fromList(self) -> Iterator[BaseLanguage]:
+	def fromList(self) -> Iterator[Language]:
 		"""Sequence of available source languages.
 		@return: sequence of available source languages
-		@rtype: Iterator[BaseLanguage]
+		@rtype: Iterator[Language]
 		"""
 		raise NotImplementedError("This method must be overridden in the child class!")
 
 	@abstractmethod
-	def intoList(self, lang: str) -> Iterator[BaseLanguage]:
+	def intoList(self, lang: str) -> Iterator[Language]:
 		"""Sequence of available target languages for a given source language.
 		@param lang: source language code
 		@type lang: str
 		@return: sequence of available target languages
-		@rtype: Iterator[BaseLanguage]
+		@rtype: Iterator[Language]
 		"""
 		raise NotImplementedError("This method must be overridden in the child class!")
 
@@ -229,28 +229,28 @@ class Languages(metaclass=ABCMeta):
 
 	@property
 	@abstractmethod
-	def defaultFrom(self) -> BaseLanguage:
+	def defaultFrom(self) -> Language:
 		"""Default source language.
 		@return: 'en' if available, else - the first language in list of source languages
-		@rtype: BaseLanguage
+		@rtype: Language
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
 
 	@property
 	@abstractmethod
-	def defaultInto(self) -> BaseLanguage:
+	def defaultInto(self) -> Language:
 		"""Default target language.
 		@return: locale language, if it is available as the target for the default source, otherwise the first one in the list
-		@rtype: BaseLanguage
+		@rtype: Language
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
 
 	@property
 	@abstractmethod
-	def all(self) -> List[BaseLanguage]:
+	def all(self) -> List[Language]:
 		"""Full list of all supported source and target languages.
 		@return: list of all supported languages
-		@rtype: List[BaseLanguage]
+		@rtype: List[Language]
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
 
