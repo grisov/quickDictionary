@@ -2,9 +2,9 @@
 
 * Author: Oleksandr Gryshchenko
 * Version: 2.1
+* NVDA compatibility: 2019.3 and beyond
 * Download [stable version][1]
 * Download [development version][2]
-* NVDA compatibility: 2019.3 and beyond
 
 Welcome to NVDA Quick Dictionary addon, which will allow you to quickly get a dictionary article with the translation of a word or phrase into your chosen language by pressing a key combination. There are few basic keyboard shortcuts and they are all intuitive and convenient so you will remember them quickly.  
 Dictionary articles contain detailed information about a word, such as part of speech, gender, plural or singular, translation options, list of meanings, synonyms and detailed examples. Such information will be useful for people who are learning foreign languages, or seek to use in communication all the richness and diversity of their own language.  
@@ -13,7 +13,7 @@ There are also advanced opportunities for working with profiles of the voice syn
 Below are all the features of the add-on and keyboard shortcuts to control them. By default all functions are called using two-layer commands. But for any of these methods you can always assign convenient for you keyboard shortcuts. You can do it in the NVDA "Preferences" -> "Input gestures..." dialog.  
 
 ## Receiving a dictionary article
-In order to get an article from the dictionary, you must first select the word you are interested in or copy it to the clipboard. Then just press NVDA+Y twice.
+In order to get an article from the dictionary, you must first select the word you are interested in or copy it to the clipboard. Then just press NVDA+Y twice.  
 There is also another way to get a dictionary entry: pressing NVDA+Y once switches the keyboard to add-on control mode, then just use the D key.
 
 ## Add-on control mode
@@ -21,6 +21,7 @@ To access all the features of the add-on, you need to switch to add-on control m
 
 ## Add-on commands list
 Basic dictionary commands:
+
 * D - announce a dictionary entry for a selected word or phrase (same as NVDA+Y);
 * W - show dictionary entry in a separate browseable window;
 * S - swap languages and get Quick Dictionary translation;
@@ -33,6 +34,7 @@ Basic dictionary commands:
 * F - choose online service.  
 
 Voice synthesizers profiles management:
+
 * from 1 to 9 - selection of the voice synthesizer profile;
 * G - announce the selected profile of voice synthesizers;
 * B - back to previous voice synthesizer;
@@ -45,6 +47,7 @@ Press O to open add-on settings dialog.
 
 ## Help on add-on commands
 You can see a list of all the commands used in the add-on as follows:
+
 * Via the NVDA menu - by pressing NVDA+N, go to the submenu "Tools", then - "Quick Dictionary" and activate the menu item "Help on add-on commands".
 * Press the H key in add-on control mode (NVDA+Y).
 
@@ -53,59 +56,31 @@ To open the add-on help - press NVDA+N, go to the "Tools" submenu, then - "Quick
 
 ## Contributions
 We are very grateful to everyone who made the effort to develop, translate and maintain this add-on:
+
 * Cagri Dogan - Turkish translation;
 * Wafiqtaher - Arabic translation.
 
 Several good solutions from other developments were used in the Quick Dictionary add-on. Thanks to the authors of the following add-ons:
+
 * Instant Translate - Alexy Sadovoy, Beqa Gozalishvili, Mesar Hameed, Alberto Buffolino and other NVDA contributors.
 * To work with voice synthesizers profiles were used ideas from the Switch Synth add-on (thanks to Tyler Spivey).
 
 ## Change log
 
-### Version 2.1
+### Version 2.1.2
+* the source code is significantly optimized and added MyPy type hints;
+* the add-on is adapted to support Python versions 3.7 and 3.8;
+* fixed formatting errors in Markdown files;
 * added a dialog to edit the text before sending to remote service;
 * separated add-on help page from ReadMe;
 * Turkish translation added (thanks to Cagri Dogan).
-
-### Version 2.0
-* added the ability to connect other online dictionary services;
-* added Lexicala service and its settings panel;
-* added a dialog for choosing an online service from the list of available ones;
-* added a command to get information about the selected service;
-* added a dialog for working with profiles of voice synthesizers;
-* implemented the procedure for switching to the previous voice synthesizer;
-* implemented a parallel thread to monitor the state of the synthesizer;
-* due to an increase in the number of functions in the add-on - help for commands is now displayed in a separate window;
-* updated procedure for caching requests to online services;
-* added add-on submenu to NVDA menu;
-* updated ReadMe.
-
-### Version 1.2
-* added the ability to automatically switch voice synthesizers for selected languages;
-* added the ability to download the current list of languages available in the online-dictionary;
-* Turkish translation added thanks to Cagri Dogan.
-
-### Version 1.1
-* changed some keyboard shortcuts which conflicted with other add-ons;
-* changed the description of the main add-on features;
-* updated help and translation of the add-on;
-* removed some keyboard shortcuts and gave to user opportunity to setup them yourself;
-* fixed error in Ukrainian translation (thanks to Volodymyr Perig);
-* added russian translation.
-
-### Version 1.0: features of implementation
-* execution of requests to the remote server in a separate thread to avoid blocking the operation of NVDA;
-* signals while waiting for a response from the server;
-* caching of the last 100 requests to reduce the load on the remote dictionary service;
-* switching to add-on control mode;
-* possibility to use an alternative server;
-* add-on settings dialog.
 
 ## Altering NVDA QuickDictionary
 You may clone this repo to make alteration to NVDA Quick Dictionary.
 
 ### Third Party dependencies
 These can be installed with pip:
+
 - markdown
 - scons
 - python-gettext
@@ -114,5 +89,5 @@ These can be installed with pip:
 1. Open a command line, change to the root of this repo
 2. Run the **scons** command. The created add-on, if there were no errors, is placed in the current directory.
 
-[1]: https://github.com/grisov/quickDictionary/releases/download/v2.1/quickDictionary-2.1.nvda-addon
-[2]: https://github.com/grisov/quickDictionary/releases/download/v2.1/quickDictionary-2.1.nvda-addon
+[1]: https://github.com/grisov/quickDictionary/releases/download/latest/quickDictionary-2.1.nvda-addon
+[2]: https://github.com/grisov/quickDictionary/releases/download/latest/quickDictionary-2.1.2-dev.nvda-addon

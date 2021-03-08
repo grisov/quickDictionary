@@ -7,10 +7,11 @@ There are also advanced opportunities for working with profiles of the voice syn
 Below are all the features of the add-on and keyboard shortcuts to control them. By default all functions are called using two-layer commands. But for any of these methods you can always assign convenient for you keyboard shortcuts. You can do it in the NVDA "Preferences" -> "Input gestures..." dialog.  
 
 ## Receiving a dictionary article
-In order to get an article from the dictionary, you must first select the word you are interested in or copy it to the clipboard. Then just press NVDA+Y twice.
+In order to get an article from the dictionary, you must first select the word you are interested in or copy it to the clipboard. Then just press NVDA+Y twice.  
 There is also another way to get a dictionary entry: pressing NVDA+Y once switches the keyboard to add-on control mode, then just use the D key.
 
 Note: Before making a request to a remote service, the add-on must receive a word or phrase that interests the user. The sequence of actions that add-on performs each time before accessing the dictionary:
+
 * receive the selected text and execute the request;
 * if there is no selected text - receive the text content of the clipboard and execute the request;
 * if the clipboard is empty or its content is not text data - the add-on notifies the user and does not take further action.
@@ -20,19 +21,22 @@ To access all the features of the add-on, you need to switch to add-on control m
 
 ## Announcement of the selected pair of languages when working with the dictionary
 To determine the current source language and destination language, follow these steps:
+
 1. Enable add-on control mode with NVDA+Y.
 2. Press A to listen to which languages are selected to retrieve data from the dictionary.
 
 ## Swap source and target languages
 This can be done quickly as follows:
+
 1. Select the word or phrase that interests you.
-2. Enable add-on control mode with NVDA+Y and than press S.
+2. Enable add-on control mode with NVDA+Y and than press S.  
 You will hear a message that the languages have been swapped and the available information from the dictionary.
 
 Note: Each time you swap languages, the add-on checks to see if a new pair of languages is available for translation in the remote dictionary. If there is no such language combination, you will hear a warning.
 
 ## Display a dictionary article in a separate browseable window
 An article from the dictionary can also be displayed in a separate window as a formatted web page:
+
 1. Select a word or phrase.
 2. Enable add-on control mode - NVDA+Y.
 3. Press W.
@@ -40,10 +44,11 @@ An article from the dictionary can also be displayed in a separate window as a f
 Note: In this window, you can use standard commands to navigate web page elements. To close the window just press Escape or Alt+F4.
 
 ## Text preparation
-Sometimes it is necessary to change the text before sending it for translation, or just enter the text yourself.
+Sometimes it is necessary to change the text before sending it for translation, or just enter the text yourself.  
 To do this, you can use the text pre-edit command - press the E key in the add-on control mode (NVDA+Y). A dialog box opens with a multi-line field for editing text. After editing, just press Ctrl+Enter or the corresponding button.
 
 The following commands are also available in the edit field:
+
 * Ctrl+A - select all;
 * Ctrl+E - clear text from non-alphabetic characters;
 * Ctrl+R - clear editor field;
@@ -53,19 +58,21 @@ Note: If before calling the dialog for editing text, the text was previously sel
 
 ## Copy the results of the last request to the clipboard
 This can be done by following the steps below:
+
 1. Enable add-on control mode - NVDA+Y.
-2. Press C.
+2. Press C.  
 You will then hear a message that the data has been successfully copied and the dictionary entry itself.
 
 Note: If you haven't previously made any requests to the remote dictionary, you will hear a warning.  
 If option "Copy dictionary response to clipboard" in the add-on settings is enabled, the data will be automatically copied after each successful request.
 
 ## Download the current list of available languages
-Use the U key in add-on control mode to download from the online dictionary and save current list of available source and target languages.
+Use the U key in add-on control mode to download from the online dictionary and save current list of available source and target languages.  
 After that you will hear a message about the status of the command.
 
 ## Choosing an online service
 There are several ways to select a remote dictionary to send queries from the add-on.
+
 * Using the NVDA menu: press NVDA+N, go to the "Tools" submenu, then - "Quick Dictionary" and activate the command "Select online service...". After that a dialog box will appear for selecting a remote service. In this dialog, use the up or down keys to navigate to the desired item and press Enter. Or just press the number that corresponds to the ID of the online service you are interested in.
 * The service selection dialog can also be called by pressing the F key in the add-on control mode.
 * Each available service is also assigned a function key starting from F1 in the add-on control mode.
@@ -75,6 +82,7 @@ Note: Each online service has its own settings panel and all its parameters are 
 
 ## Information about the selected service
 By pressing Q in the add-on control mode, you can listen to the following data:
+
 * name of the selected online service;
 * number of supported languages;
 * dictionary section (if supported);
@@ -94,6 +102,7 @@ As mentioned above - each service has its own settings panel. Therefore, all sub
 In the list of source languages, use the up or down keys to select the desired language and press Tab to move to the selection of the target language.
 
 Note:
+
 * The list of available target languages depends on the selected source language, so the target language should only be selected after the source language is set.
 * In some services, the lists of available languages are depend on the selected section of the dictionary.
 
@@ -125,6 +134,7 @@ You can create up to 9 configuration profiles for the various voice synthesizers
 To switch between profiles, use the number keys 1 to 9 in the add-on control mode.
 
 For example, to create a profile number 5, follow these steps:
+
 1. Switch to add-on control mode using NVDA+Y.
 2. Press the 5 key. You will hear a message that the selected profile is number 5.
 3. Go to the "Speech" section of the NVDA settings using NVDA+Ctrl+V and configure the desired voice synthesizer to be saved in the selected profile. Then press "Ok" button.
@@ -161,6 +171,7 @@ You can open a dialog with a list of voice synthesizers profiles from the NVDA m
 For each profile in list specified its number, synthesizer name, voice name, and the language associated with that profile.  
 To activate a profile, go to it with up or down arrow keys and press Enter, or just press the number that corresponds to the profile number.  
 Other operations with voice synthesizers profiles are also available in the specified dialog. To perform one of the following actions - go to the corresponding button in the dialog or use the key indicated in brackets:
+
 * create new profile (F7)
 * change selected profile (F4)
 * delete selected profile (F8 or Delete)
@@ -171,12 +182,14 @@ Note: By default, the associated language is set to "- Immutable language -". Th
 
 ### Choice of associated language
 To associate a profile with the desired language, follow these steps:
+
 1. Open the add-on settings dialog using NVDA+Y and then O.
 2. Find and enable the "Switch between voice synthesizers for selected languages" checkbox.
 3. Tab to desired profile and select the language from the drop-down list to which it will be used.
 4. Press "OK".
 
 Note:
+
 * If no profile has been previously created, you will see a warning about it in the add-on settings dialog.
 * Each language can be associated with only one profile. If you select a language for one of the profiles, it will be automatically removed from the drop-down lists for the other profiles.
 * In order not to use the profile to switch synthesizers - associate it with the first item "- Immutable language -".
@@ -188,6 +201,7 @@ Note: If for some reason switching to the previous voice synthesizer didn't happ
 
 ## Help on add-on commands
 You can see a list of all the commands used in the add-on as follows:
+
 * Via the NVDA menu - by pressing NVDA+N, go to the submenu "Tools", then - "Quick Dictionary" and activate the menu item "Help on add-on commands".
 * Press the H key in add-on control mode (NVDA+Y).
 
@@ -196,16 +210,21 @@ To open the add-on help - press NVDA+N, go to the "Tools" submenu, then - "Quick
 
 ## Contributions
 We are very grateful to everyone who made the effort to develop, translate and maintain this add-on:
+
 * Cagri Dogan - Turkish translation;
 * Wafiqtaher - Arabic translation.
 
 Several good solutions from other developments were used in the Quick Dictionary add-on. Thanks to the authors of the following add-ons:
+
 * Instant Translate - Alexy Sadovoy, Beqa Gozalishvili, Mesar Hameed, Alberto Buffolino and other NVDA contributors.
 * To work with voice synthesizers profiles were used ideas from the Switch Synth add-on (thanks to Tyler Spivey).
 
 ## Change log
 
-### Version 2.1
+### Version 2.1.2
+* the source code is significantly optimized and added MyPy type hints;
+* the add-on is adapted to support Python versions 3.7 and 3.8;
+* fixed formatting errors in Markdown files;
 * added a dialog to edit the text before sending to remote service;
 * separated add-on help page from ReadMe;
 * Turkish translation added (thanks to Cagri Dogan).
@@ -249,6 +268,7 @@ You may clone this repo to make alteration to NVDA Quick Dictionary.
 
 ### Third Party dependencies
 These can be installed with pip:
+
 - markdown
 - scons
 - python-gettext
