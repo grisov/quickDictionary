@@ -1,55 +1,62 @@
-#api.py
+# api.py
 # Provides interaction with the Lexicala online dictionary API
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 # Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Any, Dict
-import os
+from typing import Any, Dict, List, Optional
+import os.path
 import ssl
 import base64
 from urllib.request import Request, urlopen
 from urllib.parse import quote as urlencode
+from http.client import HTTPResponse
 from json import loads
 from datetime import datetime, timedelta
 import config
-from .. import _addonName
+from .. import addonName
 from ..service import secrets
 
 ssl._create_default_https_context = ssl._create_unverified_context
 serviceName: str = os.path.basename(os.path.dirname(__file__))
-stat: Dict[str, Any] = {} # Object for store statistics
+stat: Dict[str, Any] = {}  # Object for store statistics
 
 
 class Lapi(object):
 	"""Description of the Lexicala Online Dictionary API."""
 
-	def __init__(self,
-		text: str='',
-		lang: str='en',
-		source: str='global',
-		morph: bool=False,
-		analyzed: bool=False) -> None:
+	def __init__(
+			self,
+			text: str = '',
+			lang: str = 'en',
+			source: str = 'global',
+			# Starting with Python 3.8 is better to use here: Literal["global", "password", "random"]
+			morph: bool = False,
+			analyzed: bool = False
+	) -> None:
 		"""Input parameters for interacting with the online dictionary.
 		@param text: word or phrase to search in the dictionary
 		@type text: str
 		@param lang: source search language
 		@type lang: str
 		@param source: data source in which the search will be performed
-		@type source: str ("global", "password", "random")
-		@param morph: searches for the text in both headwords and inflections, including in supplemental morphological lists
+		@type source: str
+			starting with Python 3.8 is better to use Literal["global", "password", "random"]
+		@param morph: searches for the text in both headwords and inflections,
+			including in supplemental morphological lists
 		@type morph: bool
-		@param analyzed: algorithm that strips words to their stem, and disregards diacritics and case (uppercase/lowercase)
+		@param analyzed: algorithm that strips words to their stem,
+			and disregards diacritics and case (uppercase/lowercase)
 		@type analyzed: bool
 		"""
-		self._url = "https://dictapi.lexicala.com/"
+		self._url: str = "https://dictapi.lexicala.com/"
 		self._text = text
 		self._lang = lang
 		self._source = source
 		self._morph = morph
 		self._analyzed = analyzed
-		self._headers = {
+		self._headers: Dict[str, str] = {
 			'User-Agent': 'Mozilla 5.0'}
 
 	@property
@@ -72,13 +79,14 @@ class Lapi(object):
 	def source(self) -> str:
 		"""Data source in which the search will be performed.
 		@return: the name of the data source in which the search will be performed
-		@rtype: str ("global", "password", "random")
+		@rtype: Literal["global", "password", "random"]
 		"""
 		return self._source
 
 	@property
 	def morph(self) -> bool:
-		"""Option: searche for the text in both headwords and inflections, including in supplemental morphological lists.
+		"""Option: searche for the text in both headwords and inflections,
+		including in supplemental morphological lists.
 		@return: whether option "morph" is enabled or disabled
 		@rtype: bool
 		"""
@@ -86,28 +94,30 @@ class Lapi(object):
 
 	@property
 	def analyzed(self) -> bool:
-		"""Option: algorithm that strips words to their stem, and disregards diacritics and case (uppercase/lowercase).
+		"""Option: algorithm that strips words to their stem,
+		and disregards diacritics and case (uppercase/lowercase).
 		@return: whether option "analyzed" is enabled or disabled
 		@rtype: bool
 		"""
 		return self._analyzed
 
-	def get(self, query:str) -> dict:
+	def get(self, query: str) -> Dict:
 		"""Request to the Lexicala online dictionary using transmitted query.
 		@param query: generated query URL not including domain name
 		@type query: str
 		@return: deserialized response from the online dictionary
-		@rtype: dict
+		@rtype: Dict
 		"""
-		response, resp = {}, None
-		url = self._url + query
+		response: Dict = {}
+		resp: Optional[HTTPResponse] = None
+		url: str = self._url + query
 		rq = Request(url)
 		for name, value in self._headers.items():
 			rq.add_header(name, value)
 		base64string = base64.b64encode(bytes('%s:%s' % (
-			secrets[serviceName].decode(config.conf[_addonName][serviceName]['username']),
-			secrets[serviceName].decode(config.conf[_addonName][serviceName]['password'])
-			), 'ascii'))
+			secrets[serviceName].decode(config.conf[addonName][serviceName]['username']),
+			secrets[serviceName].decode(config.conf[addonName][serviceName]['password'])
+		), 'ascii'))
 		rq.add_header("Authorization", "Basic %s" % base64string.decode('utf-8'))
 		try:
 			resp = urlopen(rq, timeout=8)
@@ -119,8 +129,8 @@ class Lapi(object):
 			stat['remain'] = resp.getheader('X-RateLimit-DailyLimit-Remaining', 0)
 			stat['count'] = int(resp.getheader('X-RateLimit-DailyLimit', 0)) - int(stat['remain'])
 			stat['delta'] = datetime.now() - self.parseDate(resp.getheader('date', ''))
-			if resp.getcode()==200:
-				text = resp.read().decode(encoding='utf-8', errors='ignore')
+			if resp.getcode() == 200:
+				text: str = resp.read().decode(encoding='utf-8', errors='ignore')
 				try:
 					response = loads(text)
 				except Exception as e:
@@ -129,71 +139,72 @@ class Lapi(object):
 				response['error'] = "Response code: %d" % resp.getcode()
 		return response
 
-	def search(self) -> dict:
+	def search(self) -> Dict:
 		"""Request a word search in the online dictionary.
 		@return: deserialized response from the server
-		@rtype: dict
+		@rtype: Dict
 		"""
-		query = "search?source={dictionary}&language={language}&text={text}&morph={morph}&analyzed={analyzed}".format(
-			dictionary = self.source,
-			language = self.language,
-			text = urlencode(self.text),
-			morph = str(self.morph).lower(),
-			analyzed = str(self.analyzed).lower()
+		query: str = "search?source={dict}&language={lang}&text={text}&morph={morph}&analyzed={analyzed}".format(
+			dict=self.source,
+			lang=self.language,
+			text=urlencode(self.text),
+			morph=str(self.morph).lower(),
+			analyzed=str(self.analyzed).lower()
 		)
 		return self.get(query)
 
-	def entries(self, id:str) -> dict:
+	def entries(self, id: str) -> Dict:
 		"""Request on a dictionary entry by its ID.
 		@param id: identifier of a specific dictionary entry
 		@type id: str
 		@return: deserialized response from the server
-		@rtype: dict
+		@rtype: Dict
 		"""
-		query = "entries/{entry_id}".format(
-			entry_id = id
+		query: str = "entries/{entry_id}".format(
+			entry_id=id
 		)
 		return self.get(query)
 
-	def senses(self, id:str) -> dict:
+	def senses(self, id: str) -> Dict:
 		"""Request on a dictionary entry for the specific sense of word by its ID.
 		@param id: identifier of a dictionary entry for the specific sense of word
 		@type id: str
 		@return: deserialized response from the server
-		@rtype: dict
+		@rtype: Dict
 		"""
-		query = "senses/{sense_id}".format(
-			sense_id = id
+		query: str = "senses/{sense_id}".format(
+			sense_id=id
 		)
 		return self.get(query)
 
-	def languages(self) -> dict:
+	def languages(self) -> Dict:
 		"""Request for lists of all languages available in the online dictionary.
 		@return: deserialized response from the server
-		@rtype: dict
+		@rtype: Dict
 		"""
 		return self.get('languages')
 
-	def test(self) -> dict:
+	def test(self) -> Dict:
 		"""Check the functionality of the online dictionary API.
 		Authorization is not required to fulfill this request.
 		Also, this is not counted as a separate request in the daily quota of requests.
 		@return: deserialized response from the server
-		@rtype: dict
+		@rtype: Dict
 		"""
 		return self.get('test')
 
-	def parseDate(self, datestr:str) -> datetime:
+	def parseDate(self, datestr: str) -> datetime:
 		"""Analyze a date string and convert it to a datetime object.
 		@param datestr: the date as a text string
 		@type datestr: str
 		@return: datetime object
 		@rtype: datetime
 		"""
+		monthes: List[str] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 		try:
 			date = datestr.split(' ')[1:-1]
-			date[1] = "%02d" % (['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].index(date[1])+1)
+			date[1] = "%02d" % (monthes.index(date[1]) + 1)
 			dt: datetime = datetime.strptime(' '.join(date), "%d %m %Y %H:%M:%S")
-		except Exception as e:
+		except Exception:
 			return datetime.now() - timedelta(days=100)
 		return dt

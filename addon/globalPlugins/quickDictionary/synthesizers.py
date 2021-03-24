@@ -1,4 +1,4 @@
-#synthesizers.py
+# synthesizers.py
 # Components required to work with voice synthesizers profiles
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
@@ -12,16 +12,17 @@ import os
 import pickle
 import speech
 import config
-from . import _addonName
+from . import addonName
 
 
 class Profile(object):
 	"""Represents the profile of the voice synthesizer."""
 
-	def __init__(self,
-		synthName: str = '',
-		synthConf: Dict = {},
-		lang: str = '') -> None:
+	def __init__(
+			self,
+			synthName: str = '',
+			synthConf: Dict = {},
+			lang: str = '') -> None:
 		"""Input data needed to initialize the synthesizer profile.
 		@param synthName: short name of the voice synthesizer
 		@type synthName: str
@@ -126,7 +127,7 @@ class Profiles(object):
 	def __init__(self) -> None:
 		"""Incoming data to initialize the object."""
 		# an external file that stores profile settings
-		self._path = os.path.join(config.getUserDefaultConfigPath(), "%s.pickle" % _addonName)
+		self._path = os.path.join(config.getUserDefaultConfigPath(), "%s.pickle" % addonName)
 		# a dict of slots and profiles that match them
 		self._profs: Dict[int, Profile] = {}
 		# default synthesizer profile settings
@@ -143,11 +144,11 @@ class Profiles(object):
 		try:
 			with open(self._path, 'rb') as f:
 				data = pickle.load(f)
-		except Exception as e:
+		except Exception:
 			data = {}
 		if 'version' not in data:
 			data = {'version': 0}
-		self._profs = dict((key, Profile(val['name'], val['conf'], val['lang'])) if isinstance(key,int) else (key,val) for key,val in data.items())
+		self._profs = dict((key, Profile(val['name'], val['conf'], val['lang'])) if isinstance(key, int) else (key, val) for key, val in data.items())  # noqa E501
 		return self
 
 	def save(self) -> bool:
@@ -168,7 +169,7 @@ class Profiles(object):
 		try:
 			with open(self._path, 'wb') as f:
 				pickle.dump(profs, f)
-		except Exception as e:
+		except Exception:
 			return False
 		return True
 
@@ -185,7 +186,7 @@ class Profiles(object):
 
 	def __iter__(self) -> Generator[Tuple[int, Profile], None, None]:
 		"""Iterate through all available profiles of synthesizers.
-		@return: iterator each element of which consists of two values - the slot number and the corresponding profile
+		@return: iterator each item of which consists of two values - the slot number and the corresponding profile
 		@rtype: Generator[Tuple[int, Profile], None, None]
 		"""
 		for slot in sorted(self._profs, key=lambda s: str(s)):
@@ -235,7 +236,7 @@ class Profiles(object):
 		"""
 		return Profile().update()
 
-	def rememberCurrent(self, current: Optional[Profile]=None) -> Profile:
+	def rememberCurrent(self, current: Optional[Profile] = None) -> Profile:
 		"""Store current or received voice as the previous synthesizer.
 		@param current: voice synthesizer profile
 		@type: Optional[Profile]

@@ -1,4 +1,4 @@
-#locator.py
+# locator.py
 # Find available online dictionary services and add them to the list
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
@@ -26,9 +26,9 @@ def discover_services() -> None:
 	for filename in fnmatch.filter(filenames, '*.py'):
 		if filename != "__init__.py":
 			matches.append(os.path.join(dir_path, dir, filename))
-	rel_files: List[str] = [file[len(dir_path)+1:] for file in matches]
+	rel_files: List[str] = [file[len(dir_path) + 1:] for file in matches]
 	modules: List[str] = [rel_file.replace('/', '.').replace('\\', '.')[:-3] for rel_file in rel_files]
-	imported_mods: List[ModuleType] = [import_module(".." + module, package=__name__) for module in modules]
+	imported_mods: List[ModuleType] = [import_module(".." + module, package=__name__) for module in modules]  # noqa F841
 
 
 class Lookup(object):
@@ -118,7 +118,8 @@ class DictionaryService(object):
 	@property
 	def name(self) -> str:
 		"""Short service name.
-		Matches the name of the file representing the service and - the name of the directory containing the service modules.
+		Matches the name of the file representing the service
+		and - the name of the directory that contains the service modules.
 		@return: service name
 		@rtype: str
 		"""

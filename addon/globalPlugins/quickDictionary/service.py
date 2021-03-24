@@ -1,4 +1,4 @@
-#service.py
+# service.py
 """
 	Description of common components for:
 	* working with languages (class Languages);
@@ -15,13 +15,6 @@
 from __future__ import annotations
 from typing import Callable, Union, List, Dict, Iterator
 import addonHandler
-from logHandler import log
-try:
-	addonHandler.initTranslation()
-except addonHandler.AddonError:
-	log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
-_: Callable[[str], str]
-
 import os.path
 import json
 import zlib
@@ -31,7 +24,14 @@ from abc import ABCMeta, abstractmethod
 from threading import Thread
 from locale import getdefaultlocale
 from languageHandler import getLanguageDescription
-from . import _addonName
+from logHandler import log
+from . import addonName
+
+try:
+	addonHandler.initTranslation()
+except addonHandler.AddonError:
+	log.warning("Unable to init translations. This may be because the addon is running from NVDA scratchpad.")
+_: Callable[[str], str]
 
 
 # Languages which may not be in the main list
@@ -70,6 +70,7 @@ langNames = {
 	"yi": _("Yiddish"),
 }
 
+
 class Language(metaclass=ABCMeta):
 	"""Object representation of language."""
 
@@ -98,7 +99,7 @@ class Language(metaclass=ABCMeta):
 		"""
 		return self.getName()
 
-	def getName(self, code: str='') -> str:
+	def getName(self, code: str = '') -> str:
 		"""Full language name.
 		If it is not possible to determine, a short language code is returned.
 		It is designed as a separate method for redefining it in child classes of services
@@ -110,7 +111,7 @@ class Language(metaclass=ABCMeta):
 		"""
 		lang = code or self._lang
 		name = getLanguageDescription(lang)
-		if self._lang=='':
+		if self._lang == '':
 			name = "- %s -" % name
 		if not name:
 			name = self._names.get(lang)
@@ -174,7 +175,7 @@ class Languages(metaclass=ABCMeta):
 		@rtype: bool
 		"""
 		for language in self.all:
-			if language.code==lang.code:
+			if language.code == lang.code:
 				return True
 		return False
 
@@ -240,7 +241,7 @@ class Languages(metaclass=ABCMeta):
 	@abstractmethod
 	def defaultInto(self) -> Language:
 		"""Default target language.
-		@return: locale language, if it is available as the target for the default source, otherwise the first one in the list
+		@return: locale language, if it is available as the target for the default source, otherwise the first item
 		@rtype: Language
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
@@ -258,12 +259,14 @@ class Languages(metaclass=ABCMeta):
 class Translator(Thread):
 	"""Provides interaction with the online dictionary service."""
 
-	def __init__(self,
-		langFrom: str,
-		langTo: str,
-		text: str,
-		*args, **kwargs) -> None:
-		"""Initialization of the source and target language, as well as the word or phrase to search in the dictionary.
+	def __init__(
+			self,
+			langFrom: str,
+			langTo: str,
+			text: str,
+			*args, **kwargs) -> None:
+		"""Initialization of the source and target languages,
+		as well as the word or phrase to search in the remote dictionary.
 		@param langFrom: source language
 		@type langFrom: str
 		@param langTo: target language
@@ -420,8 +423,8 @@ class Secret(object):
 		"""
 		try:
 			return binascii.hexlify(zlib.compress(cred.encode('utf-8'), level=9)).decode()
-		except Exception as e:
-			return ''
+		except Exception:
+			return binascii.hexlify(zlib.compress(b'', level=9)).decode()
 
 	def decode(self, cred: str) -> str:
 		"""Restore the original data from the previously masked string.
@@ -432,7 +435,7 @@ class Secret(object):
 		"""
 		try:
 			return zlib.decompress(binascii.unhexlify(cred.encode('utf-8'))).decode()
-		except Exception as e:
+		except Exception:
 			return ''
 
 	def toDict(self) -> Dict[str, str]:
@@ -449,7 +452,7 @@ class Secret(object):
 
 	def fromDict(self, rec: Dict[str, str]) -> Secret:
 		"""Initialize the fields of the current object from the obtained parameter.
-		The update occurs only when the name of the service in the corresponding field coincides with the current one.
+		The update occurs only when the name of the service in the corresponding field coincides with the current.
 		@param rec: dict object with required keys
 		@type rec: Dict[str, str]
 		@return: updated object with the obtained data
@@ -465,13 +468,14 @@ class Secret(object):
 class Secrets(object):
 	"""Manage the credentials required for all add-on services to work."""
 
-	def __init__(self,
-		dir: str = os.path.dirname(__file__),
-		file: str = 'qd') -> None:
+	def __init__(
+			self,
+			dir: str = os.path.dirname(__file__),
+			file: str = 'qd') -> None:
 		"""Initialize all required values.
 		@param dir: the directory where the credential file is stored
 		@type dir: str
-		@param file: file name without extension, as this json file will be stored in the zip archive of the same name
+		@param file: file name without extension, json-file will be stored in the zip archive of the same name
 		@type file: str
 		"""
 		self._path: str = os.path.join(dir, file)
@@ -486,11 +490,11 @@ class Secrets(object):
 		"""
 		data: Dict[str, Dict[str, str]] = {}
 		try:
-			with zipfile.ZipFile(self._path+'.zip', mode='r') as zipArchive:
-				with zipArchive.open(name=self._file, mode='r', pwd=_addonName.encode('utf-8')) as unzippedFile:
+			with zipfile.ZipFile(self._path + '.zip', mode='r') as zipArchive:
+				with zipArchive.open(name=self._file, mode='r', pwd=addonName.encode('utf-8')) as unzippedFile:
 					data = json.load(unzippedFile)
 		except Exception as e:
-			log.error("%s: %s, %s", str(e), self._path+'.zip', self._file)
+			log.error("%s: %s, %s", str(e), self._path + '.zip', self._file)
 		for service in data:
 			self._secrets[service] = Secret(service).fromDict(data.get(service, {}))
 		return self
@@ -504,10 +508,10 @@ class Secrets(object):
 		for service in self._secrets:
 			data[service] = self._secrets[service].toDict()
 		try:
-			with open(self._path+'.json', 'w', encoding='utf-8') as f:
+			with open(self._path + '.json', 'w', encoding='utf-8') as f:
 				f.write(json.dumps(data, skipkeys=True, ensure_ascii=False, indent=4))
 		except Exception as e:
-			log.error(str(e), self._path+'json')
+			log.error(str(e), self._path + 'json')
 		return self
 
 	@property
@@ -528,5 +532,5 @@ class Secrets(object):
 		return self._secrets.get(service, Secret(service))
 
 
-# an instance for further use in addon services is created here so as not to perform its initialization on each call
+# an instance for further use in addon services so as not to perform its initialization on each call
 secrets = Secrets()

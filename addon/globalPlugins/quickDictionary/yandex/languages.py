@@ -1,15 +1,14 @@
-#languages.py
+# languages.py
 # Description of the class for working with the languages of a specific service
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 # Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import List, Iterator
-import os
-from .. import _addonName
-from ..service import Language, Languages, secrets
-from .api import serviceName, Yapi
+from typing import List, Dict, Iterator
+import os.path
+from ..service import Language, Languages
+from .api import Yapi
 
 
 class ServiceLanguage(Language):
@@ -18,7 +17,7 @@ class ServiceLanguage(Language):
 
 
 class ServiceLanguages(Languages):
-	"""Represents a list of languages available in the dictionary service."""
+	"""Represents a collection of languages available in the dictionary service."""
 
 	def __init__(self, file: str = "%s.json" % os.path.splitext(os.path.abspath(__file__))[0]) -> None:
 		"""Initialization of an object representing a collection of available language pairs.
@@ -28,7 +27,7 @@ class ServiceLanguages(Languages):
 		@type file: str
 		"""
 		super(ServiceLanguages, self).__init__(file)
-		self.updated = False
+		self.updated: bool = False
 		self._all: List[ServiceLanguage] = []
 
 	def update(self) -> bool:
@@ -38,8 +37,8 @@ class ServiceLanguages(Languages):
 		@rtype: bool
 		"""
 		self.updated = False
-		langs = Yapi().languages()
-		if len(langs)>10:
+		langs: Dict = Yapi().languages()
+		if len(langs) > 10:
 			self.updated = self.save(langs)
 		return self.updated
 
@@ -58,11 +57,12 @@ class ServiceLanguages(Languages):
 		@return: sequence of available target languages
 		@rtype: Iterator[ServiceLanguage]
 		"""
-		if not lang: return
+		if not lang:
+			return
 		for lng in self._langs:
-			l = lng.split('-')
-			if l[0]==lang:
-				yield ServiceLanguage(l[1])
+			llg: List[str] = lng.split('-')
+			if llg[0] == lang:
+				yield ServiceLanguage(llg[1])
 
 	def isAvailable(self, source: str, target: str) -> bool:
 		"""Indicates whether the selected language pair is in the list of available languages.
@@ -81,15 +81,20 @@ class ServiceLanguages(Languages):
 		@return: English if available, else - the first language in list of source languages
 		@rtype: ServiceLanguage
 		"""
-		return ServiceLanguage('en' if next(filter(lambda l: l.code=='en', self.fromList()), None) else self._langs[0].split('-')[0])
+		return ServiceLanguage(
+			'en' if next(filter(lambda l: l.code == 'en', self.fromList()), None) else self._langs[0].split('-')[0])
 
 	@property
 	def defaultInto(self) -> ServiceLanguage:
 		"""Default target language.
-		@return: locale language, if it is available as the target for the default source, otherwise the first one in the list
+		@return: locale language, if it is available as the target for the default source,
+			otherwise the first one in the list
 		@rtype: ServiceLanguage
 		"""
-		return ServiceLanguage(self.locale.code) if next(filter(lambda l: l.code==self.locale.code, self.intoList(self.defaultFrom.code)), None) else [l for l in self.intoList(self.defaultFrom.code)][0]
+		return ServiceLanguage(
+			self.locale.code) if next(
+		filter(lambda l: l.code == self.locale.code, self.intoList(self.defaultFrom.code)),
+		None) else [l for l in self.intoList(self.defaultFrom.code)][0]
 
 	@property
 	def all(self) -> List:

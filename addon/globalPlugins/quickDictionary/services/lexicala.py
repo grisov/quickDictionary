@@ -1,4 +1,4 @@
-#lexicala.py
+# lexicala.py
 # Online dictionary service description
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.

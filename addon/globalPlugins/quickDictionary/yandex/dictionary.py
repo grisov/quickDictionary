@@ -1,25 +1,25 @@
-#dictionary.py
-# Service summary, configuration scheme and objects for executing translation requests and processing the received answers
+# dictionary.py
+# Service summary, configuration scheme and objects for executing translation requests
+# and processing the received responses
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
 # Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Callable
+from typing import Callable, List, Dict
+import re
 import addonHandler
 from logHandler import log
-try:
-	addonHandler.initTranslation()
-except addonHandler.AddonError:
-	log.warning("Unable to initialise translations. This may be because the addon is running from NVDA scratchpad.")
-_: Callable[[str], str]
-
-import re
-from .. import _addonName
 from ..service import Translator, secrets
 from ..shared import htmlTemplate
 from .api import serviceName, Yapi
 from .languages import langs
+
+try:
+	addonHandler.initTranslation()
+except addonHandler.AddonError:
+	log.warning("Unable to init translations. This may be because the addon is running from NVDA scratchpad.")
+_: Callable[[str], str]
 
 
 # Translators: The name of the online dictionary service
@@ -40,8 +40,14 @@ confspec = {
 class ServiceTranslator(Translator):
 	"""Provides interaction with the online dictionary service."""
 
-	def __init__(self, langFrom:str, langTo:str, text:str, *args, **kwargs):
-		"""Initialization of the source and target language, as well as the word or phrase to search in the dictionary.
+	def __init__(
+			self,
+			langFrom: str,
+			langTo: str,
+			text: str,
+			*args, **kwargs
+	) -> None:
+		"""Initialization of the source and target language, as well as word or phrase to search in the dictionary.
 		@param langFrom: source language
 		@type langFrom: str
 		@param langTo: target language
@@ -52,20 +58,24 @@ class ServiceTranslator(Translator):
 		super(ServiceTranslator, self).__init__(langFrom, langTo, text, *args, **kwargs)
 
 	@property
-	def uiLang(self):
-		return self._langTo or langs.locale
+	def uiLang(self) -> str:
+		"""User interface language which will be used to display labels.
+		@return: UI language code
+		@rtype: str
+		"""
+		return self._langTo or langs.locale.code
 
-	def run(self):
+	def run(self) -> None:
 		"""Query the remote dictionary and save the processed response.
 		Should run in a separate thread to avoid blocking.
 		"""
-		resp = Yapi(text=self.text, langFrom=self.langFrom, langTo=self.langTo, uiLang=self.uiLang).lookup()
+		resp: Dict = Yapi(text=self.text, langFrom=self.langFrom, langTo=self.langTo, uiLang=self.uiLang).lookup()
 		if resp.get('error'):
-			self._error = True
-		parser = Parser(resp)
-		html = parser.to_html()
-		self._html = htmlTemplate.format(body=html) if html else html
-		self._plaintext = parser.to_text()
+			self._error: bool = True
+		parser: Parser = Parser(resp)
+		html: str = parser.to_html()
+		self._html: str = htmlTemplate.format(body=html) if html else html
+		self._plaintext: str = parser.to_text()
 		return
 
 
@@ -74,44 +84,44 @@ class Parser(object):
 	Must contain to_html() and to_text() methods.
 	"""
 
-	def __init__(self, resp:dict):
+	def __init__(self, resp: Dict) -> None:
 		"""Initializing input values.
 		@param resp: response from server converted to dict format
-		@type resp: dict
+		@type resp: Dict
 		"""
 		self.resp = resp
 		self.html = ''
 
-	def attrs(self, resp:dict) -> str:
+	def attrs(self, resp: Dict[str, str]) -> str:
 		"""Convert to string a sequence of attributes from fields:
 		part of speech, number and gender.
 		@param resp: part of the response from server converted to dict format
-		@type resp: dict
+		@type resp: Dict[str, str]
 		"""
-		attrs = []
+		attrs: List[str] = []
 		for key in ["pos", "asp", "num", "gen"]:
 			if key in resp:
-				field = {
+				field: str = {
 					# Translators: Field name in a dictionary entry
 					'num': "<i>%s</i>: " % _("number"),
 					# Translators: Field name in a dictionary entry
 					'gen': "<i>%s</i>: " % _("gender")
-					}.get(key, '') + resp[key]
+				}.get(key, '') + resp[key]
 				attrs.append(field)
 		if attrs:
 			return " (%s)" % ', '.join(attrs)
 		return ''
 
-	def to_html(self) -> str:
+	def to_html(self) -> str:  # noqa C901
 		"""Convert data received from a remote dictionary to HTML format.
 		@return: converted to HTML deserialized response from server
 		@rtype: str
 		"""
-		if not isinstance(self.resp, dict): # incorrect response
+		if not isinstance(self.resp, dict):  # incorrect response
 			return ''
-		if self.resp.get('error', ''): # Error message
+		if self.resp.get('error', ''):  # Error message
 			return '<h1>%s</h1>' % self.resp['error']
-		html = ''
+		html: str = ''
 		for key in ['def', 'tr', 'mean', 'syn', 'ex']:
 			if key in self.resp:
 				html += {
@@ -121,7 +131,7 @@ class Parser(object):
 					'syn': "<p><i>%s</i>:\n" % _("synonyms").capitalize(),
 					# Translators: Field name in a dictionary entry
 					'ex': "<p><i>%s</i>:\n" % _("examples").capitalize()
-					}.get(key, '')
+				}.get(key, '')
 				if key == 'def':
 					if not self.resp['def']:
 						return ''
@@ -134,12 +144,12 @@ class Parser(object):
 					for elem in self.resp['tr']:
 						html += '<li><b>' + elem['text'] + '</b>' + self.attrs(elem) + '\n'
 						html += Parser(elem).to_html()
-						html += '</li>\n';
+						html += '</li>\n'
 					html += '</ul>\n'
 				if key == 'mean':
 					means = []
 					for elem in self.resp['mean']:
-						means.append(elem['text'] + self.attrs(elem) )
+						means.append(elem['text'] + self.attrs(elem))
 					html += ', '.join(means) + '</p>\n'
 					del(means)
 					html += Parser(elem).to_html()
@@ -151,11 +161,11 @@ class Parser(object):
 					del(syns)
 					html += Parser(elem).to_html()
 				if key == 'ex':
-					exs = []
+					exs: List[str] = []
 					for elem in self.resp['ex']:
 						tmp = elem['text'] + self.attrs(elem)
 						if 'tr' in elem:
-							trs = []
+							trs: List[str] = []
 							for extr in elem['tr']:
 								trs.append(extr['text'] + self.attrs(extr))
 							tmp += ' - ' + ', '.join(trs)
@@ -166,11 +176,14 @@ class Parser(object):
 		self.html = html
 		return self.html
 
-	def to_text(self):
-		"""Convert a dictionary response from HTML format to plain text."""
-		li = u"\u2022 " # marker character code
-		h1 = "- "
-		text = self.html or self.to_html()
+	def to_text(self) -> str:
+		"""Convert a dictionary response from HTML format to plain text.
+		@return: deserialized response in plaintext format
+		@rtype: str
+		"""
+		li: str = u"\u2022 "  # marker character code
+		h1: str = "- "
+		text: str = self.html or self.to_html()
 		text = text.replace('<li>', li).replace('<h1>', h1)
 		text = re.sub(r'\<[^>]*\>', '', text)
 		text = '\r\n'.join((s for s in text.split('\n') if s))
