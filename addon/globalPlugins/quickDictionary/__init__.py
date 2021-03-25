@@ -327,9 +327,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			# Translators: Notification that no dictionary entries have been received in the current session
 			ui.message(_("There is no dictionary queries"))
 			return
-		langs = services[config.conf[addonName]['active']].langs
+		service = services[getattr(self._lastTranslator, 'id', config.conf[addonName]['active'])]
 		api.copyToClip(self._lastTranslator.plaintext, notify=True)
-		ui.message('%s - %s' % (langs[self._lastTranslator.langFrom].name, langs[self._lastTranslator.langTo].name))
+		ui.message('%s - %s' % (service.langs[self._lastTranslator.langFrom].name, service.langs[self._lastTranslator.langTo].name))
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="U - %s" % _("download from online dictionary and save the current list of available languages"))  # noqa E501
@@ -396,6 +396,31 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			ui.message("%s: %s" % (_("state of cache"), self._cacheInfo))
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
+	@script(description="J - %s" % _("show the response from the remote server"))
+	def script_showResponse(self, gesture: InputGesture) -> None:
+		"""Show deserialized remote server response in human readable format,
+		report if dictionary queries have not yet been performed.
+		@param gesture: gesture assigned to this method
+		@type gesture: InputGesture
+		"""
+		if not self._lastTranslator:
+			# Translators: Information about the online service
+			ui.message(_("There is no dictionary queries"))
+			return
+		from json import dumps
+		service = services[getattr(self._lastTranslator, 'id', config.conf[addonName]['active'])]
+		ui.browseableMessage(
+			message=dumps(self._lastTranslator.resp, skipkeys=True, ensure_ascii=False, indent=4),
+			# Translators: The title of the window that displays the desiralized response from the server
+			title=_("Response from") + ' "{server}": {text:.15s} ({langFrom}-{langTo})'.format(
+				server=service.summary,
+				text=self._lastTranslator.text,
+				langFrom=service.langs[self._lastTranslator.langFrom].name,
+				langTo=service.langs[self._lastTranslator.langTo].name),
+			isHtml=False
+		)
+
+	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="H - %s" % _("help on add-on commands"))
 	def script_help(self, gesture: InputGesture) -> None:
 		"""Retrieves a description of all add-ons methods and presents them.
@@ -427,7 +452,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.script_editText.__doc__,
 			self.script_updateLanguages.__doc__,
 			self.script_selectService.__doc__,
-			self.script_dictionaryStatistics.__doc__]:
+			self.script_dictionaryStatistics.__doc__,
+			self.script_showResponse.__doc__]:
 			lines.append("<li>%s</li>" % method)
 		lines += ["</ul>", "<br>",  # noqa ET113
 			# Translators: Message in the add-on short help  # noqa ET128
@@ -628,6 +654,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._messages.clear()
 				return
 		self._lastTranslator = translator
+		setattr(self._lastTranslator, 'id', active)
 		if isHtml:
 			ui.browseableMessage(
 				message=translator.html,
@@ -658,6 +685,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"kb:c": "copyLastResult",
 		"kb:u": "updateLanguages",
 		"kb:q": "dictionaryStatistics",
+		"kb:j": "showResponse",
 		# General
 		"kb:F": "servicesDialog",
 		"kb:`": "servicesDialog",

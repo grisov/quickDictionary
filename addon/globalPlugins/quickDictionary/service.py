@@ -269,7 +269,8 @@ class Translator(Thread):
 			langFrom: str,
 			langTo: str,
 			text: str,
-			*args, **kwargs) -> None:
+			*args, **kwargs
+	) -> None:
 		"""Initialization of the source and target languages,
 		as well as the word or phrase to search in the remote dictionary.
 		@param langFrom: source language
@@ -283,9 +284,10 @@ class Translator(Thread):
 		self._langFrom = langFrom
 		self._langTo = langTo
 		self._text = text
-		self._html = ''
-		self._plaintext = ''
-		self._error = False
+		self._resp: Dict = {}
+		self._html: str = ''
+		self._plaintext: str = ''
+		self._error: bool = False
 
 	@property
 	def langFrom(self) -> str:
@@ -310,6 +312,14 @@ class Translator(Thread):
 		@rtype: str
 		"""
 		return self._text
+
+	@property
+	def resp(self) -> Dict:
+		"""Get deserialized response from the server.
+		@return: deserealized response
+		@rtype: Dict
+		"""
+		return self._resp
 
 	@property
 	def html(self) -> str:

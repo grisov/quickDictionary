@@ -68,14 +68,18 @@ class ServiceTranslator(Translator):
 		"""Query the remote dictionary and save the processed response.
 		Should run in a separate thread to avoid blocking.
 		"""
-		resp: Dict = Yapi(text=self.text, langFrom=self.langFrom, langTo=self.langTo, uiLang=self.uiLang).lookup()
-		if resp.get('error'):
-			self._error: bool = True
-		parser: Parser = ServiceParser(resp)
+		self._resp = Yapi(
+			text=self.text,
+			langFrom=self.langFrom,
+			langTo=self.langTo,
+			uiLang=self.uiLang
+		).lookup()
+		if self._resp.get('error'):
+			self._error = True
+		parser: Parser = ServiceParser(self._resp)
 		html: str = parser.to_html()
-		self._html: str = htmlTemplate.format(body=html) if html else html
-		self._plaintext: str = parser.to_text()
-		return
+		self._html = htmlTemplate.format(body=html) if html else html
+		self._plaintext = parser.to_text()
 
 
 class ServiceParser(Parser):

@@ -83,16 +83,16 @@ class ServiceTranslator(Translator):
 		"""Query the remote dictionary and save the processed response.
 		Should run in a separate thread to avoid blocking.
 		"""
-		resp: Dict = Lapi(
+		self._resp = Lapi(
 			text=self.text,
 			lang=self.langFrom,
 			source=self.source,
 			morph=self.morph,
 			analyzed=self.analyzed
 		).search()
-		if resp.get('error'):
+		if self._resp.get('error'):
 			self._error = True
-		parser = ServiceParser(response=resp, target=self.langTo)
+		parser = ServiceParser(response=self._resp, target=self.langTo)
 		html: str = parser.to_html()
 		self._html = htmlTemplate.format(body=html) if html else html
 		self._plaintext = parser.to_text()
