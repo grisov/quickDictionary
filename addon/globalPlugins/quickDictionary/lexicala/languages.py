@@ -16,13 +16,6 @@ from .api import Lapi, serviceName
 class ServiceLanguage(Language):
 	"""Overriding a class due to a non-compliance of the some language codes with the ISO standard."""
 
-	def __init__(self, code: str) -> None:
-		"""Language initialization by its code.
-		@param code: usually two-character language code
-		@type code: str
-		"""
-		super(ServiceLanguage, self).__init__(code)
-
 	@property
 	def name(self) -> str:
 		"""Full language name.
@@ -48,10 +41,8 @@ class ServiceLanguages(Languages):
 		@param file: external file containing a list of available source and target languages
 		@type file: str
 		"""
-		self.updated: bool = False
-		self._all: List[ServiceLanguage] = []
-		self._langs: Dict = {}
 		super(ServiceLanguages, self).__init__(file)
+		self._Language = ServiceLanguage
 
 	@property
 	def sources(self) -> List[str]:

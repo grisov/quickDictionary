@@ -7,10 +7,9 @@
 # Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 from typing import Callable, List, Dict
-import re
 import addonHandler
 from logHandler import log
-from ..service import Translator, secrets
+from ..service import Translator, Parser, secrets
 from ..shared import htmlTemplate
 from .api import serviceName, Yapi
 from .languages import langs
@@ -72,25 +71,17 @@ class ServiceTranslator(Translator):
 		resp: Dict = Yapi(text=self.text, langFrom=self.langFrom, langTo=self.langTo, uiLang=self.uiLang).lookup()
 		if resp.get('error'):
 			self._error: bool = True
-		parser: Parser = Parser(resp)
+		parser: Parser = ServiceParser(resp)
 		html: str = parser.to_html()
 		self._html: str = htmlTemplate.format(body=html) if html else html
 		self._plaintext: str = parser.to_text()
 		return
 
 
-class Parser(object):
+class ServiceParser(Parser):
 	"""Converts the response from the server into a human-readable formats.
 	Must contain to_html() and to_text() methods.
 	"""
-
-	def __init__(self, resp: Dict) -> None:
-		"""Initializing input values.
-		@param resp: response from server converted to dict format
-		@type resp: Dict
-		"""
-		self.resp = resp
-		self.html = ''
 
 	def attrs(self, resp: Dict[str, str]) -> str:
 		"""Convert to string a sequence of attributes from fields:
@@ -137,13 +128,13 @@ class Parser(object):
 						return ''
 					for elem in self.resp['def']:
 						html += '<h1>' + elem['text'] + self.attrs(elem) + '</h1>\n'
-						html += Parser(elem).to_html()
+						html += ServiceParser(elem).to_html()
 						html += '\n'
 				if key == 'tr':
 					html += '<ul>\n'
 					for elem in self.resp['tr']:
 						html += '<li><b>' + elem['text'] + '</b>' + self.attrs(elem) + '\n'
-						html += Parser(elem).to_html()
+						html += ServiceParser(elem).to_html()
 						html += '</li>\n'
 					html += '</ul>\n'
 				if key == 'mean':
@@ -152,14 +143,14 @@ class Parser(object):
 						means.append(elem['text'] + self.attrs(elem))
 					html += ', '.join(means) + '</p>\n'
 					del(means)
-					html += Parser(elem).to_html()
+					html += ServiceParser(elem).to_html()
 				if key == 'syn':
 					syns = []
 					for elem in self.resp['syn']:
 						syns.append(elem['text'] + self.attrs(elem))
 					html += ', '.join(syns) + '</p>\n'
 					del(syns)
-					html += Parser(elem).to_html()
+					html += ServiceParser(elem).to_html()
 				if key == 'ex':
 					exs: List[str] = []
 					for elem in self.resp['ex']:
@@ -175,16 +166,3 @@ class Parser(object):
 					del(exs)
 		self.html = html
 		return self.html
-
-	def to_text(self) -> str:
-		"""Convert a dictionary response from HTML format to plain text.
-		@return: deserialized response in plaintext format
-		@rtype: str
-		"""
-		li: str = u"\u2022 "  # marker character code
-		h1: str = "- "
-		text: str = self.html or self.to_html()
-		text = text.replace('<li>', li).replace('<h1>', h1)
-		text = re.sub(r'\<[^>]*\>', '', text)
-		text = '\r\n'.join((s for s in text.split('\n') if s))
-		return text

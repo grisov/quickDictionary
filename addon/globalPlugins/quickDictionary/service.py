@@ -3,8 +3,9 @@
 	Description of common components for:
 	* working with languages (class Languages);
 	* executing translation requests (class Translator);
+	* parsing of deserialized data (class Parser);
 	* credentials management for all connected services (class Secrets).
-	Relevant service classes must be inherited from Languages and Translator objects
+	Relevant service classes must be inherited from Languages, Translator and Parser objects
 
 	A part of the NVDA Quick Dictionary add-on
 	This file is covered by the GNU General Public License.
@@ -17,6 +18,7 @@ from typing import Callable, Union, List, Dict, Iterator
 import addonHandler
 import os.path
 import json
+import re
 import zlib
 import binascii
 import zipfile
@@ -79,7 +81,7 @@ class Language(metaclass=ABCMeta):
 		@param code: usually two-character language code
 		@type code: str
 		"""
-		self._lang = code
+		self._lang: str = code
 		# additional languages, where key is a two-character code and value is name of the language
 		self._names: Dict[str, str] = langNames
 
@@ -126,15 +128,18 @@ class Languages(metaclass=ABCMeta):
 		@param file: external file containing a list of available source and target languages
 		@type file: str
 		"""
+		self._Language = Language  # an object that represents one language
+		self.updated: bool = False
+		self._all: List[Language] = []
 		self._file = file
-		self._langs: Union[List, Dict] = self.load()
+		self._langs: Dict = self.load()
 
-	def load(self) -> Union[List, Dict]:
+	def load(self) -> Dict:
 		"""Load a collection of available language pairs from an external json file.
 		@return: collection of language pairs available in the dictionary
 		@rtype: Union[List, Dict] (depends on the service)
 		"""
-		data = {}
+		data: Dict = {}
 		try:
 			with open(self._file, 'r', encoding='utf-8') as f:
 				data = json.load(f)
@@ -165,7 +170,7 @@ class Languages(metaclass=ABCMeta):
 			code: str = getattr(getdefaultlocale()[0], 'split')('_')[0]
 		except (AttributeError, IndexError,):
 			code = ''
-		return Language(code)
+		return self._Language(code)
 
 	def __contains__(self, lang: Language) -> bool:
 		"""Implementation of checking the presence of an Language in the current collection.
@@ -186,7 +191,7 @@ class Languages(metaclass=ABCMeta):
 		@return: the Language object for the given code
 		@rtype: Language
 		"""
-		return Language(lang)
+		return self._Language(lang)
 
 	# The following methods and properties must be overridden in the child class
 	@abstractmethod
@@ -343,6 +348,42 @@ class Translator(Thread):
 		Should run in a separate thread to avoid blocking.
 		"""
 		raise NotImplementedError("This method must be overridden in the child class!")
+
+
+class Parser(metaclass=ABCMeta):
+	"""Parse the deserialized response from the server and returns it in HTML and text formats.
+	The child class must override the to_html() method.
+	"""
+
+	def __init__(self, response: Dict) -> None:
+		"""Input deserialized data for further analysis and conversion to other formats.
+		@param response: deserialized response from the online dictionary
+		@type response: Dict
+		"""
+		self.resp: Dict = response
+		self.html: str = ''
+
+	@abstractmethod
+	def to_html(self) -> str:
+		"""Return the HTML representation of the deserialized response sent to the class from the server.
+		This method must be overridden in the child class.
+		@return: found data in HTML format
+		@rtype: str
+		"""
+		raise NotImplementedError("This method must be overridden in the child class!")
+
+	def to_text(self) -> str:
+		"""Convert a dictionary response from HTML format to plain text.
+		@return: deserialized response in plaintext format
+		@rtype: str
+		"""
+		li: str = u"\u2022 "  # marker character code
+		h1: str = "- "
+		text: str = self.html or self.to_html()
+		text = text.replace('<li>', li).replace('<h1>', h1)
+		text = re.sub(r'\<[^>]*\>', '', text)
+		text = '\r\n'.join((s for s in text.split('\n') if s))
+		return text
 
 
 class Secret(object):

@@ -6,13 +6,12 @@
 # See the file COPYING for more details.
 # Copyright (C) 2020-2021 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Any, Callable, Iterator, List, Dict, Union
-import re
+from typing import Any, Callable, List, Dict, Union
 import addonHandler
 import config
 from logHandler import log
 from .. import addonName
-from ..service import Translator, secrets
+from ..service import Translator, Parser, secrets
 from ..shared import htmlTemplate
 from .languages import langs
 from .api import Lapi, serviceName
@@ -84,7 +83,7 @@ class ServiceTranslator(Translator):
 		"""Query the remote dictionary and save the processed response.
 		Should run in a separate thread to avoid blocking.
 		"""
-		resp = Lapi(
+		resp: Dict = Lapi(
 			text=self.text,
 			lang=self.langFrom,
 			source=self.source,
@@ -93,14 +92,14 @@ class ServiceTranslator(Translator):
 		).search()
 		if resp.get('error'):
 			self._error = True
-		parser = Parser(response=resp, target=self.langTo)
-		html = parser.to_html()
+		parser = ServiceParser(response=resp, target=self.langTo)
+		html: str = parser.to_html()
 		self._html = htmlTemplate.format(body=html) if html else html
 		self._plaintext = parser.to_text()
 
 
-class Parser(object):
-	"""Parse the deserialized response from the server and returns it in HTML and text format."""
+class ServiceParser(Parser):
+	"""Parse the deserialized response from the server and returns it in HTML and text formats."""
 
 	def __init__(self, response: Dict, target: str) -> None:
 		"""Input data for further analysis and conversion to other formats.
@@ -109,38 +108,37 @@ class Parser(object):
 		@param target: target language to search in the list of translations
 		@type target: str
 		"""
-		self._resp = response
-		self._langFrom = ''
-		self._langInto = target
-		self._html = ''
+		super(ServiceParser, self).__init__(response)
+		self._langFrom: str = ''
+		self._langInto: str = target
 
 	def results(self) -> str:
 		"""Analysis of the list of results.
 		@return: all available results in HTML format
 		@rtype: str
 		"""
-		if not self._resp.get('results') or len(self._resp['results']) == 0:
-			return self.error(self._resp)
-		results = []
-		for result in self._resp['results']:
+		if not self.resp.get('results') or len(self.resp['results']) == 0:
+			return self.error(self.resp)
+		results: List[str] = []
+		for result in self.resp['results']:
 			self._langFrom = self.language(result)
-			transResp = Lapi().entries(self.id(result))
+			transResp: Dict = Lapi().entries(self.id(result))
 			results.append(self.headwords(transResp))
 			results.append(self.senses(transResp))
-		return '\n'.join(filter(lambda s: s != '', results))
+		return self.filledOnly(results)
 
 	def headwords(self, resp: Dict) -> str:
 		"""Analysis of the "headword" object.
 		Doc: "headword": object or list of objects
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp = resp.get('headword', {})
+		rsp: Union[List[Dict], Dict] = resp.get('headword', {})
 		if isinstance(rsp, list):
-			hws = [self.headword(r) for r in rsp]
-			return self.strList(filter(lambda s: s != '', hws))
+			hws: List[str] = [self.headword(r) for r in rsp]
+			return self.filledOnly(hws)
 		return self.headword(rsp)
 
 	def headword(self, resp: Dict) -> str:
@@ -153,41 +151,40 @@ class Parser(object):
 		"""
 		if not resp or len(resp) == 0:
 			return ''
-		hw = "<h1>%s</h1>" % (self.text(resp) + self.inParentheses(
+		hw: str = "<h1>%s</h1>" % (self.text(resp) + self.inParentheses(
 			self.pos(resp),
 			self.gender(resp),
 			self.number(resp)))
-		hwl = [hw]
+		hwl: List[str] = [hw]
 		hwl.extend(self.filter(resp))
-		return '\n'.join(filter(lambda s: s != '', hwl))
+		return self.filledOnly(hwl)
 
-	def senseIDs(self, resp: dict) -> list:
+	def senseIDs(self, resp: Dict) -> List[str]:
 		"""Return a list of identifiers associated with the key "senses".
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: all found in current response branch dictionary article identifiers
-		@rtype: list
+		@rtype: List[str]
 		"""
-		rsp = resp.get('senses')
-		ids = []
+		rsp: Union[List[Dict], Dict] = resp.get('senses', {})
+		ids: List[str] = []
 		if isinstance(rsp, list):
 			ids = [r['id'] for r in rsp if r.get('id')]
 		return ids
 
-	def senses(self, resp: dict) -> str:
+	def senses(self, resp: Dict) -> str:
 		"""Analysis of the "senses" object.
 		Doc: "senses": array of objects
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp = resp.get('senses', {})
-		sns: Union[str, Iterator[str], List[str]] = ''
+		rsp: Union[List[Dict], Dict] = resp.get('senses', {})
+		sns: str = ''
 		if isinstance(rsp, list):
-			sns = [self.withPrefix("<li>{value}</li>", '', self.sense(r)) for r in rsp]
-			sns = filter(lambda s: s != '', sns)
-			sns = '\n'.join(sns)
+			sns = self.filledOnly(
+				[self.withPrefix("<li>{value}</li>", '', self.sense(r)) for r in rsp])
 		else:
 			sns = self.withPrefix("<li>{value}</li>", '', self.sense(rsp))
 		return self.withPrefix('<ul type="disc">\n{value}\n</ul>', '', sns)
@@ -206,33 +203,33 @@ class Parser(object):
 		# self.id(resp)  # currently not used
 		sns.append(self.definition(resp) + self.translations(resp))
 		sns.extend(self.filter(resp))
-		snsx: str = '\n'.join(filter(lambda s: s != '', sns))
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<i>{name}</i>: {value}", _("mean"), snsx)
+		return self.withPrefix("<i>{name}</i>: {value}", _("mean"), self.filledOnly(sns))
 
-	def compositional_phrases(self, resp: dict) -> str:
+	def compositional_phrases(self, resp: Dict) -> str:
 		"""Analysis of the "compositional_phrases" object.
 		Doc: "compositional_phrases": array of objects
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp = resp.get('compositional_phrases', {})
-		cp: Union[str, List[str]] = ''
+		rsp: Union[List[Dict], Dict] = resp.get('compositional_phrases', {})
+		cp: str = ''
 		if isinstance(rsp, list):
-			cp = [self.withPrefix("<span>{value}</span>", '', self.compositional_phrase(r)) for r in rsp]
-			cp = ', '.join(filter(lambda s: s != '', cp))
+			cp = self.filledOnly(
+				[self.withPrefix("<span>{value}</span>", '', self.compositional_phrase(r)) for r in rsp]
+			)
 		else:
 			cp = self.withPrefix("<span>{value}</span>", '', self.compositional_phrase(rsp))
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("compositional phrases"), cp)
 
-	def compositional_phrase(self, resp: dict) -> str:
+	def compositional_phrase(self, resp: Dict) -> str:
 		"""Analysis of the "compositional_phrase" object.
 		Doc: "compositional_phrase": object (within the compositional_phrases array)
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
@@ -242,66 +239,66 @@ class Parser(object):
 		cp += self.withPrefix(" - {value}", '', self.definition(resp))
 		cpl: List[str] = [cp]
 		cpl.extend(self.filter(resp))
-		return '\n'.join(filter(lambda s: s and s != '', cpl))
+		return self.filledOnly(cpl)
 
-	def examples(self, resp: dict) -> str:
+	def examples(self, resp: Dict) -> str:
 		"""Analysis of the "examples" array.
 		Doc: "examples": array of objects
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp = resp.get('examples', {})
-		exs: Union[str, Iterator[str], List[str]] = ''
+		rsp: Union[List[Dict], Dict] = resp.get('examples', {})
+		exs: str = ''
 		if isinstance(rsp, list):
-			exs = [self.withPrefix("<span>{value}</span>", '', self.example(r)) for r in rsp]
-			exs = filter(lambda s: s != '', exs)
-			exs = ', '.join(exs)
+			exs = self.filledOnly(
+				[self.withPrefix("<span>{value}</span>", '', self.example(r)) for r in rsp])
 		else:
 			exs = self.withPrefix("<span>{value}</span>", '', self.example(rsp))
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("examples"), exs)
 
-	def example(self, resp: dict) -> str:
+	def example(self, resp: Dict) -> str:
 		"""Analysis of the "example" object.
 		Doc: "example": object (within the examples array)
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		if not resp or not isinstance(resp, dict):
 			return ''
-		example = [
+		example: List[str] = [
 			self.text(resp),
 			self.alternative_scripts(resp)
 		]
-		return '\n'.join(filter(lambda s: s and s != '', example))
+		return self.filledOnly(example)
 
-	def inflections(self, resp: dict) -> str:
+	def inflections(self, resp: Dict) -> str:
 		"""Analysis of the "inflections" object.
 		Doc: "inflections": array of objects
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp = resp.get('inflections', {})
-		ifs: Union[str, Iterator[str], List[str]] = ''
+		rsp: Union[List[Dict], Dict] = resp.get('inflections', {})
+		ifs: str = ''
 		if isinstance(rsp, list):
-			ifs = [self.withPrefix("<span>{value}</span>", '', self.inflection(r)) for r in rsp]
-			ifs = '\n'.join(filter(lambda s: s != '', ifs))
+			ifs = self.filledOnly(
+				[self.withPrefix("<span>{value}</span>", '', self.inflection(r)) for r in rsp]
+			)
 		else:
 			ifs = self.withPrefix("<span>{value}</span>", '', self.inflection(rsp))
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("inflections"), ifs)
 
-	def inflection(self, resp: dict) -> str:
+	def inflection(self, resp: Dict) -> str:
 		"""Analysis of the "inflection" object.
 		Doc: "inflection": object (within the inflections array)
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
@@ -313,7 +310,7 @@ class Parser(object):
 				self.gender(resp),
 				self.number(resp))]
 		inf.extend(self.filter(resp))
-		return '\n'.join(filter(lambda s: s and s != '', inf))
+		return self.filledOnly(inf)
 
 	def pronunciation(self, resp: Dict) -> str:
 		"""Analysis of the "pronunciation" object.
@@ -325,14 +322,13 @@ class Parser(object):
 		"""
 		if not resp or not isinstance(resp, dict):
 			return ''
-		rsp = resp.get('pronunciation', {})
-		pron: Union[str, List[str]] = [
-			rsp.get('value', '', ''),
+		rsp: Dict = resp.get('pronunciation', {})
+		pron: List[str] = [
+			rsp.get('value', ''),
 			self.geographical_usage(rsp)
 		]
-		pron = ', '.join(filter(lambda s: s and s != '', pron))
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i> {value}</p>", _("pronunciation"), pron)
+		return self.withPrefix("<p><i>{name}</i> {value}</p>", _("pronunciation"), self.filledOnly(pron, sep=', '))
 
 	def translations(self, resp: Dict) -> str:
 		"""Analysis of the "translations" object.
@@ -342,37 +338,34 @@ class Parser(object):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp = resp.get('translations', {})
+		rsp: Dict = resp.get('translations', {})
 		if not rsp:
 			return ''
 		if config.conf[addonName][serviceName]['all']:
 			trs: List[str] = []
-			trsx: Union[str, Iterator[str]] = ''
+			trsl: str = ''
 			for lng, cnt in rsp.items():
 				lng = langs[lng].name
 				if isinstance(cnt, list):
-					tr: Union[str, Iterator[str], List[str]] = [
-						self.withPrefix("{value}", '', self.translation(r)) for r in cnt
-					]
-					tr = filter(lambda s: s != '', tr)
-					tr = ', '.join(tr)
+					tr: str = self.filledOnly(
+						[self.withPrefix("{value}", '', self.translation(r)) for r in cnt],
+						sep=', ')
 				else:
 					tr = self.withPrefix("{value}", '', self.translation(cnt))
 				trs.append(self.withPrefix("{name} - <b>{value}</b>", lng, tr))
-			trsx = ',<br>\n'.join(sorted(trs, key=lambda k: k.lower()))
-			return self.withPrefix("\n<p>{value}.</p>", '', trsx)
-		if not rsp.get(self._langInto) or len(rsp.get(self._langInto)) == 0:
+			trsl = ';<br>\n'.join(sorted(trs, key=lambda k: k.lower()))
+			return self.withPrefix("\n<p>{value}.</p>", '', trsl)
+		if not rsp.get(self._langInto) or len(rsp.get(self._langInto, {})) == 0:
 			return ''
-		rsp = rsp.get(self._langInto, {})
-		trs = []
-		trsx = ''
+		rs: Dict = rsp.get(self._langInto, {})
+		trsl = ''
 		if isinstance(rsp, list):
-			trs = [self.withPrefix("{value}", '', self.translation(r)) for r in rsp]
-			trsx = filter(lambda s: s != '', trs)
-			trsx = ', '.join(trsx)
+			trsl = self.filledOnly(
+				[self.withPrefix("{value}", '', self.translation(r)) for r in rs],
+				sep=', ')
 		else:
-			trsx = self.withPrefix("{value}", '', self.translation(rsp))
-		return self.withPrefix(" - {value}", '', trsx)
+			trsl = self.withPrefix("{value}", '', self.translation(rs))
+		return self.withPrefix(" - {value}", '', trsl)
 
 	def translation(self, resp: Dict) -> str:
 		"""Analysis of the "translations" list item object.
@@ -382,28 +375,27 @@ class Parser(object):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		trs = []
+		trs: List[str] = []
 		trs.append(resp.get('text', '') + self.inParentheses(
 			self.pos(resp),
 			self.gender(resp),
 			self.number(resp))
 		)
 		trs.extend(self.filter(resp))
-		return '\n'.join(filter(lambda s: s != '', trs))
+		return self.filledOnly(trs)
 
-	def inParentheses(self, *args) -> str:
+	def inParentheses(self, *args: str) -> str:
 		"""List of values displayed in parentheses next to the word.
 		@param args: strings to display
-		@type args: list of str
+		@type args: sequence of str
 		@return: if the input parameters are not empty - they are returned in parentheses
 		@rtype: str
 		"""
-		fields = []
+		fields: List[str] = []
 		for arg in args:
 			if arg and arg.strip() != '':
 				fields.append(str(arg))
-		line = ', '.join(filter(lambda s: s != '', fields))
-		return (" <i>(%s)</i>" % line) if line else ''
+		return self.withPrefix(" <i>({value})</i>", '', self.filledOnly(fields, sep=', '))
 
 	def strList(self, resp: Union[Any, List[str]]) -> str:
 		"""Convert an input str or list of strs to a single line.
@@ -414,10 +406,22 @@ class Parser(object):
 		@rtype: str
 		"""
 		if isinstance(resp, list):
-			return ', '.join(filter(lambda s: s and s != '', resp))
+			return self.filledOnly(resp)
 		elif resp and resp != '':
 			return str(resp)
 		return ''
+
+	def filledOnly(self, lines: List[str], sep: str = '\n') -> str:
+		"""Combine only non-empty strings from the entered list,
+		by default a newline character '\n' is inserted between all lines.
+		@param lines: a list of strings that may be empty
+		@type lines: List[str]
+		@param sep: separator, which will be inserted when merging strings
+		@type sep: str
+		@return: a line consisting only of non-empty strings in the list
+		@rtype: str
+		"""
+		return sep.join(filter(lambda line: line and line != '', lines))
 
 	def withPrefix(self, template: str, name: str, value: str) -> str:
 		"""Display the field value after the specified prefix.
@@ -443,7 +447,7 @@ class Parser(object):
 		"""Get the value of the "text" field.
 		Doc: "text": string or list of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
@@ -489,31 +493,31 @@ class Parser(object):
 		"""
 		return self.strList(resp.get('gender'))
 
-	def number(self, resp: dict) -> str:
+	def number(self, resp: Dict) -> str:
 		"""Get the value of the "number" field.
 		Doc: "number": string
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		return self.strList(resp.get('number'))
 
-	def definition(self, resp: dict) -> str:
+	def definition(self, resp: Dict) -> str:
 		"""Get the value of the "definition" field.
 		Doc: "definition": string
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		return resp.get('definition', '')
 
-	def subcategorization(self, resp: dict) -> str:
+	def subcategorization(self, resp: Dict) -> str:
 		"""Get the value of the "subcategorization" field.
 		Doc: "subcategorization": string or Array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
@@ -523,33 +527,33 @@ class Parser(object):
 			_("subcategorization"),
 			self.strList(resp.get('subcategorization')))
 
-	def case(self, resp: dict) -> str:
+	def case(self, resp: Dict) -> str:
 		"""Get the value of the "case" field.
 		Doc: "case": string or Array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("case"), self.strList(resp.get('case')))
 
-	def register(self, resp: dict) -> str:
+	def register(self, resp: Dict) -> str:
 		"""Get the value of the "register" field.
 		Doc: "register": string or Array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("register"), self.strList(resp.get('register')))
 
-	def geographical_usage(self, resp: dict) -> str:
+	def geographical_usage(self, resp: Dict) -> str:
 		"""Get the value of the "geographical_usage" field.
 		Doc: "geographical_usage": string or Array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
@@ -559,33 +563,33 @@ class Parser(object):
 			_("geographical usage"),
 			self.strList(resp.get('geographical_usage')))
 
-	def mood(self, resp: dict) -> str:
+	def mood(self, resp: Dict) -> str:
 		"""Get the value of the "mood" field.
 		Doc: "mood": string or Array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("mood"), self.strList(resp.get('mood')))
 
-	def tense(self, resp: dict) -> str:
+	def tense(self, resp: Dict) -> str:
 		"""Get the value of the "tense" field.
 		Doc: "tense": string or Array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("tense"), self.strList(resp.get('tense')))
 
-	def homograph_number(self, resp: dict) -> str:
+	def homograph_number(self, resp: Dict) -> str:
 		"""Get the value of the "homograph_number" field.
 		Doc: "homograph_number": number
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
@@ -593,7 +597,7 @@ class Parser(object):
 			"<p><i>{name}</i>: {value}</p>",
 			# Translators: Field name in a dictionary entry
 			_("homograph number"),
-			self.strList(resp.get('homograph_number', '')))
+			self.strList(resp.get('homograph_number')))
 
 	def alternative_scripts(self, resp: Dict) -> str:
 		"""Get the value of the "alternative_scripts" object.
@@ -613,11 +617,11 @@ class Parser(object):
 			)
 		return ''
 
-	def semantic_category(self, resp: dict) -> str:
+	def semantic_category(self, resp: Dict) -> str:
 		"""Analysis of the "semantic_category" object.
 		Doc: "semantic_category": string or array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
@@ -627,11 +631,11 @@ class Parser(object):
 			_("semantic category"),
 			self.strList(resp.get('semantic_category')))
 
-	def semantic_subcategory(self, resp: dict) -> str:
+	def semantic_subcategory(self, resp: Dict) -> str:
 		"""Analysis of the "semantic_subcategory" object.
 		Doc: "semantic_subcategory": string or array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
@@ -641,11 +645,11 @@ class Parser(object):
 			_("semantic subcategory"),
 			self.strList(resp.get('semantic_subcategory')))
 
-	def range_of_application(self, resp: dict) -> str:
+	def range_of_application(self, resp: Dict) -> str:
 		"""Analysis of the "range_of_application" object.
 		Doc: "range_of_application": string or array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
@@ -655,88 +659,88 @@ class Parser(object):
 			_("range of application"),
 			self.strList(resp.get('range_of_application')))
 
-	def sentiment(self, resp: dict) -> str:
+	def sentiment(self, resp: Dict) -> str:
 		"""Analysis of the "sentiment" object.
 		Doc: "sentiment": string or array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("sentiment"), self.strList(resp.get('sentiment')))
 
-	def see(self, resp: dict) -> str:
+	def see(self, resp: Dict) -> str:
 		"""Analysis of the "see" object.
 		Doc: "see": string or array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("see"), self.strList(resp.get('see')))
 
-	def see_also(self, resp: dict) -> str:
+	def see_also(self, resp: Dict) -> str:
 		"""Analysis of the "see_also" object.
 		Doc: "see_also": string or array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("see also"), self.strList(resp.get('see_also')))
 
-	def synonyms(self, resp: dict) -> str:
+	def synonyms(self, resp: Dict) -> str:
 		"""Analysis of the "synonyms" object.
 		Doc: "synonyms": array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("synonyms"), self.strList(resp.get('synonyms')))
 
-	def antonyms(self, resp: dict) -> str:
+	def antonyms(self, resp: Dict) -> str:
 		"""Analysis of the "antonyms" object.
 		Doc: "antonyms": array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("antonyms"), self.strList(resp.get('antonyms')))
 
-	def collocate(self, resp: dict) -> str:
+	def collocate(self, resp: Dict) -> str:
 		"""Analysis of the "collocate" object.
 		Doc: "collocate": array of strings
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("collocate"), self.strList(resp.get('collocate')))
 
-	def aspect(self, resp: dict) -> str:
+	def aspect(self, resp: Dict) -> str:
 		"""Get the value of the "aspect" field.
 		Doc: "aspect": string
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("aspect"), self.strList(resp.get('aspect')))
 
-	def source(self, resp: dict) -> str:
+	def source(self, resp: Dict) -> str:
 		"""Get the value of the "source" field.
 		Doc: "source": string
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
@@ -746,14 +750,14 @@ class Parser(object):
 			_("&Dictionary:").replace('&', '').replace(':', ''),
 			resp.get('source', ''))
 
-	def error(self, resp: dict) -> str:
+	def error(self, resp: Dict) -> str:
 		"""Convert errors received when connecting to the dictionary service into a text string.
 		@param resp: branch of the deserialized response from the server
-		@type resp: dict
+		@type resp: Dict
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		return self.withPrefix("<h1>{value}</h1>", "error", resp.get('error', ''))
+		return self.withPrefix("<h1>{name}: {value}</h1>", "error", resp.get('error', ''))
 
 	def filter(self, resp: Dict) -> List[str]:
 		"""Passe the branch of the deserialized response  through a set of analyzers.
@@ -793,18 +797,6 @@ class Parser(object):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		if not self._html:
-			self._html = self.results().replace('\u02c8', '')
-		return self._html
-
-	def to_text(self) -> str:
-		"""Convert a dictionary response from HTML format to plain text.
-		@return: dictionary entry in text format
-		@rtype: str
-		"""
-		li = u"\u2022 "  # marker character code
-		h1 = "- "
-		text = self.to_html().replace('<li>', li).replace('<h1>', h1)
-		text = re.sub(r'\<[^>]*\>', '', text)
-		text = '\r\n'.join((s for s in text.split('\n') if s))
-		return text
+		if not self.html:
+			self.html = self.results().replace('\u02c8', '')
+		return self.html

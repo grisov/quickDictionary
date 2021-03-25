@@ -27,8 +27,7 @@ class ServiceLanguages(Languages):
 		@type file: str
 		"""
 		super(ServiceLanguages, self).__init__(file)
-		self.updated: bool = False
-		self._all: List[ServiceLanguage] = []
+		self._Language = ServiceLanguage
 
 	def update(self) -> bool:
 		"""Get a list of available language pairs from a remote server and save them in an external file.
