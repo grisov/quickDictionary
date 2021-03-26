@@ -329,7 +329,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return
 		service = services[getattr(self._lastTranslator, 'id', config.conf[addonName]['active'])]
 		api.copyToClip(self._lastTranslator.plaintext, notify=True)
-		ui.message('%s - %s' % (service.langs[self._lastTranslator.langFrom].name, service.langs[self._lastTranslator.langTo].name))
+		ui.message('%s - %s' % (
+			service.langs[self._lastTranslator.langFrom].name,
+			service.langs[self._lastTranslator.langTo].name))
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="U - %s" % _("download from online dictionary and save the current list of available languages"))  # noqa E501
