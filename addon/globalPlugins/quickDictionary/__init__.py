@@ -1,4 +1,4 @@
-# -*- coding:utf-8 -*-
+﻿# -*- coding:utf-8 -*-
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
@@ -6,6 +6,7 @@
 
 from typing import Optional, Callable, List
 import os.path
+import sys
 import addonHandler
 import globalPluginHandler
 import config
@@ -26,6 +27,11 @@ try:
 except addonHandler.AddonError:
 	log.warning("Unable to init translations. This may be because the addon is running from NVDA scratchpad.")
 _: Callable[[str], str]
+
+# Adding a directory with third-party modules
+_libDir = os.path.join(os.path.dirname(__file__), "lib")
+if _libDir not in sys.path:
+	sys.path.append(_libDir)
 
 _addonDir = os.path.join(os.path.dirname(__file__), "..", "..")
 if isinstance(_addonDir, bytes):

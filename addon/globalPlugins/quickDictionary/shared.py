@@ -13,6 +13,7 @@ import api
 import ui
 import braille
 import config
+import versionInfo
 import speech
 from speech.commands import LangChangeCommand, CallbackCommand
 from textInfos import POSITION_SELECTION
@@ -164,7 +165,8 @@ def restoreSynthIfSpeechBeenCanceled() -> None:
 	Must be run in a separate thread which will control the main process.
 	"""
 	previous = profiles.getCurrent()
-	while not speech.beenCanceled:
+	while not getattr(
+		speech if versionInfo.version_year < 2021 else getattr(speech, "getState")(), "beenCanceled"):
 		sleep(0.1)
 	else:
 		profiles.restorePrevious()
@@ -189,6 +191,6 @@ def messageWithLangDetection(msg: Dict[str, str]) -> None:
 		speechSequence.append(CallbackCommand(callback=Thread(target=restoreSynthIfSpeechBeenCanceled).start))
 	speechSequence.append(msg['text'])
 	if switchSynth and profile:
-		speechSequence.append(CallbackCommand(callback=lambda: speech.cancelSpeech()))
+		speechSequence.append(CallbackCommand(callback=speech.cancelSpeech))
 	speech.speak(speechSequence)
 	braille.handler.message(msg['text'])

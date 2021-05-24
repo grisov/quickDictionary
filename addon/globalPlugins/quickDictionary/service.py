@@ -522,7 +522,8 @@ class Secrets(object):
 	def __init__(
 			self,
 			dir: str = os.path.dirname(__file__),
-			file: str = 'qd') -> None:
+			file: str = 'qd'
+	) -> None:
 		"""Initialize all required values.
 		@param dir: the directory where the credential file is stored
 		@type dir: str

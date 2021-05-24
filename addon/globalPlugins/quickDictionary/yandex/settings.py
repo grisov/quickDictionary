@@ -118,7 +118,7 @@ class ServicePanel(wx.Panel):
 				# Translators: A hyperlink in addon settings dialog.
 				label=_("Register your own access token"),
 				url=secret.url,
-				style=wx.adv.HL_CONTEXTMENU | wx.adv.HL_DEFAULT_STYLE | wx.adv.HL_ALIGN_RIGHT
+				style=wx.adv.HL_CONTEXTMENU | wx.adv.HL_ALIGN_RIGHT
 			)
 		)
 		self.linkHref.Update()

@@ -10,8 +10,8 @@ from __future__ import annotations
 from typing import Optional, Dict, Tuple, Generator
 import os
 import pickle
-import speech
 import config
+from synthDriverHandler import getSynth, setSynth
 from . import addonName
 
 
@@ -47,8 +47,8 @@ class Profile(object):
 			config.conf.profiles[0]['speech'][self._name].clear()
 			config.conf.profiles[0]['speech'][self._name].update(self._conf)
 			config.conf['speech'][self._name]._cache.clear()
-			state = speech.setSynth(self._name)
-			speech.getSynth().saveSettings()
+			state = setSynth(self._name)
+			getSynth().saveSettings()
 		except KeyError:
 			pass
 		self._status = state
@@ -59,8 +59,8 @@ class Profile(object):
 		@return: updated voice synthesizer profile
 		@rtype: Profile
 		"""
-		self._name = speech.getSynth().name
-		self._conf = dict(config.conf['speech'][speech.getSynth().name].items())
+		self._name = getSynth().name
+		self._conf = dict(config.conf['speech'][getSynth().name].items())
 		self._lang = self._lang or ''
 		return self
 
