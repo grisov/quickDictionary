@@ -92,8 +92,8 @@ class ServiceLanguages(Languages):
 		"""
 		return ServiceLanguage(
 			self.locale.code) if next(
-		filter(lambda l: l.code == self.locale.code, self.intoList(self.defaultFrom.code)),
-		None) else [l for l in self.intoList(self.defaultFrom.code)][0]
+				filter(lambda lng: lng.code == self.locale.code, self.intoList(self.defaultFrom.code)),
+				None) else [lng for lng in self.intoList(self.defaultFrom.code)][0]
 
 	@property
 	def all(self) -> List:

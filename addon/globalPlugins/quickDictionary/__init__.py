@@ -463,7 +463,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.script_dictionaryStatistics.__doc__,
 			self.script_showResponse.__doc__]:
 			lines.append("<li>%s</li>" % method)
-		lines += ["</ul>", "<br>",  # noqa ET113
+		lines += [
+			"</ul>", "<br>",  # noqa ET113
 			# Translators: Message in the add-on short help  # noqa ET128
 			"<h2>%s</h2>" % _("Voice synthesizers profiles management:"),
 			'<ul type="disc">']

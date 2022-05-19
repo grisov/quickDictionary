@@ -40,11 +40,11 @@ class ServiceTranslator(Translator):
 	"""Provides interaction with the online dictionary service."""
 
 	def __init__(
-			self,
-			langFrom: str,
-			langTo: str,
-			text: str,
-			*args, **kwargs
+		self,
+		langFrom: str,
+		langTo: str,
+		text: str,
+		*args, **kwargs
 	) -> None:
 		"""Initialization of the source and target language, as well as word or phrase to search in the dictionary.
 		@param langFrom: source language

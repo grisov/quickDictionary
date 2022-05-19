@@ -19,10 +19,11 @@ class Profile(object):
 	"""Represents the profile of the voice synthesizer."""
 
 	def __init__(
-			self,
-			synthName: str = '',
-			synthConf: Dict = {},
-			lang: str = '') -> None:
+		self,
+		synthName: str = '',
+		synthConf: Dict = {},
+		lang: str = ''
+	) -> None:
 		"""Input data needed to initialize the synthesizer profile.
 		@param synthName: short name of the voice synthesizer
 		@type synthName: str

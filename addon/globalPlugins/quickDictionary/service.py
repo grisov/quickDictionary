@@ -265,11 +265,11 @@ class Translator(Thread):
 	"""Provides interaction with the online dictionary service."""
 
 	def __init__(
-			self,
-			langFrom: str,
-			langTo: str,
-			text: str,
-			*args, **kwargs
+		self,
+		langFrom: str,
+		langTo: str,
+		text: str,
+		*args, **kwargs
 	) -> None:
 		"""Initialization of the source and target languages,
 		as well as the word or phrase to search in the remote dictionary.
@@ -520,9 +520,9 @@ class Secrets(object):
 	"""Manage the credentials required for all add-on services to work."""
 
 	def __init__(
-			self,
-			dir: str = os.path.dirname(__file__),
-			file: str = 'qd'
+		self,
+		dir: str = os.path.dirname(__file__),
+		file: str = 'qd'
 	) -> None:
 		"""Initialize all required values.
 		@param dir: the directory where the credential file is stored

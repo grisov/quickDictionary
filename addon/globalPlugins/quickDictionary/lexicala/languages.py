@@ -123,8 +123,9 @@ class ServiceLanguages(Languages):
 		"""
 		return (source in [
 			lang.code for lang in self.fromList()
-			]) and (target in [
-		lang.code for lang in self.intoList()])
+		]) and (target in [
+			lang.code for lang in self.intoList()
+		])
 
 	@property
 	def defaultFrom(self) -> ServiceLanguage:

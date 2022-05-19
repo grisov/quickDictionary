@@ -27,13 +27,13 @@ class Lapi(object):
 	"""Description of the Lexicala Online Dictionary API."""
 
 	def __init__(
-			self,
-			text: str = '',
-			lang: str = 'en',
-			source: str = 'global',
-			# Starting with Python 3.8 is better to use here: Literal["global", "password", "random"]
-			morph: bool = False,
-			analyzed: bool = False
+		self,
+		text: str = '',
+		lang: str = 'en',
+		source: str = 'global',
+		# Starting with Python 3.8 is better to use here: Literal["global", "password", "random"]
+		morph: bool = False,
+		analyzed: bool = False
 	) -> None:
 		"""Input parameters for interacting with the online dictionary.
 		@param text: word or phrase to search in the dictionary

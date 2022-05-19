@@ -28,9 +28,9 @@ class ServicePanel(wx.Panel):
 	"""Service settings panel object."""
 
 	def __init__(
-			self,
-			parent: Optional[wx.Window] = None,
-			id: int = wx.ID_ANY
+		self,
+		parent: Optional[wx.Window] = None,
+		id: int = wx.ID_ANY
 	) -> None:
 		"""Create a settings panel for a specific service.
 		Populate the service panel with settings controls.

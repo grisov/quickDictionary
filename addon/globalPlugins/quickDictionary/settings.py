@@ -90,10 +90,11 @@ class ServicePanel(wx.Panel):
 	"""
 
 	def __init__(
-			self,
-			active: int,
-			parent: Optional[wx._core.Window] = None,
-			id: int = wx.ID_ANY) -> None:
+		self,
+		active: int,
+		parent: Optional[wx._core.Window] = None,
+		id: int = wx.ID_ANY
+	) -> None:
 		"""Create a panel to display in the add-on settings dialog.
 		@param active: index of the selected service
 		@type active: int
@@ -160,7 +161,7 @@ class ServicePanel(wx.Panel):
 
 		# Setting initial values in choices and interaction between choices
 		langs = services[self._active].langs
-		self._langs = [langs['']] + [l for l in langs.all]
+		self._langs = [langs['']] + [lng for lng in langs.all]
 		self._choices = dict({slot: profile.lang for slot, profile in profiles})
 		for slot, profile in profiles:
 			self.widgetMakerExclude(self._synthLangsChoice[slot], slot)
@@ -238,11 +239,12 @@ class ServicesDialog(wx.Dialog):
 	"""Online service selection dialog."""
 
 	def __init__(
-			self,
-			parent: Optional[wx._core.Window],
-			id: int,
-			title: str,
-			*args, **kwargs) -> None:
+		self,
+		parent: Optional[wx._core.Window],
+		id: int,
+		title: str,
+		*args, **kwargs
+	) -> None:
 		"""Create a dialog box for selecting an available online service.
 		@param parent: parent top level window
 		@type parent: Optional[wx._core.Window]
@@ -317,9 +319,10 @@ class ChangeProfileDialog(wx.Dialog):
 	"""Request to save changes to the selected voice synthesizer profile."""
 
 	def __init__(
-			self,
-			parent: Optional[wx._core.Window],
-			slot: int) -> None:
+		self,
+		parent: Optional[wx._core.Window],
+		slot: int
+	) -> None:
 		"""Layout of dialog box elements.
 		@param parent: parent top level window
 		@type parent: Optional[wx._core.Window]
@@ -431,11 +434,12 @@ class SynthesizersDialog(wx.Dialog):
 	"""A dialog box that allows to manipulate the profiles of voice synthesizers."""
 
 	def __init__(
-			self,
-			parent: Optional[wx._core.Window],
-			id: int,
-			title: str,
-			*args, **kwargs) -> None:
+		self,
+		parent: Optional[wx._core.Window],
+		id: int,
+		title: str,
+		*args, **kwargs
+	) -> None:
 		"""Create a dialog box for manipulating voice synthesizers profiles.
 		@param parent: parent top level window
 		@type parent: Optional[wx._core.Window]
@@ -615,12 +619,13 @@ class EditableInputDialog(wx.Dialog):
 	"""Dialog for edit source text before sending it for translation."""
 
 	def __init__(
-			self,
-			parent: Optional[wx._core.Window],
-			id: int,
-			title: str,
-			text: str,
-			*args, **kwargs) -> None:
+		self,
+		parent: Optional[wx._core.Window],
+		id: int,
+		title: str,
+		text: str,
+		*args, **kwargs
+	) -> None:
 		"""Create a dialog box for edit source text before sending it for translation.
 		@param parent: parent top level window
 		@type parent: Optional[wx._core.Window]
