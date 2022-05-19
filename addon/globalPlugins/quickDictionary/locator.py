@@ -147,7 +147,7 @@ class DictionaryService(object):
 		@return: specific Translator class used by the service
 		@rtype: <service_name>.dictionary.ServiceTranslator
 		"""
-		return getattr(self['.dictionary'], 'ServiceTranslator', object)
+		return getattr(self['.dictionary'], 'ServiceTranslator')
 
 	@property
 	def langs(self) -> Languages:
@@ -155,7 +155,7 @@ class DictionaryService(object):
 		@return: an instance of the service specific class to interact with the list of available languages
 		@rtyp: <service_name>.languages.ServiceLanguages
 		"""
-		return getattr(self['.languages'], 'langs', object)
+		return getattr(self['.languages'], 'langs')
 
 	@property
 	def panel(self) -> Panel:
