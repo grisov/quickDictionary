@@ -50,14 +50,16 @@ class Lapi(object):
 			and disregards diacritics and case (uppercase/lowercase)
 		@type analyzed: bool
 		"""
-		self._url: str = "https://dictapi.lexicala.com/"
+		self._url: str = "https://lexicala1.p.rapidapi.com/"
 		self._text = text
 		self._lang = lang
 		self._source = source
 		self._morph = morph
 		self._analyzed = analyzed
 		self._headers: Dict[str, str] = {
-			'User-Agent': 'Mozilla 5.0'}
+			"X-RapidAPI-Host": "lexicala1.p.rapidapi.com",
+			"User-Agent": "Mozilla 5.0"
+		}
 
 	@property
 	def text(self) -> str:
@@ -114,11 +116,7 @@ class Lapi(object):
 		rq = Request(url)
 		for name, value in self._headers.items():
 			rq.add_header(name, value)
-		base64string = base64.b64encode(bytes('%s:%s' % (
-			secrets[serviceName].decode(config.conf[addonName][serviceName]['username']),
-			secrets[serviceName].decode(config.conf[addonName][serviceName]['password'])
-		), 'ascii'))
-		rq.add_header("Authorization", "Basic %s" % base64string.decode('utf-8'))
+		rq.add_header("X-RapidAPI-Key", secrets[serviceName].decode(config.conf[addonName][serviceName]['password']))
 		try:
 			resp = urlopen(rq, timeout=8)
 		except Exception as e:
@@ -126,8 +124,8 @@ class Lapi(object):
 			response['error'] = "HTTP error: %s" % str(e)
 			return response
 		if resp:
-			stat['remain'] = resp.getheader('X-RateLimit-DailyLimit-Remaining', 0)
-			stat['count'] = int(resp.getheader('X-RateLimit-DailyLimit', 0)) - int(stat['remain'])
+			stat['remain'] = resp.getheader("X-RateLimit-requests-Remaining", 0)
+			stat['count'] = int(resp.getheader("X-RateLimit-requests-Limit", 0)) - int(stat['remain'])
 			stat['delta'] = datetime.now() - self.parseDate(resp.getheader('date', ''))
 			if resp.getcode() == 200:
 				text: str = resp.read().decode(encoding='utf-8', errors='ignore')
