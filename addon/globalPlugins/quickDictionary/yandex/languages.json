@@ -29,6 +29,7 @@
         "en-nl",
         "en-no",
         "en-pt",
+        "en-pt-BR",
         "en-ru",
         "en-sk",
         "en-sv",
@@ -85,6 +86,7 @@
         "ru-no",
         "ru-pl",
         "ru-pt",
+        "ru-pt-BR",
         "ru-ru",
         "ru-sk",
         "ru-sv",
@@ -103,6 +105,13 @@
         "uk-en",
         "uk-ru",
         "uk-uk",
-        "zh-ru"
+        "zh-ru",
+        "emj-ru",
+        "emj-en",
+        "emj-fr",
+        "emj-es",
+        "emj-tr",
+        "emj-it",
+        "emj-pt"
     ]
 }

@@ -280,7 +280,7 @@ class Translator(Thread):
 		@param text: a word or phrase to look up in a dictionary
 		@type text: str
 		"""
-		super(Translator, self).__init__(*args, **kwargs)
+		super().__init__(*args, **kwargs)
 		self._langFrom = langFrom
 		self._langTo = langTo
 		self._text = text
