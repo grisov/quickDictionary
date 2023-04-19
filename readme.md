@@ -1,7 +1,7 @@
 # NVDA Quick Dictionary
 
 * Author: Oleksandr Gryshchenko
-* Version: 2.1
+* Version: 2.2
 * NVDA compatibility: 2019.3 and beyond
 * Download [stable version][1]
 
@@ -70,6 +70,10 @@ Several good solutions from other developments were used in the Quick Dictionary
 * To work with voice synthesizers profiles were used ideas from the Switch Synth add-on (thanks to Tyler Spivey).
 
 ## Change log
+
+### Version 2.2
+* the add-on has been tested for compatibility with NVDA 2023.1;
+* fixed interaction with new API of the Lexicala service.
 
 ### Version 2.1.5
 * the add-on has been tested for compatibility with NVDA 2022.1;
