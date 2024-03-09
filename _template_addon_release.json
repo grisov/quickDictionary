@@ -21,8 +21,8 @@
 		"patch": 0
 	},
 	"channel": "beta",
-	"URL": "https://github.com/nvaccess/addon-datastore/releases/download/v0.1.0/myAddon.nvda-addon",
-	"sha256": "69D84CA8899800A5575CE31798293CD4FEBAB1D734A07C2E51E56A28E0DF8C82",
+	"URL": "https://github.com/grisov/quickDictionary/releases/download/v2.2.1/quickDictionary-2.2.1.nvda-addon",
+	"sha256": "82299f5829e02c8822d5774ee2fcd121a0dff508039a505a03088d183a860f5a",
 	"sourceURL": "https://github.com/grisov/quickDictionary",
 	"license": "GPL v2",
 	"licenseURL": "https://github.com/grisov/quickDictionary/blob/main/COPYING.txt"
