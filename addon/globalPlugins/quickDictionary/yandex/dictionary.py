@@ -4,7 +4,7 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2023 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 from typing import Callable, List, Dict
 import addonHandler
@@ -146,14 +146,14 @@ class ServiceParser(Parser):
 					for elem in self.resp['mean']:
 						means.append(elem['text'] + self.attrs(elem))
 					html += ', '.join(means) + '</p>\n'
-					del(means)
+					del means
 					html += ServiceParser(elem).to_html()
 				if key == 'syn':
 					syns = []
 					for elem in self.resp['syn']:
 						syns.append(elem['text'] + self.attrs(elem))
 					html += ', '.join(syns) + '</p>\n'
-					del(syns)
+					del syns
 					html += ServiceParser(elem).to_html()
 				if key == 'ex':
 					exs: List[str] = []
@@ -164,9 +164,9 @@ class ServiceParser(Parser):
 							for extr in elem['tr']:
 								trs.append(extr['text'] + self.attrs(extr))
 							tmp += ' - ' + ', '.join(trs)
-							del(trs)
+							del trs
 						exs.append(tmp)
 					html += ',\n'.join(exs) + '</p>'
-					del(exs)
+					del exs
 		self.html = html
 		return self.html

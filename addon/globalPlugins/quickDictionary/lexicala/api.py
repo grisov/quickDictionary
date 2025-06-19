@@ -3,12 +3,11 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2023 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 from typing import Any, Dict, List, Optional
 import os.path
 import ssl
-import base64
 from urllib.request import Request, urlopen
 from urllib.parse import quote as urlencode
 from http.client import HTTPResponse
