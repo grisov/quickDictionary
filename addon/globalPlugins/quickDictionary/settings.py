@@ -3,12 +3,13 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2023 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 from typing import Optional, Callable
 import addonHandler
 import gui
 from gui.nvdaControls import AutoWidthColumnListCtrl
+from gui.settingsDialogs import SettingsPanel
 import wx
 import config
 from logHandler import log
@@ -23,7 +24,7 @@ except addonHandler.AddonError:
 _: Callable[[str], str]
 
 
-class QDSettingsPanel(gui.SettingsPanel):
+class QDSettingsPanel(SettingsPanel):
 	"""Main add-on settings panel which uses separate service panels."""
 	title: str = addonSummary
 
@@ -33,7 +34,7 @@ class QDSettingsPanel(gui.SettingsPanel):
 
 	def makeSettings(self, sizer: wx._core.Sizer) -> None:
 		"""Populate the panel with settings controls.
-		Overrides the corresponding abstract method of the gui.SettingsPanel class.
+		Overrides the corresponding abstract method of the SettingsPanel class.
 		@param sizer: The sizer to which to add the settings controls.
 		@type sizer: wx._core.Sizer
 		"""
@@ -72,13 +73,13 @@ class QDSettingsPanel(gui.SettingsPanel):
 
 	def postInit(self) -> None:
 		"""Set system focus to service selection dropdown list.
-		Overrides the corresponding abstract method of the gui.SettingsPanel class.
+		Overrides the corresponding abstract method of the SettingsPanel class.
 		"""
 		self._servChoice.SetFocus()
 
 	def onSave(self) -> None:
 		"""Update Configuration when clicking OK.
-		Overrides the corresponding abstract method of the gui.SettingsPanel class.
+		Overrides the corresponding abstract method of the SettingsPanel class.
 		"""
 		config.conf[addonName]['active'] = self._active
 		self._panel.save()

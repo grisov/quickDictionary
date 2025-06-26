@@ -1,8 +1,7 @@
-# -*- coding:utf-8 -*-
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2023 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 from typing import Optional, Callable, List
 import os.path
@@ -52,7 +51,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	scriptCategory: str = addonSummary
 
 	def __init__(self, *args, **kwargs) -> None:
-		"""Initializing initial configuration values ​​and other fields"""
+		"""Initializing initial configuration values and other fields"""
 		super(GlobalPlugin, self).__init__(*args, **kwargs)
 		if appArgs.secure or config.isAppX:
 			return
@@ -157,7 +156,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	@property
 	def isAutoSwap(self) -> bool:
-		"""Property indicating whether to automatically swap languages ​​when there is no entry in the dictionary.
+		"""Property indicating whether to automatically swap languages when there is no entry in the dictionary.
 		@return: value stored in the add-on configuration
 		@rtype: bool
 		"""
@@ -249,7 +248,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		text = getSelectedText()
 		if not text:
 			return
-		Thread(target=self.translate, args=[text, True]).start()
+		# Thread(target=self.translate, args=[text, True]).start()
+		self.translate(text, isHtml=True)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="E - %s" % _("edit text before sending"))
@@ -297,14 +297,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="S - %s" % _("swap languages and get Quick Dictionary translation"))
 	def script_swapLanguages(self, gesture: InputGesture) -> None:
-		"""Swap languages ​​and present the dictionary entry for the selected word or phrase.
+		"""Swap languages and present the dictionary entry for the selected word or phrase.
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
 		langs = services[config.conf[addonName]['active']].langs
 		if langs.isAvailable(self.target, self.source):
 			self.source, self.target = self.target, self.source
-			# Translators: Notification that languages ​​have been swapped
+			# Translators: Notification that languages have been swapped
 			self._messages.append(_("Languages swapped"))
 			self._messages.append('%s - %s' % (self.source, self.target))
 			text = getSelectedText()
@@ -354,7 +354,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			waitingFor(langs.update)
 			if langs.updated:
 				# Translators: Notification when downloading from the online dictionary list of available languages
-				ui.message(_("The list of available languages ​​has been successfully downloaded and saved."))
+				ui.message(_("The list of available languages has been successfully downloaded and saved."))
 			else:
 				# Translators: Notification when downloading from the online dictionary list of available languages
 				ui.message(_("Warning! The list of available languages could not be loaded."))
@@ -505,7 +505,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""Display the add-on settings dialog.
 		Called using keyboard commands and menu items.
 		"""
-		wx.CallAfter(gui.mainFrame._popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, QDSettingsPanel)
+		wx.CallAfter(gui.mainFrame.popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, QDSettingsPanel)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description=_("From {startslot} to {endslot} - selection of the voice synthesizer profile").format(
@@ -643,7 +643,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param isHtml: a sign of whether it is necessary to display the result of work in the form of HTML page
 		@type isHtml: bool
 		"""
-		active = config.conf[addonName]['active']
+		active = config.conf[addonName]["active"]
 		langs = services[active].langs
 		pairs = [(self.source, self.target)]
 		if self.isAutoSwap:
@@ -668,7 +668,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			ui.browseableMessage(
 				message=translator.html,
 				title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name),
-				isHtml=isHtml
+				isHtml=isHtml,
+				closeButton=False,
+				copyButton=not config.conf[addonName][services[active].name]["copytoclip"]
 			)
 		else:
 			self._messages.append('%s - %s' % (langs[translator.langFrom].name, langs[translator.langTo].name))
