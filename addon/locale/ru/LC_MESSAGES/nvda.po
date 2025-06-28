@@ -1,0 +1,591 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 'quickDictionary' '2.1'\n"
+"Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
+"POT-Creation-Date: 2025-06-26 13:56+0500\n"
+"PO-Revision-Date: 2025-06-26 13:57+0500\n"
+"Last-Translator: Oleksandr Gryshchenko <grisov.nvaccess@mailnull.com>\n"
+"Language-Team: Danil Kostenkov <danilkostenkov38@gmail.com>\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"X-Generator: Poedit 3.6\n"
+"X-Poedit-Basepath: ../../../..\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: addon\n"
+"X-Poedit-SearchPath-2: addon/globalPlugins/quickDictionary\n"
+"X-Poedit-SearchPath-3: addon/globalPlugins/quickDictionary/lexicala\n"
+"X-Poedit-SearchPath-4: addon/globalPlugins/quickDictionary/services\n"
+"X-Poedit-SearchPath-5: addon/globalPlugins/quickDictionary/wiktionary\n"
+"X-Poedit-SearchPath-6: addon/globalPlugins/quickDictionary/yandex\n"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:86
+#: addon/globalPlugins/quickDictionary/__init__.py:255
+#: addon/globalPlugins/quickDictionary/__init__.py:276
+msgid "edit text before sending"
+msgstr "редактировать текст перед отправкой"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:89
+#: addon/globalPlugins/quickDictionary/__init__.py:622
+#: addon/globalPlugins/quickDictionary/__init__.py:635
+msgid "choose online service"
+msgstr "выбор онлайн-сервиса"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:92
+#: addon/globalPlugins/quickDictionary/__init__.py:553
+msgid "Voice synthesizers profiles"
+msgstr "Профили голосовых синтезаторов"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:95
+msgid "&Options..."
+msgstr "Па&раметры..."
+
+#: addon/globalPlugins/quickDictionary/__init__.py:98
+#: addon/globalPlugins/quickDictionary/__init__.py:432
+#: addon/globalPlugins/quickDictionary/__init__.py:491
+msgid "help on add-on commands"
+msgstr "справка по командам дополнения"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:107
+msgid "He&lp"
+msgstr "Спра&вка"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:215
+#, python-format
+msgid "then press %s for help"
+msgstr "потом нажмите %s для получения справки"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:230
+#, python-format
+msgid ""
+"announce the dictionary entry for the currently selected word or phrase (the "
+"same as %s)"
+msgstr ""
+"произнести словарную статью для выбранного слова или словосочетания (то же "
+"самое, что и %s)"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:242
+msgid "show dictionary entry in a separate browseable window"
+msgstr "показать словарную статью в отдельном окне для просмотра"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:282
+msgid "announce the current source and target languages"
+msgstr "произнести текущий исходный язык и язык перевода"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:291
+#, python-brace-format
+msgid "Translate: from {langFrom} to {langInto}"
+msgstr "Перевести: из {langFrom} на {langInto}"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:298
+msgid "swap languages and get Quick Dictionary translation"
+msgstr "изменить порядок языков и получить быстрый перевод"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:308
+msgid "Languages swapped"
+msgstr "Порядок языков изменено"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:319
+msgid "Swap languages is not available for this pair"
+msgstr "Обратный порядок недоступен для этой пары языков"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:326
+msgid "copy last dictionary entry to the clipboard"
+msgstr "скопировать результат последнего запроса в буфер обмена"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:334
+#: addon/globalPlugins/quickDictionary/__init__.py:386
+#: addon/globalPlugins/quickDictionary/__init__.py:416
+msgid "There is no dictionary queries"
+msgstr "Еще не выполнялись запросы к словарю"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:343
+msgid ""
+"download from online dictionary and save the current list of available "
+"languages"
+msgstr ""
+"загрузить из онлайн-словаря и сохранить актуальный список доступных языков"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:357
+msgid ""
+"The list of available languages ​​has been successfully downloaded and saved."
+msgstr "Список доступных языков успешно загружен и сохранён."
+
+#: addon/globalPlugins/quickDictionary/__init__.py:360
+msgid "Warning! The list of available languages could not be loaded."
+msgstr "Внимание! Не удалось загрузить список доступных языков."
+
+#: addon/globalPlugins/quickDictionary/__init__.py:364
+msgid "statistics on the using the online service"
+msgstr "статистика использования онлайн-сервиса"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:375
+#, python-brace-format
+msgid "supports {number} languages"
+msgstr "поддерживает {number} языков"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:380
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:750
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:46
+msgid "&Dictionary:"
+msgstr "С&ловарь:"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:389
+#, python-brace-format
+msgid "performed {count} requests"
+msgstr "выполнено {count} запросов"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:392
+#, python-brace-format
+msgid "available {remain}"
+msgstr "доступно {remain}"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:400
+#, python-brace-format
+msgid "the limit will be reset in {hours} hours {minutes} minutes"
+msgstr "ограничение будет сброшено через {hours} часов {minutes} минут"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:404
+msgid "state of cache"
+msgstr "состояние кеша"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:407
+msgid "show the response from the remote server"
+msgstr "Показать ответ от удалённого сервера"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:423
+msgid "Response from"
+msgstr "Ответ от"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:447
+msgid "switch to add-on control mode"
+msgstr "переключение в режим управления дополнением"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:449
+#, python-format
+msgid "to get a quick translation of a word or phrase - press %s twice"
+msgstr "чтобы быстро перевести слово или словосочетание - дважды нажмите %s"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:452
+msgid "In add-on gestures layer mode:"
+msgstr "В режиме управления дополнением:"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:469
+msgid "Voice synthesizers profiles management:"
+msgstr "Управление профилями голосовых синтезаторов:"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:486
+msgid ""
+"for any of the listed features you can customize the keyboard shortcut in "
+"NVDA input gestures dialog"
+msgstr ""
+"для любой из перечисленных функций вы можете настроить собственную "
+"комбинацию клавиш в диалоговом окне \"Жесты ввода\" NVDA"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:496
+msgid "open add-on settings dialog"
+msgstr "открывает диалоговое окно настроек дополнения"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:511
+#, python-brace-format
+msgid ""
+"From {startslot} to {endslot} - selection of the voice synthesizer profile"
+msgstr "От {startslot} до {endslot} - выбор профиля голосового синтезатора"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:524
+#, python-brace-format
+msgid "Profile {slot} selected: {title}"
+msgstr "Выбран профиль {slot}: {title}"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:527
+msgid "announce the selected profile of voice synthesizers"
+msgstr "объявить выбранный профиль речевого синтезатора"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:536
+msgid "display a list of all customized voice synthesizers profiles"
+msgstr "показать список всех настроенных профилей синтезаторов голоса"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:561
+#: addon/globalPlugins/quickDictionary/settings.py:567
+msgid "delete the selected voice synthesizer profile"
+msgstr "удаление выбранного профиля речевого синтезатора"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:571
+#: addon/globalPlugins/quickDictionary/settings.py:566
+#, python-format
+msgid "Profile %d successfully deleted"
+msgstr "Профиль %d успешно удалён"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:574
+msgid "restore default voice synthesizer"
+msgstr "восстановить синтезатор голоса по умолчанию"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:585
+msgid "back to previous voice synthesizer"
+msgstr "вернуться к предыдущему синтезатору голоса"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:597
+msgid "save configured voice synthesizer profile"
+msgstr "сохранение настроенного профиля синтезатора голоса"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:606
+#: addon/globalPlugins/quickDictionary/settings.py:579
+msgid "Voice synthesizer profile saved successfully"
+msgstr "Профиль синтезатора речи успешно сохранен"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:609
+#, python-brace-format
+msgid "From F1 to F{endgate} - select online dictionary service"
+msgstr "От F1 до F{endgate} - выбор службы онлайн-словарей"
+
+#: addon/globalPlugins/quickDictionary/__init__.py:662
+msgid "No results"
+msgstr "Отсутствуют данные"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:27
+msgid "Lexicala Dictionaries"
+msgstr "Словари Lexicala"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:207
+#: addon/globalPlugins/quickDictionary/yandex/dictionary.py:124
+msgid "mean"
+msgstr "значение"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:226
+msgid "compositional phrases"
+msgstr "композиционные выражения"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:260
+#: addon/globalPlugins/quickDictionary/yandex/dictionary.py:128
+msgid "examples"
+msgstr "примеры"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:295
+msgid "inflections"
+msgstr "словоформы"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:331
+msgid "pronunciation"
+msgstr "произношение"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:527
+msgid "subcategorization"
+msgstr "подкатегоризация"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:539
+msgid "case"
+msgstr "падеж"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:550
+msgid "register"
+msgstr "реестр"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:563
+msgid "geographical usage"
+msgstr "географическое применение"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:575
+msgid "mood"
+msgstr "оттенок"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:586
+msgid "tense"
+msgstr "время"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:599
+msgid "homograph number"
+msgstr "колличество гомографов"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:631
+msgid "semantic category"
+msgstr "семантическая категория"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:645
+msgid "semantic subcategory"
+msgstr "семантическая подкатегория"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:659
+msgid "range of application"
+msgstr "диапазон применения"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:671
+msgid "sentiment"
+msgstr "настроение"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:682
+msgid "see"
+msgstr "смотрите"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:693
+msgid "see also"
+msgstr "смотрите также"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:704
+#: addon/globalPlugins/quickDictionary/yandex/dictionary.py:126
+msgid "synonyms"
+msgstr "синонимы"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:715
+msgid "antonyms"
+msgstr "антонимы"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:726
+msgid "collocate"
+msgstr "размещено"
+
+#: addon/globalPlugins/quickDictionary/lexicala/dictionary.py:737
+msgid "aspect"
+msgstr "выражение"
+
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:56
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:47
+msgid "Select dictionary source and target language:"
+msgstr "Выберите исходный и целевой язык словаря:"
+
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:61
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:52
+msgid "&Source language:"
+msgstr "&Исходный язык:"
+
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:68
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:59
+msgid "&Target language:"
+msgstr "Язык &перевода:"
+
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:83
+msgid "Search in both headwords and &inflections"
+msgstr "Выполнять поиск в оборо&тах"
+
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:88
+msgid "St&rip words to their stem"
+msgstr "Выполнять поиск однокоре&нных слов"
+
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:93
+msgid "Show a&ll available translations"
+msgstr "Отображать &все имеющиеся переводы"
+
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:98
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:75
+msgid "Copy dictionary response to clip&board"
+msgstr "Копировать результат в &буфер обмена"
+
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:103
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:80
+msgid "Auto-s&wap languages"
+msgstr "Автоматически изменять порядок я&зыков"
+
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:112
+msgid "&Username:"
+msgstr "Им&я пользователя:"
+
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:119
+msgid "&Password:"
+msgstr "Па&роль:"
+
+#: addon/globalPlugins/quickDictionary/lexicala/settings.py:131
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:119
+msgid "Register your own access token"
+msgstr "Зарегистрировать собственный код доступа"
+
+#: addon/globalPlugins/quickDictionary/service.py:42
+msgid "Cebuano"
+msgstr "Себуанский"
+
+#: addon/globalPlugins/quickDictionary/service.py:44
+msgid "Esperanto"
+msgstr "Эсперанто"
+
+#: addon/globalPlugins/quickDictionary/service.py:46
+msgid "Hmong"
+msgstr "Хмонг"
+
+#: addon/globalPlugins/quickDictionary/service.py:48
+msgid "Creole Haiti"
+msgstr "Креольский Гаити"
+
+#: addon/globalPlugins/quickDictionary/service.py:50
+msgid "Javanese"
+msgstr "Яванский"
+
+#: addon/globalPlugins/quickDictionary/service.py:52
+msgid "Latin"
+msgstr "Латинский"
+
+#: addon/globalPlugins/quickDictionary/service.py:54
+msgid "Malagasy"
+msgstr "Малагасийский"
+
+#: addon/globalPlugins/quickDictionary/service.py:56
+msgid "Meadow Mari"
+msgstr "Лукомарийский"
+
+#: addon/globalPlugins/quickDictionary/service.py:58
+msgid "Hill Mari"
+msgstr "Горномарийский"
+
+#: addon/globalPlugins/quickDictionary/service.py:60
+msgid "Myanmar (Burmese)"
+msgstr "Мьянма (Бирманский)"
+
+#: addon/globalPlugins/quickDictionary/service.py:62
+msgid "Chichewa"
+msgstr "Чичева"
+
+#: addon/globalPlugins/quickDictionary/service.py:64
+msgid "Somali"
+msgstr "Сомалийский"
+
+#: addon/globalPlugins/quickDictionary/service.py:66
+msgid "Sesotho"
+msgstr "Сесото"
+
+#: addon/globalPlugins/quickDictionary/service.py:68
+msgid "Sundanese"
+msgstr "Суданский"
+
+#: addon/globalPlugins/quickDictionary/service.py:70
+msgid "Tagalog"
+msgstr "Тагальский"
+
+#: addon/globalPlugins/quickDictionary/service.py:72
+msgid "Yiddish"
+msgstr "Идиш"
+
+#: addon/globalPlugins/quickDictionary/settings.py:44
+msgid "Select &online service:"
+msgstr "Выберите &онлайн-сервис:"
+
+#: addon/globalPlugins/quickDictionary/settings.py:117
+msgid "Switch between &voice synthesizers for selected languages"
+msgstr "Переключение между синтезаторами &голоса для выбранных языков"
+
+#: addon/globalPlugins/quickDictionary/settings.py:145
+#: addon/globalPlugins/quickDictionary/settings.py:472
+msgid "Please set up voice synthesizers profiles."
+msgstr "Пожалуйста настройте профили синтезаторов речи."
+
+#: addon/globalPlugins/quickDictionary/settings.py:261
+msgid "Select an online service from the list"
+msgstr "Выберите онлайн-сервис из списка"
+
+#: addon/globalPlugins/quickDictionary/settings.py:268
+msgid "ID"
+msgstr "ID"
+
+#: addon/globalPlugins/quickDictionary/settings.py:270
+msgid "Online service"
+msgstr "Удаленный-сервис"
+
+#: addon/globalPlugins/quickDictionary/settings.py:272
+msgid "Supported languages"
+msgstr "Колличество поддерживаемых языков"
+
+#: addon/globalPlugins/quickDictionary/settings.py:333
+msgid "Changing the profile of the voice synthesizer"
+msgstr "Изменение профиля голосового синтезатора"
+
+#: addon/globalPlugins/quickDictionary/settings.py:338
+#, python-format
+msgid "Do you want to save changes in profile %d?"
+msgstr "Хотите ли Вы сохранить изменения в профиле %d?"
+
+#: addon/globalPlugins/quickDictionary/settings.py:388
+msgid "Create a new voice synthesizer profile"
+msgstr "Создать новый профиль синтезатора голоса"
+
+#: addon/globalPlugins/quickDictionary/settings.py:393
+msgid "Please select the &number for new profile:"
+msgstr "Пожалуйста, выберите &номер для нового профиля:"
+
+#: addon/globalPlugins/quickDictionary/settings.py:456
+msgid "Select a voice synthesizer &profile from the list"
+msgstr "Выберите из списка &профиль речевого синтезатора"
+
+#: addon/globalPlugins/quickDictionary/settings.py:463
+msgid "Slot"
+msgstr "Слот"
+
+#: addon/globalPlugins/quickDictionary/settings.py:465
+msgid "Voice synthesizer"
+msgstr "Голосовой синтезатор"
+
+#: addon/globalPlugins/quickDictionary/settings.py:467
+msgid "Associated language"
+msgstr "Связанный язык"
+
+#: addon/globalPlugins/quickDictionary/settings.py:481
+msgid "&Activate"
+msgstr "&Активировать"
+
+#: addon/globalPlugins/quickDictionary/settings.py:486
+msgid "&Change"
+msgstr "&Изменить"
+
+#: addon/globalPlugins/quickDictionary/settings.py:579
+msgid "Profiles list could not be saved"
+msgstr "Невозможно сохранить список профилей"
+
+#: addon/globalPlugins/quickDictionary/settings.py:581
+msgid "Saving voice synthesizers profiles list"
+msgstr "Сохранение списка профилей голосовых синтезаторов"
+
+#: addon/globalPlugins/quickDictionary/shared.py:117
+msgid ""
+"There is no selected text, the clipboard is also empty, or its content is "
+"not text!"
+msgstr "Нет выделенного текста и буфер обмена не содержит текстовых данных!"
+
+#: addon/globalPlugins/quickDictionary/yandex/dictionary.py:25
+msgid "Yandex Dictionaries"
+msgstr "Словари Яндекс"
+
+#: addon/globalPlugins/quickDictionary/yandex/dictionary.py:101
+msgid "number"
+msgstr "число"
+
+#: addon/globalPlugins/quickDictionary/yandex/dictionary.py:103
+msgid "gender"
+msgstr "пол"
+
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:85
+msgid "Use &alternative server"
+msgstr "Использовать альтернативный се&рвер"
+
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:93
+msgid "&Dictionary Access Token:"
+msgstr "Код &доступа к онлайн-словарю:"
+
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:107
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:171
+msgid "Show"
+msgstr "Показать"
+
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:136
+msgid "-- select language --"
+msgstr "-- выберите язык --"
+
+#: addon/globalPlugins/quickDictionary/yandex/settings.py:164
+msgid "Hide"
+msgstr "Скрыть"
+
+#: buildVars.py:24
+msgid "Quick Dictionary"
+msgstr "Быстрый словарь"
+
+#: buildVars.py:27
+msgid ""
+"Online Dictionary add-on for quick translation selected words or phrases."
+msgstr "Позволяет быстро получить перевод выбранного слова или словосочетания."
+
+#~ msgid "Copied to clipboard."
+#~ msgstr "Скопировано в буфер обмена."
+
+#~ msgid "Copy failed."
+#~ msgstr "Ошибка копирования."
