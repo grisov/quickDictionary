@@ -3,14 +3,16 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 from typing import Callable, Iterator, Optional
+
 import addonHandler
-import wx
 import config
+import wx
 from gui import guiHelper
 from logHandler import log
+
 from .. import addonName
 from ..service import secrets
 from .api import serviceName
@@ -29,7 +31,7 @@ class ServicePanel(wx.Panel):
 	def __init__(
 		self,
 		parent: Optional[wx.Window] = None,
-		id: int = wx.ID_ANY
+		id: int = wx.ID_ANY,
 	) -> None:
 		"""Create a settings panel for a specific service.
 		Populate the service panel with settings controls.
@@ -46,14 +48,18 @@ class ServicePanel(wx.Panel):
 			_("&Dictionary:"),
 			wx.Choice,
 			choices=langs.sources,
-			style=wx.CB_SORT
+			style=wx.CB_SORT,
 		)
-		currentSource: int = self.sourceChoice.FindString(config.conf[addonName][serviceName]['source'])
+		currentSource: int = self.sourceChoice.FindString(config.conf[addonName][serviceName]["source"])
 		self.sourceChoice.Select(currentSource)
 		self.sourceChoice.Bind(wx.EVT_CHOICE, self.onSelectSource)
 		addonHelper.addItem(
 			# Translators: Help message for a dialog.
-			wx.StaticText(self, label=_("Select dictionary source and target language:"), style=wx.ALIGN_LEFT)
+			wx.StaticText(
+				self,
+				label=_("Select dictionary source and target language:"),
+				style=wx.ALIGN_LEFT,
+			),
 		)
 		languageHelper = guiHelper.BoxSizerHelper(self, orientation=wx.HORIZONTAL)
 		self.fromChoice = languageHelper.addLabeledControl(
@@ -61,48 +67,54 @@ class ServicePanel(wx.Panel):
 			_("&Source language:"),
 			wx.Choice,
 			choices=[],
-			style=wx.CB_SORT
+			style=wx.CB_SORT,
 		)
 		self.intoChoice = languageHelper.addLabeledControl(
 			# Translators: A setting in addon settings dialog.
 			_("&Target language:"),
 			wx.Choice,
 			choices=[],
-			style=wx.CB_SORT
+			style=wx.CB_SORT,
 		)
 		addonHelper.addItem(languageHelper)
-		self.widgetMaker(self.fromChoice, langs.fromList(source=config.conf[addonName][serviceName]['source']))
-		self.widgetMaker(self.intoChoice, langs.intoList(source=config.conf[addonName][serviceName]['source']))
-		langFrom: int = self.fromChoice.FindString(langs[config.conf[addonName][serviceName]['from']].name)
-		langTo: int = self.intoChoice.FindString(langs[config.conf[addonName][serviceName]['into']].name)
+		self.widgetMaker(
+			self.fromChoice,
+			langs.fromList(source=config.conf[addonName][serviceName]["source"]),
+		)
+		self.widgetMaker(
+			self.intoChoice,
+			langs.intoList(source=config.conf[addonName][serviceName]["source"]),
+		)
+		langFrom: int = self.fromChoice.FindString(langs[config.conf[addonName][serviceName]["from"]].name)
+		langTo: int = self.intoChoice.FindString(langs[config.conf[addonName][serviceName]["into"]].name)
 		self.fromChoice.Select(langFrom)
 		self.intoChoice.Select(langTo)
 
 		self.morphChk = addonHelper.addItem(
 			# Translators: A setting in addon settings dialog.
-			wx.CheckBox(self, label=_("Search in both headwords and &inflections"))
+			wx.CheckBox(self, label=_("Search in both headwords and &inflections")),
 		)
-		self.morphChk.SetValue(config.conf[addonName][serviceName]['morph'])
+		self.morphChk.SetValue(config.conf[addonName][serviceName]["morph"])
 		self.analyzedChk = addonHelper.addItem(
 			# Translators: A setting in addon settings dialog.
-			wx.CheckBox(self, label=_("St&rip words to their stem"))
+			wx.CheckBox(self, label=_("St&rip words to their stem")),
 		)
-		self.analyzedChk.SetValue(config.conf[addonName][serviceName]['analyzed'])
+		self.analyzedChk.SetValue(config.conf[addonName][serviceName]["analyzed"])
 		self.allChk = addonHelper.addItem(
 			# Translators: A setting in addon settings dialog.
-			wx.CheckBox(self, label=_("Show a&ll available translations"))
+			wx.CheckBox(self, label=_("Show a&ll available translations")),
 		)
-		self.allChk.SetValue(config.conf[addonName][serviceName]['all'])
+		self.allChk.SetValue(config.conf[addonName][serviceName]["all"])
 		self.copyToClipboardChk = addonHelper.addItem(
 			# Translators: A setting in addon settings dialog.
-			wx.CheckBox(self, label=_("Copy dictionary response to clip&board"))
+			wx.CheckBox(self, label=_("Copy dictionary response to clip&board")),
 		)
-		self.copyToClipboardChk.SetValue(config.conf[addonName][serviceName]['copytoclip'])
+		self.copyToClipboardChk.SetValue(config.conf[addonName][serviceName]["copytoclip"])
 		self.autoSwapChk = addonHelper.addItem(
 			# Translators: A setting in addon settings dialog.
-			wx.CheckBox(self, label=_("Auto-s&wap languages"))
+			wx.CheckBox(self, label=_("Auto-s&wap languages")),
 		)
-		self.autoSwapChk.SetValue(config.conf[addonName][serviceName]['autoswap'])
+		self.autoSwapChk.SetValue(config.conf[addonName][serviceName]["autoswap"])
 
 		# Fields for input user credentials and link to registration
 		secret = secrets[serviceName]
@@ -111,15 +123,15 @@ class ServicePanel(wx.Panel):
 			# Translators: A setting in addon settings dialog.
 			_("&Username:"),
 			wx.TextCtrl,
-			value=secret.decode(config.conf[addonName][serviceName]['username']),
-			style=wx.TE_LEFT
+			value=secret.decode(config.conf[addonName][serviceName]["username"]),
+			style=wx.TE_LEFT,
 		)
 		self.passwordInput = authHelper.addLabeledControl(
 			# Translators: A setting in addon settings dialog.
 			_("&Password:"),
 			wx.TextCtrl,
-			value=secret.decode(config.conf[addonName][serviceName]['password']),
-			style=wx.TE_LEFT | wx.TE_PASSWORD
+			value=secret.decode(config.conf[addonName][serviceName]["password"]),
+			style=wx.TE_LEFT | wx.TE_PASSWORD,
 		)
 		addonHelper.addItem(authHelper)
 
@@ -130,11 +142,13 @@ class ServicePanel(wx.Panel):
 				# Translators: A hyperlink in addon settings dialog.
 				label=_("Register your own access token"),
 				url=secret.url,
-				style=wx.adv.HL_CONTEXTMENU | wx.adv.HL_DEFAULT_STYLE | wx.adv.HL_ALIGN_RIGHT)
+				style=wx.adv.HL_CONTEXTMENU | wx.adv.HL_DEFAULT_STYLE | wx.adv.HL_ALIGN_RIGHT,
+			),
 		)
 		self.linkHref.Update()
 		self.linkHref.Show(
-			show=self.usernameInput.GetValue() == secret.username and self.passwordInput.GetValue() == secret.password
+			show=self.usernameInput.GetValue() == secret.username
+			and self.passwordInput.GetValue() == secret.password,
 		)
 		addonHelper.sizer.Fit(self)
 
@@ -148,8 +162,8 @@ class ServicePanel(wx.Panel):
 		self.widgetMaker(self.fromChoice, langs.fromList(source=source))
 		self.intoChoice.Clear()
 		self.widgetMaker(self.intoChoice, langs.intoList(source=source))
-		langFrom: int = self.fromChoice.FindString(langs[config.conf[addonName][serviceName]['from']].name)
-		langTo: int = self.intoChoice.FindString(langs[config.conf[addonName][serviceName]['into']].name)
+		langFrom: int = self.fromChoice.FindString(langs[config.conf[addonName][serviceName]["from"]].name)
+		langTo: int = self.intoChoice.FindString(langs[config.conf[addonName][serviceName]["into"]].name)
 		langFrom = max(0, langFrom)
 		langTo = max(0, langTo)
 		self.fromChoice.Select(langFrom)
@@ -167,18 +181,21 @@ class ServicePanel(wx.Panel):
 
 	def save(self) -> None:
 		"""Save the state of the service panel settings."""
-		config.conf[addonName][serviceName]['source'] = self.sourceChoice.GetString(
-			self.sourceChoice.GetSelection())
+		config.conf[addonName][serviceName]["source"] = self.sourceChoice.GetString(
+			self.sourceChoice.GetSelection(),
+		)
 		fromLang: str = self.fromChoice.GetClientData(self.fromChoice.GetSelection()).code
 		intoLang: str = self.intoChoice.GetClientData(self.intoChoice.GetSelection()).code
-		config.conf[addonName][serviceName]['from'] = fromLang
-		config.conf[addonName][serviceName]['into'] = intoLang
-		config.conf[addonName][serviceName]['morph'] = self.morphChk.GetValue()
-		config.conf[addonName][serviceName]['analyzed'] = self.analyzedChk.GetValue()
-		config.conf[addonName][serviceName]['all'] = self.allChk.GetValue()
-		config.conf[addonName][serviceName]['copytoclip'] = self.copyToClipboardChk.GetValue()
-		config.conf[addonName][serviceName]['autoswap'] = self.autoSwapChk.GetValue()
-		config.conf[addonName][serviceName]['username'] = secrets[serviceName].encode(
-			self.usernameInput.GetValue() or secrets[serviceName].username)
-		config.conf[addonName][serviceName]['password'] = secrets[serviceName].encode(
-			self.passwordInput.GetValue() or secrets[serviceName].password)
+		config.conf[addonName][serviceName]["from"] = fromLang
+		config.conf[addonName][serviceName]["into"] = intoLang
+		config.conf[addonName][serviceName]["morph"] = self.morphChk.GetValue()
+		config.conf[addonName][serviceName]["analyzed"] = self.analyzedChk.GetValue()
+		config.conf[addonName][serviceName]["all"] = self.allChk.GetValue()
+		config.conf[addonName][serviceName]["copytoclip"] = self.copyToClipboardChk.GetValue()
+		config.conf[addonName][serviceName]["autoswap"] = self.autoSwapChk.GetValue()
+		config.conf[addonName][serviceName]["username"] = secrets[serviceName].encode(
+			self.usernameInput.GetValue() or secrets[serviceName].username,
+		)
+		config.conf[addonName][serviceName]["password"] = secrets[serviceName].encode(
+			self.passwordInput.GetValue() or secrets[serviceName].password,
+		)

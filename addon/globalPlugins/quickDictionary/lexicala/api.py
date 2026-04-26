@@ -3,17 +3,19 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Any, Dict, List, Optional
 import os.path
 import ssl
-from urllib.request import Request, urlopen
-from urllib.parse import quote as urlencode
+from datetime import datetime, timedelta
 from http.client import HTTPResponse
 from json import loads
-from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+from urllib.parse import quote as urlencode
+from urllib.request import Request, urlopen
+
 import config
+
 from .. import addonName
 from ..service import secrets
 
@@ -27,12 +29,12 @@ class Lapi(object):
 
 	def __init__(
 		self,
-		text: str = '',
-		lang: str = 'en',
-		source: str = 'global',
+		text: str = "",
+		lang: str = "en",
+		source: str = "global",
 		# Starting with Python 3.8 is better to use here: Literal["global", "password", "random"]
 		morph: bool = False,
-		analyzed: bool = False
+		analyzed: bool = False,
 	) -> None:
 		"""Input parameters for interacting with the online dictionary.
 		@param text: word or phrase to search in the dictionary
@@ -57,7 +59,7 @@ class Lapi(object):
 		self._analyzed = analyzed
 		self._headers: Dict[str, str] = {
 			"X-RapidAPI-Host": "lexicala1.p.rapidapi.com",
-			"User-Agent": "Mozilla 5.0"
+			"User-Agent": "Mozilla 5.0",
 		}
 
 	@property
@@ -115,25 +117,28 @@ class Lapi(object):
 		rq = Request(url)
 		for name, value in self._headers.items():
 			rq.add_header(name, value)
-		rq.add_header("X-RapidAPI-Key", secrets[serviceName].decode(config.conf[addonName][serviceName]['password']))
+		rq.add_header(
+			"X-RapidAPI-Key",
+			secrets[serviceName].decode(config.conf[addonName][serviceName]["password"]),
+		)
 		try:
 			resp = urlopen(rq, timeout=8)
 		except Exception as e:
 			# e.getcode()==429 -> "To date, the number of allowed queries to the dictionary is exhausted!"
-			response['error'] = "HTTP error: %s" % str(e)
+			response["error"] = "HTTP error: %s" % str(e)
 			return response
 		if resp:
-			stat['remain'] = resp.getheader("X-RateLimit-requests-Remaining", 0)
-			stat['count'] = int(resp.getheader("X-RateLimit-requests-Limit", 0)) - int(stat['remain'])
-			stat['delta'] = datetime.now() - self.parseDate(resp.getheader('date', ''))
+			stat["remain"] = resp.getheader("X-RateLimit-requests-Remaining", 0)
+			stat["count"] = int(resp.getheader("X-RateLimit-requests-Limit", 0)) - int(stat["remain"])
+			stat["delta"] = datetime.now() - self.parseDate(resp.getheader("date", ""))
 			if resp.getcode() == 200:
-				text: str = resp.read().decode(encoding='utf-8', errors='ignore')
+				text: str = resp.read().decode(encoding="utf-8", errors="ignore")
 				try:
 					response = loads(text)
 				except Exception as e:
-					response['error'] = "JSON error: %s" % str(e)
+					response["error"] = "JSON error: %s" % str(e)
 			else:
-				response['error'] = "Response code: %d" % resp.getcode()
+				response["error"] = "Response code: %d" % resp.getcode()
 		return response
 
 	def search(self) -> Dict:
@@ -141,12 +146,14 @@ class Lapi(object):
 		@return: deserialized response from the server
 		@rtype: Dict
 		"""
-		query: str = "search?source={dict}&language={lang}&text={text}&morph={morph}&analyzed={analyzed}".format(
-			dict=self.source,
-			lang=self.language,
-			text=urlencode(self.text),
-			morph=str(self.morph).lower(),
-			analyzed=str(self.analyzed).lower()
+		query: str = (
+			"search?source={dict}&language={lang}&text={text}&morph={morph}&analyzed={analyzed}".format(
+				dict=self.source,
+				lang=self.language,
+				text=urlencode(self.text),
+				morph=str(self.morph).lower(),
+				analyzed=str(self.analyzed).lower(),
+			)
 		)
 		return self.get(query)
 
@@ -158,7 +165,7 @@ class Lapi(object):
 		@rtype: Dict
 		"""
 		query: str = "entries/{entry_id}".format(
-			entry_id=id
+			entry_id=id,
 		)
 		return self.get(query)
 
@@ -170,7 +177,7 @@ class Lapi(object):
 		@rtype: Dict
 		"""
 		query: str = "senses/{sense_id}".format(
-			sense_id=id
+			sense_id=id,
 		)
 		return self.get(query)
 
@@ -179,7 +186,7 @@ class Lapi(object):
 		@return: deserialized response from the server
 		@rtype: Dict
 		"""
-		return self.get('languages')
+		return self.get("languages")
 
 	def test(self) -> Dict:
 		"""Check the functionality of the online dictionary API.
@@ -188,7 +195,7 @@ class Lapi(object):
 		@return: deserialized response from the server
 		@rtype: Dict
 		"""
-		return self.get('test')
+		return self.get("test")
 
 	def parseDate(self, datestr: str) -> datetime:
 		"""Analyze a date string and convert it to a datetime object.
@@ -197,11 +204,24 @@ class Lapi(object):
 		@return: datetime object
 		@rtype: datetime
 		"""
-		monthes: List[str] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+		monthes: List[str] = [
+			"Jan",
+			"Feb",
+			"Mar",
+			"Apr",
+			"May",
+			"Jun",
+			"Jul",
+			"Aug",
+			"Sep",
+			"Oct",
+			"Nov",
+			"Dec",
+		]
 		try:
-			date = datestr.split(' ')[1:-1]
+			date = datestr.split(" ")[1:-1]
 			date[1] = "%02d" % (monthes.index(date[1]) + 1)
-			dt: datetime = datetime.strptime(' '.join(date), "%d %m %Y %H:%M:%S")
+			dt: datetime = datetime.strptime(" ".join(date), "%d %m %Y %H:%M:%S")
 		except Exception:
 			return datetime.now() - timedelta(days=100)
 		return dt

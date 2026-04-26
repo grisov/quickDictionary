@@ -3,15 +3,17 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 from typing import Callable, Iterator, Optional
+
 import addonHandler
 import config
 import wx
 from gui import guiHelper
-from tones import beep
 from logHandler import log
+from tones import beep
+
 from .. import addonName
 from ..service import secrets
 from .api import serviceName
@@ -30,7 +32,7 @@ class ServicePanel(wx.Panel):
 	def __init__(
 		self,
 		parent: Optional[wx.Window] = None,
-		id: int = wx.ID_ANY
+		id: int = wx.ID_ANY,
 	) -> None:
 		"""Create a settings panel for a specific service.
 		Populate the service panel with settings controls.
@@ -44,7 +46,11 @@ class ServicePanel(wx.Panel):
 		self.SetSizer(addonHelper.sizer)
 		addonHelper.addItem(
 			# Translators: Help message for a dialog.
-			wx.StaticText(self, label=_("Select dictionary source and target language:"), style=wx.ALIGN_LEFT)
+			wx.StaticText(
+				self,
+				label=_("Select dictionary source and target language:"),
+				style=wx.ALIGN_LEFT,
+			),
 		)
 		languageHelper = guiHelper.BoxSizerHelper(self, orientation=wx.HORIZONTAL)
 		self.fromChoice = languageHelper.addLabeledControl(
@@ -52,39 +58,39 @@ class ServicePanel(wx.Panel):
 			_("&Source language:"),
 			wx.Choice,
 			choices=[],
-			style=wx.CB_SORT
+			style=wx.CB_SORT,
 		)
 		self.intoChoice = languageHelper.addLabeledControl(
 			# Translators: A setting in addon settings dialog.
 			_("&Target language:"),
 			wx.Choice,
 			choices=[],
-			style=wx.CB_SORT
+			style=wx.CB_SORT,
 		)
 		addonHelper.addItem(languageHelper)
 		self.widgetMaker(self.fromChoice, langs.fromList())
 		self.fromChoice.Bind(wx.EVT_CHOICE, self.onSelectFrom)
-		self.widgetMaker(self.intoChoice, langs.intoList(config.conf[addonName][serviceName]['from']))
-		langFrom: int = self.fromChoice.FindString(langs[config.conf[addonName][serviceName]['from']].name)
-		langTo: int = self.intoChoice.FindString(langs[config.conf[addonName][serviceName]['into']].name)
+		self.widgetMaker(self.intoChoice, langs.intoList(config.conf[addonName][serviceName]["from"]))
+		langFrom: int = self.fromChoice.FindString(langs[config.conf[addonName][serviceName]["from"]].name)
+		langTo: int = self.intoChoice.FindString(langs[config.conf[addonName][serviceName]["into"]].name)
 		self.fromChoice.Select(langFrom)
 		self.intoChoice.Select(langTo)
 
 		self.copyToClipboardChk = addonHelper.addItem(
 			# Translators: A setting in addon settings dialog.
-			wx.CheckBox(self, label=_("Copy dictionary response to clip&board"))
+			wx.CheckBox(self, label=_("Copy dictionary response to clip&board")),
 		)
-		self.copyToClipboardChk.SetValue(config.conf[addonName][serviceName]['copytoclip'])
+		self.copyToClipboardChk.SetValue(config.conf[addonName][serviceName]["copytoclip"])
 		self.autoSwapChk = addonHelper.addItem(
 			# Translators: A setting in addon settings dialog.
-			wx.CheckBox(self, label=_("Auto-s&wap languages"))
+			wx.CheckBox(self, label=_("Auto-s&wap languages")),
 		)
-		self.autoSwapChk.SetValue(config.conf[addonName][serviceName]['autoswap'])
+		self.autoSwapChk.SetValue(config.conf[addonName][serviceName]["autoswap"])
 		self.useMirrorChk = addonHelper.addItem(
 			# Translators: A setting in addon settings dialog.
-			wx.CheckBox(self, label=_("Use &alternative server"))
+			wx.CheckBox(self, label=_("Use &alternative server")),
 		)
-		self.useMirrorChk.SetValue(config.conf[addonName][serviceName]['mirror'])
+		self.useMirrorChk.SetValue(config.conf[addonName][serviceName]["mirror"])
 
 		# Field for input access token and link to registration
 		secret = secrets[serviceName]
@@ -95,8 +101,8 @@ class ServicePanel(wx.Panel):
 		passwordSizer = wx.BoxSizer(wx.HORIZONTAL)
 		self.tokenInputStars = wx.TextCtrl(
 			self,
-			value=secret.decode(config.conf[addonName][serviceName]['password']),
-			style=wx.TE_LEFT | wx.TE_PASSWORD
+			value=secret.decode(config.conf[addonName][serviceName]["password"]),
+			style=wx.TE_LEFT | wx.TE_PASSWORD,
 		)
 		passwordSizer.Add(self.tokenInputStars)
 		self.tokenInputText = wx.TextCtrl(self, style=wx.TE_LEFT)
@@ -118,8 +124,8 @@ class ServicePanel(wx.Panel):
 				# Translators: A hyperlink in addon settings dialog.
 				label=_("Register your own access token"),
 				url=secret.url,
-				style=wx.adv.HL_CONTEXTMENU | wx.adv.HL_ALIGN_RIGHT
-			)
+				style=wx.adv.HL_CONTEXTMENU | wx.adv.HL_ALIGN_RIGHT,
+			),
 		)
 		self.linkHref.Update()
 		self.linkHref.Show(show=self.tokenInput.GetValue() == secret.password)
@@ -145,7 +151,7 @@ class ServicePanel(wx.Panel):
 		fromLang: str = self.fromChoice.GetClientData(self.fromChoice.GetSelection()).code
 		self.intoChoice.Clear()
 		self.widgetMaker(self.intoChoice, langs.intoList(fromLang))
-		intoLang: int = self.intoChoice.FindString(langs[config.conf[addonName][serviceName]['into']].name)
+		intoLang: int = self.intoChoice.FindString(langs[config.conf[addonName][serviceName]["into"]].name)
 		self.intoChoice.Select(intoLang if intoLang >= 0 else 0)
 
 	def onTokenButton(self, event: wx.PyEvent) -> None:
@@ -176,10 +182,11 @@ class ServicePanel(wx.Panel):
 		"""Save the state of the service panel settings."""
 		fromLang: str = self.fromChoice.GetClientData(self.fromChoice.GetSelection()).code
 		intoLang: str = self.intoChoice.GetClientData(self.intoChoice.GetSelection()).code
-		config.conf[addonName][serviceName]['from'] = fromLang
-		config.conf[addonName][serviceName]['into'] = intoLang
-		config.conf[addonName][serviceName]['copytoclip'] = self.copyToClipboardChk.GetValue()
-		config.conf[addonName][serviceName]['autoswap'] = self.autoSwapChk.GetValue()
-		config.conf[addonName][serviceName]['mirror'] = self.useMirrorChk.GetValue()
-		config.conf[addonName][serviceName]['password'] = secrets[serviceName].encode(
-			self.tokenInput.GetValue() or secrets[serviceName].password)
+		config.conf[addonName][serviceName]["from"] = fromLang
+		config.conf[addonName][serviceName]["into"] = intoLang
+		config.conf[addonName][serviceName]["copytoclip"] = self.copyToClipboardChk.GetValue()
+		config.conf[addonName][serviceName]["autoswap"] = self.autoSwapChk.GetValue()
+		config.conf[addonName][serviceName]["mirror"] = self.useMirrorChk.GetValue()
+		config.conf[addonName][serviceName]["password"] = secrets[serviceName].encode(
+			self.tokenInput.GetValue() or secrets[serviceName].password,
+		)

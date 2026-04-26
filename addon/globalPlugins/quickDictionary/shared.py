@@ -3,29 +3,31 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Any, Callable, List, Dict
 import os.path
 import re
-import addonHandler
-import api
-import ui
-import braille
-import config
-import versionInfo
-import speech
-from speech.commands import LangChangeCommand, CallbackCommand
-from textInfos import POSITION_SELECTION
-from time import sleep
-from tones import beep
 from functools import lru_cache, wraps
 from threading import Thread
+from time import sleep
+from typing import Any, Callable, Dict, List
+
+import addonHandler
+import api
+import braille
+import config
+import speech
+import ui
+import versionInfo
 from logHandler import log
+from speech.commands import CallbackCommand, LangChangeCommand
+from textInfos import POSITION_SELECTION
+from tones import beep
+
 from . import addonName
 from .locator import services
-from .synthesizers import profiles
 from .service import Translator
+from .synthesizers import profiles
 
 try:
 	addonHandler.initTranslation()
@@ -51,7 +53,7 @@ def translateWithCaching(langFrom: str, langInto: str, text: str, hashForCache: 
 	@return: object containing the prepared response from the remote dictionary
 	@rtype: Translator
 	"""
-	translator = services[config.conf[addonName]['active']].translator(langFrom, langInto, text)
+	translator = services[config.conf[addonName]["active"]].translator(langFrom, langInto, text)
 	translator.start()
 	i = 0
 	while translator.is_alive():
@@ -100,7 +102,7 @@ def getSelectedText() -> str:
 	"""
 	obj = api.getFocusObject()
 	treeInterceptor = obj.treeInterceptor
-	if hasattr(treeInterceptor, 'TextInfo') and not treeInterceptor.passThrough:
+	if hasattr(treeInterceptor, "TextInfo") and not treeInterceptor.passThrough:
 		obj = treeInterceptor
 	try:
 		info = obj.makeTextInfo(POSITION_SELECTION)
@@ -110,12 +112,14 @@ def getSelectedText() -> str:
 		try:
 			text = api.getClipData()
 		except Exception:
-			text = ''
+			text = ""
 		if not text or not isinstance(text, str) or not clearText(text):
 			# Translators: User has pressed the shortcut key for translating selected text,
 			# but no text was actually selected and clipboard is clear
-			ui.message(_("There is no selected text, the clipboard is also empty, or its content is not text!"))
-			return ''
+			ui.message(
+				_("There is no selected text, the clipboard is also empty, or its content is not text!"),
+			)
+			return ""
 		return text
 	return info.text
 
@@ -127,13 +131,14 @@ def clearText(text: str) -> str:
 	@return: text string stripped of unnecessary characters
 	@rtype: str
 	"""
-	text = ''.join([s for s in text.strip() if s.isalpha() or s.isspace()])
-	return ' '.join(re.split(r'\s+', text))
+	text = "".join([s for s in text.strip() if s.isalpha() or s.isspace()])
+	return " ".join(re.split(r"\s+", text))
 
 
 # Below toggle code came from Tyler Spivey's code, with enhancements by Joseph Lee
 def finally_(func: Callable, final: Callable) -> Callable:
 	"""Calls final after func, even if it fails."""
+
 	def wrap(f) -> Callable:
 		@wraps(f)
 		def new(*args, **kwargs) -> None:
@@ -141,23 +146,28 @@ def finally_(func: Callable, final: Callable) -> Callable:
 				func(*args, **kwargs)
 			finally:
 				final()
+
 		return new
+
 	return wrap(final)
 
 
 # Template for displaying HTML content.
-htmlTemplate = ''.join([
-	"&nbsp;",
-	"<!DOCTYPE html>",
-	"<html>",
-	"<head>",
-	'<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-	"<title></title>"
-	'<link rel="stylesheet" type="text/css" href="%s">' % os.path.join(os.path.dirname(__file__), 'style.css'),
-	"</head>",
-	"<body>{body}</body>",
-	"</html>"
-])
+htmlTemplate = "".join(
+	[
+		"&nbsp;",
+		"<!DOCTYPE html>",
+		"<html>",
+		"<head>",
+		'<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+		"<title></title>"
+		'<link rel="stylesheet" type="text/css" href="%s">'
+		% os.path.join(os.path.dirname(__file__), "style.css"),
+		"</head>",
+		"<body>{body}</body>",
+		"</html>",
+	],
+)
 
 
 def restoreSynthIfSpeechBeenCanceled() -> None:
@@ -166,7 +176,9 @@ def restoreSynthIfSpeechBeenCanceled() -> None:
 	"""
 	previous = profiles.getCurrent()
 	while not getattr(
-		speech if versionInfo.version_year < 2021 else getattr(speech, "getState")(), "beenCanceled"):
+		speech if versionInfo.version_year < 2021 else getattr(speech, "getState")(),
+		"beenCanceled",
+	):
 		sleep(0.1)
 	else:
 		profiles.restorePrevious()
@@ -179,18 +191,18 @@ def messageWithLangDetection(msg: Dict[str, str]) -> None:
 	@param msg: language code and text to be spoken in the specified language
 	@type msg: Dict[str, str] -> {'lang': str, 'text': str}
 	"""
-	switchSynth = config.conf[addonName][services[config.conf[addonName]['active']].name]['switchsynth']
-	profile = next(filter(lambda x: x.lang == msg['lang'], (p for s, p in profiles)), None)
+	switchSynth = config.conf[addonName][services[config.conf[addonName]["active"]].name]["switchsynth"]
+	profile = next(filter(lambda x: x.lang == msg["lang"], (p for s, p in profiles)), None)
 	if switchSynth and profile:
 		profiles.rememberCurrent()
 		profile.set()
 	speechSequence = []
-	if config.conf['speech']['autoLanguageSwitching']:
-		speechSequence.append(LangChangeCommand(msg['lang']))
+	if config.conf["speech"]["autoLanguageSwitching"]:
+		speechSequence.append(LangChangeCommand(msg["lang"]))
 	if switchSynth and profile:
 		speechSequence.append(CallbackCommand(callback=Thread(target=restoreSynthIfSpeechBeenCanceled).start))
-	speechSequence.append(msg['text'])
+	speechSequence.append(msg["text"])
 	if switchSynth and profile:
 		speechSequence.append(CallbackCommand(callback=speech.cancelSpeech))
 	speech.speak(speechSequence)
-	braille.handler.message(msg['text'])
+	braille.handler.message(msg["text"])
