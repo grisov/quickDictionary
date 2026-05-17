@@ -4,17 +4,19 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Any, Callable, List, Dict, Union
+from typing import Any, Callable, Dict, List, Union
+
 import addonHandler
 import config
 from logHandler import log
+
 from .. import addonName
-from ..service import Translator, Parser, secrets
+from ..service import Parser, Translator, secrets
 from ..shared import htmlTemplate
-from .languages import langs
 from .api import Lapi, serviceName
+from .languages import langs
 
 try:
 	addonHandler.initTranslation()
@@ -32,12 +34,12 @@ confspec: Dict[str, str] = {
 	"into": "string(default=%s)" % langs.defaultInto.code,
 	"autoswap": "boolean(default=false)",
 	"copytoclip": "boolean(default=false)",
-	"username": 'string(default=%s)' % secrets[serviceName]._username,
+	"username": "string(default=%s)" % secrets[serviceName]._username,
 	"password": "string(default=%s)" % secrets[serviceName]._password,
 	"morph": "boolean(default=false)",  # Strip words to their stem
 	"analyzed": "boolean(default=false)",  # Searching both headwords and inflections
 	"all": "boolean(default=false)",  # Show all available translations
-	"switchsynth": "boolean(default=false)"
+	"switchsynth": "boolean(default=false)",
 }
 
 
@@ -61,7 +63,7 @@ class ServiceTranslator(Translator):
 		@return: source language code
 		@rtype: str
 		"""
-		return config.conf[addonName][serviceName]['source']
+		return config.conf[addonName][serviceName]["source"]
 
 	@property
 	def morph(self) -> bool:
@@ -69,7 +71,7 @@ class ServiceTranslator(Translator):
 		@return: parameter of searching in the remote dictionary
 		@rtype: bool
 		"""
-		return config.conf[addonName][serviceName]['morph']
+		return config.conf[addonName][serviceName]["morph"]
 
 	@property
 	def analyzed(self) -> bool:
@@ -77,7 +79,7 @@ class ServiceTranslator(Translator):
 		@return: parameter of searching in the remote dictionary
 		@rtype: bool
 		"""
-		return config.conf[addonName][serviceName]['analyzed']
+		return config.conf[addonName][serviceName]["analyzed"]
 
 	def run(self) -> None:
 		"""Query the remote dictionary and save the processed response.
@@ -88,9 +90,9 @@ class ServiceTranslator(Translator):
 			lang=self.langFrom,
 			source=self.source,
 			morph=self.morph,
-			analyzed=self.analyzed
+			analyzed=self.analyzed,
 		).search()
-		if self._resp.get('error'):
+		if self._resp.get("error"):
 			self._error = True
 		parser = ServiceParser(response=self._resp, target=self.langTo)
 		html: str = parser.to_html()
@@ -109,7 +111,7 @@ class ServiceParser(Parser):
 		@type target: str
 		"""
 		super(ServiceParser, self).__init__(response)
-		self._langFrom: str = ''
+		self._langFrom: str = ""
 		self._langInto: str = target
 
 	def results(self) -> str:
@@ -117,10 +119,10 @@ class ServiceParser(Parser):
 		@return: all available results in HTML format
 		@rtype: str
 		"""
-		if not self.resp.get('results') or len(self.resp['results']) == 0:
+		if not self.resp.get("results") or len(self.resp["results"]) == 0:
 			return self.error(self.resp)
 		results: List[str] = []
-		for result in self.resp['results']:
+		for result in self.resp["results"]:
 			self._langFrom = self.language(result)
 			transResp: Dict = Lapi().entries(self.id(result))
 			results.append(self.headwords(transResp))
@@ -135,7 +137,7 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp: Union[List[Dict], Dict] = resp.get('headword', {})
+		rsp: Union[List[Dict], Dict] = resp.get("headword", {})
 		if isinstance(rsp, list):
 			hws: List[str] = [self.headword(r) for r in rsp]
 			return self.filledOnly(hws)
@@ -150,11 +152,15 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		if not resp or len(resp) == 0:
-			return ''
-		hw: str = "<h1>%s</h1>" % (self.text(resp) + self.inParentheses(
-			self.pos(resp),
-			self.gender(resp),
-			self.number(resp)))
+			return ""
+		hw: str = "<h1>%s</h1>" % (
+			self.text(resp)
+			+ self.inParentheses(
+				self.pos(resp),
+				self.gender(resp),
+				self.number(resp),
+			)
+		)
 		hwl: List[str] = [hw]
 		hwl.extend(self.filter(resp))
 		return self.filledOnly(hwl)
@@ -166,10 +172,10 @@ class ServiceParser(Parser):
 		@return: all found in current response branch dictionary article identifiers
 		@rtype: List[str]
 		"""
-		rsp: Union[List[Dict], Dict] = resp.get('senses', {})
+		rsp: Union[List[Dict], Dict] = resp.get("senses", {})
 		ids: List[str] = []
 		if isinstance(rsp, list):
-			ids = [r['id'] for r in rsp if r.get('id')]
+			ids = [r["id"] for r in rsp if r.get("id")]
 		return ids
 
 	def senses(self, resp: Dict) -> str:
@@ -180,14 +186,15 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp: Union[List[Dict], Dict] = resp.get('senses', {})
-		sns: str = ''
+		rsp: Union[List[Dict], Dict] = resp.get("senses", {})
+		sns: str = ""
 		if isinstance(rsp, list):
 			sns = self.filledOnly(
-				[self.withPrefix("<li>{value}</li>", '', self.sense(r)) for r in rsp])
+				[self.withPrefix("<li>{value}</li>", "", self.sense(r)) for r in rsp],
+			)
 		else:
-			sns = self.withPrefix("<li>{value}</li>", '', self.sense(rsp))
-		return self.withPrefix('<ul type="disc">\n{value}\n</ul>', '', sns)
+			sns = self.withPrefix("<li>{value}</li>", "", self.sense(rsp))
+		return self.withPrefix('<ul type="disc">\n{value}\n</ul>', "", sns)
 
 	def sense(self, resp: Dict) -> str:
 		"""Analysis of the "sense" object.
@@ -198,7 +205,7 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		if not resp or not isinstance(resp, dict):
-			return ''
+			return ""
 		sns: List[str] = []
 		# self.id(resp)  # currently not used
 		sns.append(self.definition(resp) + self.translations(resp))
@@ -214,14 +221,14 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp: Union[List[Dict], Dict] = resp.get('compositional_phrases', {})
-		cp: str = ''
+		rsp: Union[List[Dict], Dict] = resp.get("compositional_phrases", {})
+		cp: str = ""
 		if isinstance(rsp, list):
 			cp = self.filledOnly(
-				[self.withPrefix("<span>{value}</span>", '', self.compositional_phrase(r)) for r in rsp]
+				[self.withPrefix("<span>{value}</span>", "", self.compositional_phrase(r)) for r in rsp],
 			)
 		else:
-			cp = self.withPrefix("<span>{value}</span>", '', self.compositional_phrase(rsp))
+			cp = self.withPrefix("<span>{value}</span>", "", self.compositional_phrase(rsp))
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("compositional phrases"), cp)
 
@@ -234,9 +241,9 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		if not resp or not isinstance(resp, dict):
-			return ''
+			return ""
 		cp: str = self.text(resp) + self.inParentheses(self.pos(resp))
-		cp += self.withPrefix(" - {value}", '', self.definition(resp))
+		cp += self.withPrefix(" - {value}", "", self.definition(resp))
 		cpl: List[str] = [cp]
 		cpl.extend(self.filter(resp))
 		return self.filledOnly(cpl)
@@ -249,13 +256,14 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp: Union[List[Dict], Dict] = resp.get('examples', {})
-		exs: str = ''
+		rsp: Union[List[Dict], Dict] = resp.get("examples", {})
+		exs: str = ""
 		if isinstance(rsp, list):
 			exs = self.filledOnly(
-				[self.withPrefix("<span>{value}</span>", '', self.example(r)) for r in rsp])
+				[self.withPrefix("<span>{value}</span>", "", self.example(r)) for r in rsp],
+			)
 		else:
-			exs = self.withPrefix("<span>{value}</span>", '', self.example(rsp))
+			exs = self.withPrefix("<span>{value}</span>", "", self.example(rsp))
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("examples"), exs)
 
@@ -268,10 +276,10 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		if not resp or not isinstance(resp, dict):
-			return ''
+			return ""
 		example: List[str] = [
 			self.text(resp),
-			self.alternative_scripts(resp)
+			self.alternative_scripts(resp),
 		]
 		return self.filledOnly(example)
 
@@ -283,14 +291,14 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp: Union[List[Dict], Dict] = resp.get('inflections', {})
-		ifs: str = ''
+		rsp: Union[List[Dict], Dict] = resp.get("inflections", {})
+		ifs: str = ""
 		if isinstance(rsp, list):
 			ifs = self.filledOnly(
-				[self.withPrefix("<span>{value}</span>", '', self.inflection(r)) for r in rsp]
+				[self.withPrefix("<span>{value}</span>", "", self.inflection(r)) for r in rsp],
 			)
 		else:
-			ifs = self.withPrefix("<span>{value}</span>", '', self.inflection(rsp))
+			ifs = self.withPrefix("<span>{value}</span>", "", self.inflection(rsp))
 		# Translators: Field name in a dictionary entry
 		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("inflections"), ifs)
 
@@ -303,12 +311,15 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		if not resp or not isinstance(resp, dict):
-			return ''
+			return ""
 		inf: List[str] = [
-			resp.get('text', '') + self.inParentheses(
+			resp.get("text", "")
+			+ self.inParentheses(
 				self.pos(resp),
 				self.gender(resp),
-				self.number(resp))]
+				self.number(resp),
+			),
+		]
 		inf.extend(self.filter(resp))
 		return self.filledOnly(inf)
 
@@ -321,14 +332,18 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		if not resp or not isinstance(resp, dict):
-			return ''
-		rsp: Dict = resp.get('pronunciation', {})
+			return ""
+		rsp: Dict = resp.get("pronunciation", {})
 		pron: List[str] = [
-			rsp.get('value', ''),
-			self.geographical_usage(rsp)
+			rsp.get("value", ""),
+			self.geographical_usage(rsp),
 		]
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i> {value}</p>", _("pronunciation"), self.filledOnly(pron, sep=', '))
+		return self.withPrefix(
+			"<p><i>{name}</i> {value}</p>",
+			_("pronunciation"),
+			self.filledOnly(pron, sep=", "),
+		)
 
 	def translations(self, resp: Dict) -> str:
 		"""Analysis of the "translations" object.
@@ -338,34 +353,36 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		rsp: Dict = resp.get('translations', {})
+		rsp: Dict = resp.get("translations", {})
 		if not rsp:
-			return ''
-		if config.conf[addonName][serviceName]['all']:
+			return ""
+		if config.conf[addonName][serviceName]["all"]:
 			trs: List[str] = []
-			trsl: str = ''
+			trsl: str = ""
 			for lng, cnt in rsp.items():
 				lng = langs[lng].name
 				if isinstance(cnt, list):
 					tr: str = self.filledOnly(
-						[self.withPrefix("{value}", '', self.translation(r)) for r in cnt],
-						sep=', ')
+						[self.withPrefix("{value}", "", self.translation(r)) for r in cnt],
+						sep=", ",
+					)
 				else:
-					tr = self.withPrefix("{value}", '', self.translation(cnt))
+					tr = self.withPrefix("{value}", "", self.translation(cnt))
 				trs.append(self.withPrefix("{name} - <b>{value}</b>", lng, tr))
-			trsl = ';<br>\n'.join(sorted(trs, key=lambda k: k.lower()))
-			return self.withPrefix("\n<p>{value}.</p>", '', trsl)
+			trsl = ";<br>\n".join(sorted(trs, key=lambda k: k.lower()))
+			return self.withPrefix("\n<p>{value}.</p>", "", trsl)
 		if not rsp.get(self._langInto) or len(rsp.get(self._langInto, {})) == 0:
-			return ''
+			return ""
 		rs: Dict = rsp.get(self._langInto, {})
-		trsl = ''
+		trsl = ""
 		if isinstance(rsp, list):
 			trsl = self.filledOnly(
-				[self.withPrefix("{value}", '', self.translation(r)) for r in rs],
-				sep=', ')
+				[self.withPrefix("{value}", "", self.translation(r)) for r in rs],
+				sep=", ",
+			)
 		else:
-			trsl = self.withPrefix("{value}", '', self.translation(rs))
-		return self.withPrefix(" - {value}", '', trsl)
+			trsl = self.withPrefix("{value}", "", self.translation(rs))
+		return self.withPrefix(" - {value}", "", trsl)
 
 	def translation(self, resp: Dict) -> str:
 		"""Analysis of the "translations" list item object.
@@ -376,10 +393,13 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		trs: List[str] = []
-		trs.append(resp.get('text', '') + self.inParentheses(
-			self.pos(resp),
-			self.gender(resp),
-			self.number(resp))
+		trs.append(
+			resp.get("text", "")
+			+ self.inParentheses(
+				self.pos(resp),
+				self.gender(resp),
+				self.number(resp),
+			),
 		)
 		trs.extend(self.filter(resp))
 		return self.filledOnly(trs)
@@ -393,9 +413,9 @@ class ServiceParser(Parser):
 		"""
 		fields: List[str] = []
 		for arg in args:
-			if arg and arg.strip() != '':
+			if arg and arg.strip() != "":
 				fields.append(str(arg))
-		return self.withPrefix(" <i>({value})</i>", '', self.filledOnly(fields, sep=', '))
+		return self.withPrefix(" <i>({value})</i>", "", self.filledOnly(fields, sep=", "))
 
 	def strList(self, resp: Union[Any, List[str]]) -> str:
 		"""Convert an input str or list of strs to a single line.
@@ -407,11 +427,11 @@ class ServiceParser(Parser):
 		"""
 		if isinstance(resp, list):
 			return self.filledOnly(resp)
-		elif resp and resp != '':
+		elif resp and resp != "":
 			return str(resp)
-		return ''
+		return ""
 
-	def filledOnly(self, lines: List[str], sep: str = '\n') -> str:
+	def filledOnly(self, lines: List[str], sep: str = "\n") -> str:
 		"""Combine only non-empty strings from the entered list,
 		by default a newline character '\n' is inserted between all lines.
 		@param lines: a list of strings that may be empty
@@ -421,7 +441,7 @@ class ServiceParser(Parser):
 		@return: a line consisting only of non-empty strings in the list
 		@rtype: str
 		"""
-		return sep.join(filter(lambda line: line and line != '', lines))
+		return sep.join(filter(lambda line: line and line != "", lines))
 
 	def withPrefix(self, template: str, name: str, value: str) -> str:
 		"""Display the field value after the specified prefix.
@@ -436,12 +456,12 @@ class ServiceParser(Parser):
 		@return: combined in a str fields name and value according to the specified template
 		@rtype: str
 		"""
-		if value and value != '':
-			if '{name}' not in template:
-				template += '{name}'
-				name = ''
+		if value and value != "":
+			if "{name}" not in template:
+				template += "{name}"
+				name = ""
 			return template.format(name=name.capitalize(), value=value)
-		return ''
+		return ""
 
 	def text(self, resp: Dict) -> str:
 		"""Get the value of the "text" field.
@@ -451,7 +471,7 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		return self.strList(resp.get('text', ''))
+		return self.strList(resp.get("text", ""))
 
 	def id(self, resp: Dict) -> str:
 		"""Get the value of the "id" field.
@@ -461,7 +481,7 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		return resp.get('id', '')
+		return resp.get("id", "")
 
 	def language(self, resp: Dict) -> str:
 		"""Get the value of the "language" field.
@@ -471,7 +491,7 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		return resp.get('language', '')
+		return resp.get("language", "")
 
 	def pos(self, resp: Dict) -> str:
 		"""Analysis of the "Part Of Speech" object.
@@ -481,7 +501,7 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		return self.strList(resp.get('pos'))
+		return self.strList(resp.get("pos"))
 
 	def gender(self, resp: Dict) -> str:
 		"""Analysis of the "gender" object.
@@ -491,7 +511,7 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		return self.strList(resp.get('gender'))
+		return self.strList(resp.get("gender"))
 
 	def number(self, resp: Dict) -> str:
 		"""Get the value of the "number" field.
@@ -501,7 +521,7 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		return self.strList(resp.get('number'))
+		return self.strList(resp.get("number"))
 
 	def definition(self, resp: Dict) -> str:
 		"""Get the value of the "definition" field.
@@ -511,7 +531,7 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		return resp.get('definition', '')
+		return resp.get("definition", "")
 
 	def subcategorization(self, resp: Dict) -> str:
 		"""Get the value of the "subcategorization" field.
@@ -525,7 +545,8 @@ class ServiceParser(Parser):
 			"<p><i>{name}</i>: {value}</p>",
 			# Translators: Field name in a dictionary entry
 			_("subcategorization"),
-			self.strList(resp.get('subcategorization')))
+			self.strList(resp.get("subcategorization")),
+		)
 
 	def case(self, resp: Dict) -> str:
 		"""Get the value of the "case" field.
@@ -536,7 +557,7 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("case"), self.strList(resp.get('case')))
+		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("case"), self.strList(resp.get("case")))
 
 	def register(self, resp: Dict) -> str:
 		"""Get the value of the "register" field.
@@ -547,7 +568,11 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("register"), self.strList(resp.get('register')))
+		return self.withPrefix(
+			"<p><i>{name}</i>: {value}</p>",
+			_("register"),
+			self.strList(resp.get("register")),
+		)
 
 	def geographical_usage(self, resp: Dict) -> str:
 		"""Get the value of the "geographical_usage" field.
@@ -561,7 +586,8 @@ class ServiceParser(Parser):
 			"<p><i>{name}</i>: {value}</p>",
 			# Translators: Field name in a dictionary entry
 			_("geographical usage"),
-			self.strList(resp.get('geographical_usage')))
+			self.strList(resp.get("geographical_usage")),
+		)
 
 	def mood(self, resp: Dict) -> str:
 		"""Get the value of the "mood" field.
@@ -572,7 +598,7 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("mood"), self.strList(resp.get('mood')))
+		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("mood"), self.strList(resp.get("mood")))
 
 	def tense(self, resp: Dict) -> str:
 		"""Get the value of the "tense" field.
@@ -583,7 +609,7 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("tense"), self.strList(resp.get('tense')))
+		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("tense"), self.strList(resp.get("tense")))
 
 	def homograph_number(self, resp: Dict) -> str:
 		"""Get the value of the "homograph_number" field.
@@ -597,7 +623,8 @@ class ServiceParser(Parser):
 			"<p><i>{name}</i>: {value}</p>",
 			# Translators: Field name in a dictionary entry
 			_("homograph number"),
-			self.strList(resp.get('homograph_number')))
+			self.strList(resp.get("homograph_number")),
+		)
 
 	def alternative_scripts(self, resp: Dict) -> str:
 		"""Get the value of the "alternative_scripts" object.
@@ -607,15 +634,19 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		if isinstance(resp.get('alternative_scripts'), dict):
-			return '\n'.join(
-				(self.withPrefix(
-					"{name}: {value}",
-					key,
-					val
-				) for key, val in resp.get('alternative_scripts', {}) if key != '' and val != '')
+		if isinstance(resp.get("alternative_scripts"), dict):
+			return "\n".join(
+				(
+					self.withPrefix(
+						"{name}: {value}",
+						key,
+						val,
+					)
+					for key, val in resp.get("alternative_scripts", {})
+					if key != "" and val != ""
+				)
 			)
-		return ''
+		return ""
 
 	def semantic_category(self, resp: Dict) -> str:
 		"""Analysis of the "semantic_category" object.
@@ -629,7 +660,8 @@ class ServiceParser(Parser):
 			"<p><i>{name}</i>: {value}</p>",
 			# Translators: Field name in a dictionary entry
 			_("semantic category"),
-			self.strList(resp.get('semantic_category')))
+			self.strList(resp.get("semantic_category")),
+		)
 
 	def semantic_subcategory(self, resp: Dict) -> str:
 		"""Analysis of the "semantic_subcategory" object.
@@ -643,7 +675,8 @@ class ServiceParser(Parser):
 			"<p><i>{name}</i>: {value}</p>",
 			# Translators: Field name in a dictionary entry
 			_("semantic subcategory"),
-			self.strList(resp.get('semantic_subcategory')))
+			self.strList(resp.get("semantic_subcategory")),
+		)
 
 	def range_of_application(self, resp: Dict) -> str:
 		"""Analysis of the "range_of_application" object.
@@ -657,7 +690,8 @@ class ServiceParser(Parser):
 			"<p><i>{name}</i>: {value}</p>",
 			# Translators: Field name in a dictionary entry
 			_("range of application"),
-			self.strList(resp.get('range_of_application')))
+			self.strList(resp.get("range_of_application")),
+		)
 
 	def sentiment(self, resp: Dict) -> str:
 		"""Analysis of the "sentiment" object.
@@ -668,7 +702,11 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("sentiment"), self.strList(resp.get('sentiment')))
+		return self.withPrefix(
+			"<p><i>{name}</i>: {value}</p>",
+			_("sentiment"),
+			self.strList(resp.get("sentiment")),
+		)
 
 	def see(self, resp: Dict) -> str:
 		"""Analysis of the "see" object.
@@ -679,7 +717,7 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("see"), self.strList(resp.get('see')))
+		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("see"), self.strList(resp.get("see")))
 
 	def see_also(self, resp: Dict) -> str:
 		"""Analysis of the "see_also" object.
@@ -690,7 +728,11 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("see also"), self.strList(resp.get('see_also')))
+		return self.withPrefix(
+			"<p><i>{name}</i>: {value}</p>",
+			_("see also"),
+			self.strList(resp.get("see_also")),
+		)
 
 	def synonyms(self, resp: Dict) -> str:
 		"""Analysis of the "synonyms" object.
@@ -701,7 +743,11 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("synonyms"), self.strList(resp.get('synonyms')))
+		return self.withPrefix(
+			"<p><i>{name}</i>: {value}</p>",
+			_("synonyms"),
+			self.strList(resp.get("synonyms")),
+		)
 
 	def antonyms(self, resp: Dict) -> str:
 		"""Analysis of the "antonyms" object.
@@ -712,7 +758,11 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("antonyms"), self.strList(resp.get('antonyms')))
+		return self.withPrefix(
+			"<p><i>{name}</i>: {value}</p>",
+			_("antonyms"),
+			self.strList(resp.get("antonyms")),
+		)
 
 	def collocate(self, resp: Dict) -> str:
 		"""Analysis of the "collocate" object.
@@ -723,7 +773,11 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("collocate"), self.strList(resp.get('collocate')))
+		return self.withPrefix(
+			"<p><i>{name}</i>: {value}</p>",
+			_("collocate"),
+			self.strList(resp.get("collocate")),
+		)
 
 	def aspect(self, resp: Dict) -> str:
 		"""Get the value of the "aspect" field.
@@ -734,7 +788,7 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		# Translators: Field name in a dictionary entry
-		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("aspect"), self.strList(resp.get('aspect')))
+		return self.withPrefix("<p><i>{name}</i>: {value}</p>", _("aspect"), self.strList(resp.get("aspect")))
 
 	def source(self, resp: Dict) -> str:
 		"""Get the value of the "source" field.
@@ -747,8 +801,9 @@ class ServiceParser(Parser):
 		return self.withPrefix(
 			"<p><i>{name}</i>: <b>{value}</b></p>",
 			# Translators: Field name in a dictionary entry
-			_("&Dictionary:").replace('&', '').replace(':', ''),
-			resp.get('source', ''))
+			_("&Dictionary:").replace("&", "").replace(":", ""),
+			resp.get("source", ""),
+		)
 
 	def error(self, resp: Dict) -> str:
 		"""Convert errors received when connecting to the dictionary service into a text string.
@@ -757,7 +812,7 @@ class ServiceParser(Parser):
 		@return: found data in HTML format
 		@rtype: str
 		"""
-		return self.withPrefix("<h1>{name}: {value}</h1>", "error", resp.get('error', ''))
+		return self.withPrefix("<h1>{name}: {value}</h1>", "error", resp.get("error", ""))
 
 	def filter(self, resp: Dict) -> List[str]:
 		"""Passe the branch of the deserialized response  through a set of analyzers.
@@ -798,5 +853,5 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		if not self.html:
-			self.html = self.results().replace('\u02c8', '')
+			self.html = self.results().replace("\u02c8", "")
 		return self.html

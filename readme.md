@@ -2,7 +2,7 @@
 
 * Author: Oleksandr Gryshchenko
 * Version: 2.2
-* NVDA compatibility: 2019.3 and beyond
+* NVDA compatibility: 2026.1 and beyond
 * Download [stable version][1]
 
 Welcome to NVDA Quick Dictionary addon, which will allow you to quickly get a dictionary article with the translation of a word or phrase into your chosen language by pressing a key combination. There are few basic keyboard shortcuts and they are all intuitive and convenient so you will remember them quickly.
@@ -70,6 +70,9 @@ Several good solutions from other developments were used in the Quick Dictionary
 * To work with voice synthesizers profiles were used ideas from the Switch Synth add-on (thanks to Tyler Spivey).
 
 ## Change log
+
+### Version 2.2.3
+* the add-on has been tested for compatibility with NVDA 2026.1;
 
 ### Version 2.2
 * the add-on has been tested for compatibility with NVDA 2023.1;

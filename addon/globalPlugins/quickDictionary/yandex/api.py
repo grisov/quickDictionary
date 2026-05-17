@@ -3,15 +3,17 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Any, Dict
 import os.path
 import ssl
-from urllib.request import Request, urlopen
-from urllib.parse import quote as urlencode
 from json import loads
+from typing import Any, Dict
+from urllib.parse import quote as urlencode
+from urllib.request import Request, urlopen
+
 import config
+
 from .. import addonName
 from ..service import secrets
 
@@ -25,10 +27,10 @@ class Yapi(object):
 
 	def __init__(
 		self,
-		text: str = '',
-		langFrom: str = '',
-		langTo: str = '',
-		uiLang: str = ''
+		text: str = "",
+		langFrom: str = "",
+		langTo: str = "",
+		uiLang: str = "",
 	) -> None:
 		"""Input parameters for interacting with the online dictionary.
 		@param text: word or phrase to search in the dictionary
@@ -47,7 +49,8 @@ class Yapi(object):
 		self._langTo = langTo
 		self._uiLang = uiLang
 		self._headers: Dict[str, str] = {
-			'User-Agent': 'Mozilla 5.0'}
+			"User-Agent": "Mozilla 5.0",
+		}
 
 	@property
 	def text(self) -> str:
@@ -87,7 +90,7 @@ class Yapi(object):
 		@return: the order of the servers used when connecting
 		@rtype: bool
 		"""
-		return config.conf[addonName][serviceName]['mirror']
+		return config.conf[addonName][serviceName]["mirror"]
 
 	@property
 	def directUrl(self) -> str:
@@ -111,7 +114,7 @@ class Yapi(object):
 		@return: access token
 		@rtype: str
 		"""
-		return secrets[serviceName].decode(config.conf[addonName][serviceName]['password'])
+		return secrets[serviceName].decode(config.conf[addonName][serviceName]["password"])
 
 	def get(self, query: str) -> Dict:
 		"""Request to the Yandex online dictionary using transmitted query.
@@ -126,22 +129,22 @@ class Yapi(object):
 			servers.reverse()
 		for server in servers:
 			url = server + query
-			rq = Request(url, method='GET', headers=self._headers)
+			rq = Request(url, method="GET", headers=self._headers)
 			try:
 				resp = urlopen(rq, timeout=8)
 			except Exception as e:
-				response['error'] = "HTTP error: %s [%s]" % (str(e), server)
+				response["error"] = "HTTP error: %s [%s]" % (str(e), server)
 				continue
 			if resp.getcode() != 200:
-				response['error'] = "Incorrect response code %d from the server %s" % (resp.getcode(), server)
+				response["error"] = "Incorrect response code %d from the server %s" % (resp.getcode(), server)
 				continue
 			break
 		if resp:
-			stat['count'] = stat.get('count', 0) + 1
+			stat["count"] = stat.get("count", 0) + 1
 			try:
-				response = loads(resp.read().decode(encoding='utf-8', errors='ignore'))
+				response = loads(resp.read().decode(encoding="utf-8", errors="ignore"))
 			except Exception as e:
-				response['error'] = "JSON error: %s [%s]" % (str(e), server)
+				response["error"] = "JSON error: %s [%s]" % (str(e), server)
 		return response
 
 	def lookup(self) -> Dict:
@@ -154,8 +157,9 @@ class Yapi(object):
 		query: str = urlTemplate.format(
 			lang=lang,
 			text=urlencode(self.text),
-			key='key=%s&' % self.token,
-			ui='&ui=%s' % self.uiLang or '')
+			key="key=%s&" % self.token,
+			ui="&ui=%s" % self.uiLang or "",
+		)
 		return self.get(query)
 
 	def languages(self) -> Dict:

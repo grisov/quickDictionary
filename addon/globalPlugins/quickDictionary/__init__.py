@@ -1,25 +1,36 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Optional, Callable, List
 import os.path
 import sys
-import addonHandler
-import globalPluginHandler
-import config
-import api
-import ui
-import gui
-import wx
+from collections.abc import Callable
 from threading import Thread
+from typing import Any, override
+
+import addonHandler
+import api
+import config
+import globalPluginHandler
+import gui
+import ui
+import wx
 from globalVars import appArgs
-from scriptHandler import script
-from queueHandler import queueFunction, eventQueue
-from tones import beep
 from inputCore import InputGesture
 from logHandler import log
+from queueHandler import eventQueue, queueFunction
+from scriptHandler import script
+from tones import beep
+
+from .locator import services  # noqa E402
+from .service import Translator  # noqa E402
+from .settings import (EditableInputDialog, QDSettingsPanel,  # noqa E402
+                       ServicesDialog, SynthesizersDialog)
+from .shared import (finally_, getSelectedText, hashForCache,  # noqa E402
+                     htmlTemplate, messageWithLangDetection,
+                     translateWithCaching, waitingFor)
+from .synthesizers import profiles  # noqa E402
 
 try:
 	addonHandler.initTranslation()
@@ -36,21 +47,17 @@ _addonDir = os.path.join(os.path.dirname(__file__), "..", "..")
 if isinstance(_addonDir, bytes):
 	_addonDir = _addonDir.decode("mbcs")
 _curAddon = addonHandler.Addon(_addonDir)
-addonName: str = _curAddon.manifest['name']
-addonSummary: str = _curAddon.manifest['summary']
-
-from .locator import services  # noqa E402
-from .shared import getSelectedText, translateWithCaching, hashForCache, waitingFor, messageWithLangDetection, finally_, htmlTemplate  # noqa E402
-from .synthesizers import profiles  # noqa E402
-from .settings import QDSettingsPanel, SynthesizersDialog, ServicesDialog, EditableInputDialog  # noqa E402
-from .service import Translator  # noqa E402
+addonName: str = _curAddon.manifest["name"]
+addonSummary: str = _curAddon.manifest["summary"]
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	"""Implementation global commands of NVDA add-on"""
+
 	scriptCategory: str = addonSummary
 
-	def __init__(self, *args, **kwargs) -> None:
+	@override
+	def __init__(self, *args: Any, **kwargs: Any) -> None:
 		"""Initializing initial configuration values and other fields"""
 		super(GlobalPlugin, self).__init__(*args, **kwargs)
 		if appArgs.secure or config.isAppX:
@@ -65,15 +72,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		# to use the second layer of keyboard shortcuts
 		self._toggleGestures: bool = False
 		# to use copy latest translation to the clipboard
-		self._lastTranslator: Optional[Translator] = None
+		self._lastTranslator: Translator | None = None
 		# to use speech synthesizers profiles
 		self._slot: int = 1
 		# to switch between services
-		self._gate: int = config.conf[addonName]['active'] + 1
+		self._gate: int = config.conf[addonName]["active"] + 1
 		# storing information about the state of the cache
-		self._cacheInfo: str = ''
+		self._cacheInfo: str = ""
 		# Sequence of messages
-		self._messages: List[str] = []
+		self._messages: list[str] = []
 		self.createSubMenu()
 
 	def createSubMenu(self) -> None:
@@ -82,14 +89,22 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		subMenu = wx.Menu()
 		self.mainItem = self.menu.AppendSubMenu(subMenu, addonSummary)
 		# Translators: the name of a submenu item (also used as method description).
-		preEditItem = subMenu.Append(wx.ID_ANY, _("edit text before sending").capitalize() + '...')
+		preEditItem = subMenu.Append(wx.ID_ANY, _("edit text before sending").capitalize() + "...")
 		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.preEditDialog(), preEditItem)
 		# Translators: the name of a submenu item (also used as method description).
-		chooseServiceItem = subMenu.Append(wx.ID_ANY, _("choose online service").capitalize() + '...')
-		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.chooseServiceDialog(), chooseServiceItem)
+		chooseServiceItem = subMenu.Append(wx.ID_ANY, _("choose online service").capitalize() + "...")
+		gui.mainFrame.sysTrayIcon.Bind(
+			wx.EVT_MENU,
+			lambda event: self.chooseServiceDialog(),
+			chooseServiceItem,
+		)
 		# Translators: the name of a submenu item (also used as dialog title).
-		synthsProfilesItem = subMenu.Append(wx.ID_ANY, _("Voice synthesizers profiles") + '...')
-		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.synthsProfilesDialog(), synthsProfilesItem)
+		synthsProfilesItem = subMenu.Append(wx.ID_ANY, _("Voice synthesizers profiles") + "...")
+		gui.mainFrame.sysTrayIcon.Bind(
+			wx.EVT_MENU,
+			lambda event: self.synthsProfilesDialog(),
+			synthsProfilesItem,
+		)
 		# Translators: the name of a submenu item
 		settingsItem = subMenu.Append(wx.ID_ANY, _("&Options..."))
 		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonSettingsDialog(), settingsItem)
@@ -99,7 +114,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		helpFile = _curAddon.getDocFilePath().replace("readme.html", "index.html")
 		# If there is no localized file - open the English version
 		if not os.path.isfile(helpFile):
-			locale = helpFile.split('\\')[-2]
+			locale = helpFile.split("\\")[-2]
 			helpFile = _curAddon.getDocFilePath().replace("\\%s\\readme.html" % locale, "\\en\\index.html")
 		if os.path.isfile(helpFile):
 			# Translators: the name of a submenu item
@@ -112,6 +127,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@type helpFile: str
 		"""
 		import webbrowser
+
 		webbrowser.open(helpFile)
 
 	@property
@@ -120,7 +136,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: usually two-character language code
 		@rtype: str
 		"""
-		return config.conf[addonName][services[config.conf[addonName]['active']].name]['from']
+		return config.conf[addonName][services[config.conf[addonName]["active"]].name]["from"]
 
 	@source.setter
 	def source(self, lang: str) -> None:
@@ -128,7 +144,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param lang: usually two-character language code
 		@type lang: str
 		"""
-		config.conf[addonName][services[config.conf[addonName]['active']].name]['from'] = lang
+		config.conf[addonName][services[config.conf[addonName]["active"]].name]["from"] = lang
 
 	@property
 	def target(self) -> str:
@@ -136,7 +152,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: usually two-character language code
 		@rtype: str
 		"""
-		return config.conf[addonName][services[config.conf[addonName]['active']].name]['into']
+		return config.conf[addonName][services[config.conf[addonName]["active"]].name]["into"]
 
 	@target.setter
 	def target(self, lang: str) -> None:
@@ -144,7 +160,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param lang: usually two-character language code
 		@type lang: str
 		"""
-		config.conf[addonName][services[config.conf[addonName]['active']].name]['into'] = lang
+		config.conf[addonName][services[config.conf[addonName]["active"]].name]["into"] = lang
 
 	@property
 	def isCopyToClipboard(self) -> bool:
@@ -152,7 +168,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: value stored in the add-on configuration
 		@rtype: bool
 		"""
-		return config.conf[addonName][services[config.conf[addonName]['active']].name]['copytoclip']
+		return config.conf[addonName][services[config.conf[addonName]["active"]].name]["copytoclip"]
 
 	@property
 	def isAutoSwap(self) -> bool:
@@ -160,7 +176,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: value stored in the add-on configuration
 		@rtype: bool
 		"""
-		return config.conf[addonName][services[config.conf[addonName]['active']].name]['autoswap']
+		return config.conf[addonName][services[config.conf[addonName]["active"]].name]["autoswap"]
 
 	@property
 	def isSwitchSynth(self) -> bool:
@@ -168,11 +184,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: value stored in the add-on configuration
 		@rtype: bool
 		"""
-		return config.conf[addonName]['switchsynth']
+		return config.conf[addonName]["switchsynth"]
 
-	def terminate(self, *args, **kwargs) -> None:
+	@override
+	def terminate(self) -> None:
 		"""This will be called when NVDA is finished with this global plugin."""
-		super().terminate(*args, **kwargs)
 		try:
 			gui.settingsDialogs.NVDASettingsDialog.categoryClasses.remove(QDSettingsPanel)
 		except IndexError:
@@ -181,6 +197,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.menu.Remove(self.mainItem)
 		except (RuntimeError, AttributeError):
 			log.warning("Can't remove %s submenu from NVDA menu", addonSummary)
+		super().terminate()
 
 	def getScript(self, gesture: InputGesture) -> Callable:
 		"""Retrieve the script bound to a given gesture.
@@ -211,7 +228,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		beep(100, 100)
 
 	# Translators: Method description is displayed in the NVDA input gestures dialog
-	@script(description="%s, %s" % (addonSummary, _("then press %s for help") % 'H'))
+	@script(description="%s, %s" % (addonSummary, _("then press %s for help") % "H"))
 	def script_addonLayer(self, gesture: InputGesture) -> None:
 		"""A run-time binding will occur from which we can perform various layered dictionary commands.
 		First, check if a second press of the script was done.
@@ -226,7 +243,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		beep(200, 10)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
-	@script(description="D - %s" % _("announce the dictionary entry for the currently selected word or phrase (the same as %s)") % 'NVDA+Y')  # noqa E501
+	@script(
+		description="D - %s"
+		% _("announce the dictionary entry for the currently selected word or phrase (the same as %s)")
+		% "NVDA+Y",
+	)  # noqa E501
 	def script_dictionaryAnnounce(self, gesture: InputGesture) -> None:
 		"""Receive and read a dictionary entry for the selected text or text from the clipboard.
 		@param gesture: gesture assigned to this method
@@ -262,19 +283,21 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def preEditDialog(self) -> None:
 		"""Dialog for pre-editing text before sending it for translation."""
+
 		def resultHandler(result: int, dlg: wx.Dialog) -> None:
 			"""Processing data obtained from the dialog."""
 			if result == wx.ID_OK:
 				if not dlg.text:
 					return
 				Thread(target=self.translate, args=[dlg.text, True]).start()
+
 		text = getSelectedText()
 		ed = EditableInputDialog(
 			parent=gui.mainFrame,
 			id=wx.ID_ANY,
 			# Translators: The title of the dialog to edit the text before sending it for translation
 			title=_("edit text before sending").capitalize(),
-			text=text
+			text=text,
 		)
 		gui.runScriptModalDialog(ed, callback=lambda result: resultHandler(result, ed))
 
@@ -285,13 +308,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		langs = services[config.conf[addonName]['active']].langs
+		langs = services[config.conf[addonName]["active"]].langs
 		ui.message(
 			# Translators: message presented to announce the current source and target languages.
 			_("Translate: from {langFrom} to {langInto}").format(
 				langFrom=langs[self.source].name,
-				langInto=langs[self.target].name
-			)
+				langInto=langs[self.target].name,
+			),
 		)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
@@ -301,25 +324,26 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		langs = services[config.conf[addonName]['active']].langs
+		langs = services[config.conf[addonName]["active"]].langs
 		if langs.isAvailable(self.target, self.source):
 			self.source, self.target = self.target, self.source
 			# Translators: Notification that languages have been swapped
 			self._messages.append(_("Languages swapped"))
-			self._messages.append('%s - %s' % (self.source, self.target))
+			self._messages.append("%s - %s" % (self.source, self.target))
 			text = getSelectedText()
 			if not text:
-				ui.message('...'.join(self._messages))
+				ui.message("...".join(self._messages))
 				self._messages.clear()
 				return
 			Thread(target=self.translate, args=[text, False]).start()
 		else:
 			ui.message(
 				# Translators: Notification that reverse translation is not available for the current language pair
-				_("Swap languages is not available for this pair") + ": {source} - {target}".format(
+				_("Swap languages is not available for this pair")
+				+ ": {source} - {target}".format(
 					source=langs[self.source].name,
-					target=langs[self.target].name
-				)
+					target=langs[self.target].name,
+				),
 			)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
@@ -333,24 +357,32 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			# Translators: Notification that no dictionary entries have been received in the current session
 			ui.message(_("There is no dictionary queries"))
 			return
-		service = services[getattr(self._lastTranslator, 'id', config.conf[addonName]['active'])]
+		service = services[getattr(self._lastTranslator, "id", config.conf[addonName]["active"])]
 		api.copyToClip(self._lastTranslator.plaintext, notify=True)
-		ui.message('%s - %s' % (
-			service.langs[self._lastTranslator.langFrom].name,
-			service.langs[self._lastTranslator.langTo].name))
+		ui.message(
+			"%s - %s"
+			% (
+				service.langs[self._lastTranslator.langFrom].name,
+				service.langs[self._lastTranslator.langTo].name,
+			),
+		)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
-	@script(description="U - %s" % _("download from online dictionary and save the current list of available languages"))  # noqa E501
+	@script(
+		description="U - %s"
+		% _("download from online dictionary and save the current list of available languages"),
+	)  # noqa E501
 	def script_updateLanguages(self, gesture: InputGesture) -> None:
 		"""Download a list of available languages from the online dictionary and save them to a local file.
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
+
 		def downloadLanguages() -> None:
 			"""Download current list of available languages from the remote server and save them to a local file.
 			Wait for the request to complete and return a prepared response.
 			"""
-			langs = services[config.conf[addonName]['active']].langs
+			langs = services[config.conf[addonName]["active"]].langs
 			waitingFor(langs.update)
 			if langs.updated:
 				# Translators: Notification when downloading from the online dictionary list of available languages
@@ -358,6 +390,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			else:
 				# Translators: Notification when downloading from the online dictionary list of available languages
 				ui.message(_("Warning! The list of available languages could not be loaded."))
+
 		Thread(target=downloadLanguages).start()
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
@@ -369,36 +402,41 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		service = services[config.conf[addonName]['active']]
+		service = services[config.conf[addonName]["active"]]
 		ui.message(service.summary)
 		# Translators: Information about the online service
 		ui.message(_("supports {number} languages").format(number=len(service.langs.all)))
-		if config.conf[addonName][service.name].get('source'):
+		if config.conf[addonName][service.name].get("source"):
 			ui.message(
 				# Translators: The name of the field displayed in the statistics and in the settings panel
 				"{title} - {source}".format(
-					title=_("&Dictionary:").replace('&', ''),
-					source=config.conf[addonName][service.name]['source']
-				)
+					title=_("&Dictionary:").replace("&", ""),
+					source=config.conf[addonName][service.name]["source"],
+				),
 			)
 		if not service.stat:
 			# Translators: Information about the online service
 			ui.message(_("There is no dictionary queries"))
-		if service.stat.get('count'):
+		if service.stat.get("count"):
 			# Translators: Information about the online service
-			ui.message(_("performed {count} requests").format(count=service.stat['count']))
-		if service.stat.get('remain'):
+			ui.message(_("performed {count} requests").format(count=service.stat["count"]))
+		if service.stat.get("remain"):
 			# Translators: Information about the online service
-			ui.message(_("available {remain}").format(remain=service.stat['remain']))
+			ui.message(_("available {remain}").format(remain=service.stat["remain"]))
 		from datetime import datetime, timedelta
-		if isinstance(service.stat.get('delta'), timedelta):
+
+		if isinstance(service.stat.get("delta"), timedelta):
 			tomorrow = datetime.now() + timedelta(days=1)
 			middle = datetime(tomorrow.year, tomorrow.month, tomorrow.day)
-			hours, seconds = divmod((middle + service.stat['delta'] - datetime.now()).seconds, 3600)
+			hours, seconds = divmod((middle + service.stat["delta"] - datetime.now()).seconds, 3600)
 			minutes, seconds = divmod(seconds, 60)
 			# Translators: Information about the online service
-			ui.message(_("the limit will be reset in {hours} hours {minutes} minutes").format(
-				hours=hours, minutes=minutes))
+			ui.message(
+				_("the limit will be reset in {hours} hours {minutes} minutes").format(
+					hours=hours,
+					minutes=minutes,
+				),
+			)
 		if self._cacheInfo:
 			# Translators: Information about the cache state
 			ui.message("%s: %s" % (_("state of cache"), self._cacheInfo))
@@ -416,16 +454,19 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			ui.message(_("There is no dictionary queries"))
 			return
 		from json import dumps
-		service = services[getattr(self._lastTranslator, 'id', config.conf[addonName]['active'])]
+
+		service = services[getattr(self._lastTranslator, "id", config.conf[addonName]["active"])]
 		ui.browseableMessage(
 			message=dumps(self._lastTranslator.resp, skipkeys=True, ensure_ascii=False, indent=4),
 			# Translators: The title of the window that displays the desiralized response from the server
-			title=_("Response from") + ' "{server}": {text:.15s} ({langFrom}-{langTo})'.format(
+			title=_("Response from")
+			+ ' "{server}": {text:.15s} ({langFrom}-{langTo})'.format(
 				server=service.summary,
 				text=self._lastTranslator.text,
 				langFrom=service.langs[self._lastTranslator.langFrom].name,
-				langTo=service.langs[self._lastTranslator.langTo].name),
-			isHtml=False
+				langTo=service.langs[self._lastTranslator.langTo].name,
+			),
+			isHtml=False,
 		)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
@@ -450,7 +491,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			"<br>",
 			# Translators: Message in the add-on short help
 			"<h2>%s</h2>" % _("In add-on gestures layer mode:"),
-			'<ul type="disc">']
+			'<ul type="disc">',
+		]
 		for method in [
 			self.script_dictionaryAnnounce.__doc__,
 			self.script_dictionaryBox.__doc__,
@@ -461,13 +503,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.script_updateLanguages.__doc__,
 			self.script_selectService.__doc__,
 			self.script_dictionaryStatistics.__doc__,
-			self.script_showResponse.__doc__]:
+			self.script_showResponse.__doc__,
+		]:
 			lines.append("<li>%s</li>" % method)
 		lines += [
-			"</ul>", "<br>",  # noqa ET113
+			"</ul>",
+			"<br>",  # noqa ET113
 			# Translators: Message in the add-on short help  # noqa ET128
 			"<h2>%s</h2>" % _("Voice synthesizers profiles management:"),
-			'<ul type="disc">']
+			'<ul type="disc">',
+		]
 		for method in [
 			self.script_selectSynthProfile.__doc__,
 			self.script_announceSelectedSynthProfile.__doc__,
@@ -475,7 +520,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.script_restoreDefaultSynth.__doc__,
 			self.script_removeSynthProfile.__doc__,
 			self.script_saveSynthProfile.__doc__,
-			self.script_displayAllSynthProfiles.__doc__]:
+			self.script_displayAllSynthProfiles.__doc__,
+		]:
 			lines.append("<li>%s</li>" % method)
 		lines += ["</ul>", "<br>"]
 		for line in [
@@ -483,13 +529,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.script_showSettings.__doc__,
 			self.script_help.__doc__,
 			# Translators: Message in the add-on short help
-			_("for any of the listed features you can customize the keyboard shortcut in NVDA input gestures dialog")]:
+			_(
+				"for any of the listed features you can customize the keyboard shortcut in NVDA input gestures dialog",
+			),
+		]:
 			lines.append("<p>%s.</p>" % line.capitalize())
 		ui.browseableMessage(
-			message=htmlTemplate.format(body=''.join(lines)),
+			message=htmlTemplate.format(body="".join(lines)),
 			# Translators: The title of the window with help information about the add-on commands
 			title=_("help on add-on commands").capitalize(),
-			isHtml=True
+			isHtml=True,
 		)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
@@ -505,13 +554,19 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""Display the add-on settings dialog.
 		Called using keyboard commands and menu items.
 		"""
-		wx.CallAfter(gui.mainFrame.popupSettingsDialog, gui.settingsDialogs.NVDASettingsDialog, QDSettingsPanel)
+		wx.CallAfter(
+			gui.mainFrame.popupSettingsDialog,
+			gui.settingsDialogs.NVDASettingsDialog,
+			QDSettingsPanel,
+		)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
-	@script(description=_("From {startslot} to {endslot} - selection of the voice synthesizer profile").format(
-		startslot=1,
-		endslot=9
-	))
+	@script(
+		description=_("From {startslot} to {endslot} - selection of the voice synthesizer profile").format(
+			startslot=1,
+			endslot=9,
+		),
+	)
 	def script_selectSynthProfile(self, gesture: InputGesture) -> None:
 		"""Switch between voice synthesizer profiles.
 		@param gesture: gesture assigned to this method
@@ -521,7 +576,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		profiles.rememberCurrent()
 		profiles[self._slot].set()
 		# Translators: Message when selecting a voice synthesizer profile
-		ui.message(_("Profile {slot} selected: {title}").format(slot=self._slot, title=profiles[self._slot].title))
+		ui.message(
+			_("Profile {slot} selected: {title}").format(slot=self._slot, title=profiles[self._slot].title),
+		)
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="G - %s" % _("announce the selected profile of voice synthesizers"))
@@ -545,10 +602,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""Dialog for manipulation of voice synthesizers profiles.
 		Call using keyboard commands or menu items.
 		"""
+
 		def handleDialogComplete(dialogResult: int) -> None:
 			"""Callback function to retrieve data from the dialog."""
 			if dialogResult in range(10):
 				self._slot = dialogResult
+
 		# Translators: The title of the dialog box with a list of voice synthesizers profiles
 		sd = SynthesizersDialog(parent=gui.mainFrame, id=wx.ID_ANY, title=_("Voice synthesizers profiles"))
 		index = max(0, sd.synthsList.FindItem(-1, str(self._slot)))
@@ -606,17 +665,19 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message(_("Voice synthesizer profile saved successfully"))
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
-	@script(description=_("From F1 to F{endgate} - select online dictionary service").format(
-		endgate=len(services)
-	))
+	@script(
+		description=_("From F1 to F{endgate} - select online dictionary service").format(
+			endgate=len(services),
+		),
+	)
 	def script_selectService(self, gesture: InputGesture) -> None:
 		"""Select target online service.
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		self._gate = min(int(gesture.mainKeyName.lower().replace('f', '')), len(services))
-		config.conf[addonName]['active'] = self._gate - 1
-		ui.message(': '.join([gesture.displayName, services[self._gate - 1].summary]))
+		self._gate = min(int(gesture.mainKeyName.lower().replace("f", "")), len(services))
+		config.conf[addonName]["active"] = self._gate - 1
+		ui.message(": ".join([gesture.displayName, services[self._gate - 1].summary]))
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
 	@script(description="F - %s" % _("choose online service"))
@@ -653,7 +714,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			translator = translateWithCaching(lFrom, lInto, text, hashForCache(active))
 			if translator.error:
 				translateWithCaching.cache_clear()  # reset cache when HTTP errors occur
-			self._cacheInfo = str(translateWithCaching.cache_info())  # - to check the current status of queries cache
+			self._cacheInfo = str(
+				translateWithCaching.cache_info(),
+			)  # - to check the current status of queries cache
 			if translator.plaintext:
 				break
 		else:
@@ -663,24 +726,26 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._messages.clear()
 				return
 		self._lastTranslator = translator
-		setattr(self._lastTranslator, 'id', active)
+		setattr(self._lastTranslator, "id", active)
 		if isHtml:
 			ui.browseableMessage(
 				message=translator.html,
-				title='%s-%s' % (langs[translator.langFrom].name, langs[translator.langTo].name),
+				title="%s-%s" % (langs[translator.langFrom].name, langs[translator.langTo].name),
 				isHtml=isHtml,
 				closeButton=False,
-				copyButton=not config.conf[addonName][services[active].name]["copytoclip"]
+				copyButton=not config.conf[addonName][services[active].name]["copytoclip"],
 			)
 		else:
-			self._messages.append('%s - %s' % (langs[translator.langFrom].name, langs[translator.langTo].name))
+			self._messages.append(
+				"%s - %s" % (langs[translator.langFrom].name, langs[translator.langTo].name),
+			)
 			self._messages.append(translator.plaintext)
-			message = '...'.join(self._messages)
+			message = "...".join(self._messages)
 			self._messages.clear()
 			queueFunction(
 				eventQueue,
 				messageWithLangDetection,
-				{'text': message, 'lang': translator.langTo}
+				{"text": message, "lang": translator.langTo},
 			)
 		if self.isCopyToClipboard:
 			api.copyToClip(translator.plaintext, notify=True)

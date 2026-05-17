@@ -3,15 +3,18 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 # In the development of this module were used ideas from the Switch Synth add-on (thanks to Tyler Spivey)
 
 from __future__ import annotations
-from typing import Optional, Dict, Tuple, Generator
+
 import os
 import pickle
+from typing import Dict, Generator, Optional, Tuple
+
 import config
 from synthDriverHandler import getSynth, setSynth
+
 from . import addonName
 
 
@@ -20,9 +23,9 @@ class Profile(object):
 
 	def __init__(
 		self,
-		synthName: str = '',
+		synthName: str = "",
 		synthConf: Dict = {},
-		lang: str = ''
+		lang: str = "",
 	) -> None:
 		"""Input data needed to initialize the synthesizer profile.
 		@param synthName: short name of the voice synthesizer
@@ -45,9 +48,9 @@ class Profile(object):
 		"""
 		state = False
 		try:
-			config.conf.profiles[0]['speech'][self._name].clear()
-			config.conf.profiles[0]['speech'][self._name].update(self._conf)
-			config.conf['speech'][self._name]._cache.clear()
+			config.conf.profiles[0]["speech"][self._name].clear()
+			config.conf.profiles[0]["speech"][self._name].update(self._conf)
+			config.conf["speech"][self._name]._cache.clear()
 			state = setSynth(self._name)
 			getSynth().saveSettings()
 		except KeyError:
@@ -61,8 +64,8 @@ class Profile(object):
 		@rtype: Profile
 		"""
 		self._name = getSynth().name
-		self._conf = dict(config.conf['speech'][getSynth().name].items())
-		self._lang = self._lang or ''
+		self._conf = dict(config.conf["speech"][getSynth().name].items())
+		self._lang = self._lang or ""
 		return self
 
 	@property
@@ -87,7 +90,7 @@ class Profile(object):
 		@return: synthesizer name and voice name
 		@rtype: str
 		"""
-		return '-'.join((self.name, self.conf.get('voice', ''),))
+		return "-".join((self.name, self.conf.get("voice", "")))
 
 	@property
 	def lang(self) -> str:
@@ -143,13 +146,16 @@ class Profiles(object):
 		@rtype: Profiles
 		"""
 		try:
-			with open(self._path, 'rb') as f:
+			with open(self._path, "rb") as f:
 				data = pickle.load(f)
 		except Exception:
 			data = {}
-		if 'version' not in data:
-			data = {'version': 0}
-		self._profs = dict((key, Profile(val['name'], val['conf'], val['lang'])) if isinstance(key, int) else (key, val) for key, val in data.items())  # noqa E501
+		if "version" not in data:
+			data = {"version": 0}
+		self._profs = dict(
+			(key, Profile(val["name"], val["conf"], val["lang"])) if isinstance(key, int) else (key, val)
+			for key, val in data.items()
+		)  # noqa E501
 		return self
 
 	def save(self) -> bool:
@@ -161,14 +167,14 @@ class Profiles(object):
 		for slot in sorted(self._profs, key=lambda slot: str(slot)):
 			if isinstance(slot, int):
 				profs[slot] = {
-					'name': self._profs[slot].name,
-					'conf': self._profs[slot].conf,
-					'lang': self._profs[slot].lang
+					"name": self._profs[slot].name,
+					"conf": self._profs[slot].conf,
+					"lang": self._profs[slot].lang,
 				}
 			else:
 				profs[slot] = self._profs[slot]
 		try:
-			with open(self._path, 'wb') as f:
+			with open(self._path, "wb") as f:
 				pickle.dump(profs, f)
 		except Exception:
 			return False

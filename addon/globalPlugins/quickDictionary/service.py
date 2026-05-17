@@ -1,32 +1,35 @@
 # service.py
 """
-	Description of common components for:
-	* working with languages (class Languages);
-	* executing translation requests (class Translator);
-	* parsing of deserialized data (class Parser);
-	* credentials management for all connected services (class Secrets).
-	Relevant service classes must be inherited from Languages, Translator and Parser objects
+Description of common components for:
+* working with languages (class Languages);
+* executing translation requests (class Translator);
+* parsing of deserialized data (class Parser);
+* credentials management for all connected services (class Secrets).
+Relevant service classes must be inherited from Languages, Translator and Parser objects
 
-	A part of the NVDA Quick Dictionary add-on
-	This file is covered by the GNU General Public License.
-	See the file COPYING for more details.
-	Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+A part of the NVDA Quick Dictionary add-on
+This file is covered by the GNU General Public License.
+See the file COPYING for more details.
+Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 """
 
 from __future__ import annotations
-from typing import Callable, Union, List, Dict, Iterator
-import addonHandler
-import os.path
-import json
-import re
-import zlib
+
 import binascii
+import json
+import os.path
+import re
 import zipfile
+import zlib
 from abc import ABCMeta, abstractmethod
-from threading import Thread
 from locale import getdefaultlocale
+from threading import Thread
+from typing import Callable, Dict, Iterator, List, Union
+
+import addonHandler
 from languageHandler import getLanguageDescription
 from logHandler import log
+
 from . import addonName
 
 try:
@@ -101,7 +104,7 @@ class Language(metaclass=ABCMeta):
 		"""
 		return self.getName()
 
-	def getName(self, code: str = '') -> str:
+	def getName(self, code: str = "") -> str:
 		"""Full language name.
 		If it is not possible to determine, a short language code is returned.
 		It is designed as a separate method for redefining it in child classes of services
@@ -113,7 +116,7 @@ class Language(metaclass=ABCMeta):
 		"""
 		lang = code or self._lang
 		name = getLanguageDescription(lang)
-		if self._lang == '':
+		if self._lang == "":
 			name = "- %s -" % name
 		if not name:
 			name = self._names.get(lang)
@@ -141,11 +144,11 @@ class Languages(metaclass=ABCMeta):
 		"""
 		data: Dict = {}
 		try:
-			with open(self._file, 'r', encoding='utf-8') as f:
+			with open(self._file, "r", encoding="utf-8") as f:
 				data = json.load(f)
 		except Exception as e:
 			log.exception(e)
-		return data.get('data', {})
+		return data.get("data", {})
 
 	def save(self, data: Union[List, Dict]) -> bool:
 		"""Save a collection of available languages to an external file.
@@ -153,7 +156,7 @@ class Languages(metaclass=ABCMeta):
 		@type data: Union[List, Dict]
 		"""
 		try:
-			with open(self._file, 'w') as f:
+			with open(self._file, "w") as f:
 				f.write(json.dumps({"data": data}, skipkeys=True, ensure_ascii=False, indent=4))
 		except Exception as e:
 			log.exception(e)
@@ -167,9 +170,9 @@ class Languages(metaclass=ABCMeta):
 		@rtype: Language
 		"""
 		try:
-			code: str = getattr(getdefaultlocale()[0], 'split')('_')[0]
-		except (AttributeError, IndexError,):
-			code = ''
+			code: str = getattr(getdefaultlocale()[0], "split")("_")[0]
+		except (AttributeError, IndexError):
+			code = ""
 		return self._Language(code)
 
 	def __contains__(self, lang: Language) -> bool:
@@ -269,7 +272,8 @@ class Translator(Thread):
 		langFrom: str,
 		langTo: str,
 		text: str,
-		*args, **kwargs
+		*args,
+		**kwargs,
 	) -> None:
 		"""Initialization of the source and target languages,
 		as well as the word or phrase to search in the remote dictionary.
@@ -285,8 +289,8 @@ class Translator(Thread):
 		self._langTo = langTo
 		self._text = text
 		self._resp: Dict = {}
-		self._html: str = ''
-		self._plaintext: str = ''
+		self._html: str = ""
+		self._plaintext: str = ""
 		self._error: bool = False
 
 	@property
@@ -371,7 +375,7 @@ class Parser(metaclass=ABCMeta):
 		@type response: Dict
 		"""
 		self.resp: Dict = response
-		self.html: str = ''
+		self.html: str = ""
 
 	@abstractmethod
 	def to_html(self) -> str:
@@ -387,12 +391,12 @@ class Parser(metaclass=ABCMeta):
 		@return: deserialized response in plaintext format
 		@rtype: str
 		"""
-		li: str = u"\u2022 "  # marker character code
+		li: str = "\u2022 "  # marker character code
 		h1: str = "- "
 		text: str = self.html or self.to_html()
-		text = text.replace('<li>', li).replace('<h1>', h1)
-		text = re.sub(r'\<[^>]*\>', '', text)
-		text = '\r\n'.join((s for s in text.split('\n') if s))
+		text = text.replace("<li>", li).replace("<h1>", h1)
+		text = re.sub(r"\<[^>]*\>", "", text)
+		text = "\r\n".join((s for s in text.split("\n") if s))
 		return text
 
 
@@ -405,9 +409,9 @@ class Secret(object):
 		@type service: str
 		"""
 		self._service: str = service
-		self._url: str = ''
-		self.username: str = ''
-		self.password: str = ''
+		self._url: str = ""
+		self.username: str = ""
+		self.password: str = ""
 
 	@property
 	def service(self) -> str:
@@ -473,9 +477,9 @@ class Secret(object):
 		@rtype: str
 		"""
 		try:
-			return binascii.hexlify(zlib.compress(cred.encode('utf-8'), level=9)).decode()
+			return binascii.hexlify(zlib.compress(cred.encode("utf-8"), level=9)).decode()
 		except Exception:
-			return binascii.hexlify(zlib.compress(b'', level=9)).decode()
+			return binascii.hexlify(zlib.compress(b"", level=9)).decode()
 
 	def decode(self, cred: str) -> str:
 		"""Restore the original data from the previously masked string.
@@ -485,9 +489,9 @@ class Secret(object):
 		@rtype: str
 		"""
 		try:
-			return zlib.decompress(binascii.unhexlify(cred.encode('utf-8'))).decode()
+			return zlib.decompress(binascii.unhexlify(cred.encode("utf-8"))).decode()
 		except Exception:
-			return ''
+			return ""
 
 	def toDict(self) -> Dict[str, str]:
 		"""Convert a set of values stored in an object to a dict type.
@@ -498,7 +502,7 @@ class Secret(object):
 			"service": self._service,
 			"username": self._username,
 			"password": self._password,
-			"url": self._url
+			"url": self._url,
 		}
 
 	def fromDict(self, rec: Dict[str, str]) -> Secret:
@@ -509,10 +513,10 @@ class Secret(object):
 		@return: updated object with the obtained data
 		@rtype: Secret
 		"""
-		if self._service == rec.get('service'):
-			self._username = rec.get('username') or self._username
-			self._password = rec.get('password') or self._password
-			self._url = rec.get('url') or self._url
+		if self._service == rec.get("service"):
+			self._username = rec.get("username") or self._username
+			self._password = rec.get("password") or self._password
+			self._url = rec.get("url") or self._url
 		return self
 
 
@@ -522,7 +526,7 @@ class Secrets(object):
 	def __init__(
 		self,
 		dir: str = os.path.dirname(__file__),
-		file: str = 'qd'
+		file: str = "qd",
 	) -> None:
 		"""Initialize all required values.
 		@param dir: the directory where the credential file is stored
@@ -531,7 +535,7 @@ class Secrets(object):
 		@type file: str
 		"""
 		self._path: str = os.path.join(dir, file)
-		self._file: str = file + '.json'
+		self._file: str = file + ".json"
 		self._secrets: Dict[str, Secret] = {}
 		self.load()
 
@@ -542,11 +546,15 @@ class Secrets(object):
 		"""
 		data: Dict[str, Dict[str, str]] = {}
 		try:
-			with zipfile.ZipFile(self._path + '.zip', mode='r') as zipArchive:
-				with zipArchive.open(name=self._file, mode='r', pwd=addonName.encode('utf-8')) as unzippedFile:
+			with zipfile.ZipFile(self._path + ".zip", mode="r") as zipArchive:
+				with zipArchive.open(
+					name=self._file,
+					mode="r",
+					pwd=addonName.encode("utf-8"),
+				) as unzippedFile:
 					data = json.load(unzippedFile)
 		except Exception as e:
-			log.error("%s: %s, %s", str(e), self._path + '.zip', self._file)
+			log.error("%s: %s, %s", str(e), self._path + ".zip", self._file)
 		for service in data:
 			self._secrets[service] = Secret(service).fromDict(data.get(service, {}))
 		return self
@@ -560,10 +568,10 @@ class Secrets(object):
 		for service in self._secrets:
 			data[service] = self._secrets[service].toDict()
 		try:
-			with open(self._path + '.json', 'w', encoding='utf-8') as f:
+			with open(self._path + ".json", "w", encoding="utf-8") as f:
 				f.write(json.dumps(data, skipkeys=True, ensure_ascii=False, indent=4))
 		except Exception as e:
-			log.error(str(e), self._path + 'json')
+			log.error(str(e), self._path + "json")
 		return self
 
 	@property

@@ -4,14 +4,14 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Any, Dict
 import os.path
 import ssl
-from urllib.request import Request, urlopen
-from urllib.parse import quote as urlencode
 from json import loads
+from typing import Any, Dict
+from urllib.parse import quote as urlencode
+from urllib.request import Request, urlopen
 
 ssl._create_default_https_context = ssl._create_unverified_context
 serviceName: str = os.path.basename(os.path.dirname(__file__))
@@ -23,10 +23,10 @@ class Wapi(object):
 
 	def __init__(
 		self,
-		text: str = '',
-		langFrom: str = '',
-		langTo: str = '',
-		uiLang: str = ''
+		text: str = "",
+		langFrom: str = "",
+		langTo: str = "",
+		uiLang: str = "",
 	) -> None:
 		"""Input parameters for interacting with the online dictionary.
 		@param text: word or phrase to search in the dictionary
@@ -44,7 +44,8 @@ class Wapi(object):
 		self._langTo = langTo
 		self._uiLang = uiLang
 		self._headers: Dict[str, str] = {
-			'User-Agent': 'Mozilla 5.0'}
+			"User-Agent": "Mozilla 5.0",
+		}
 
 	@property
 	def text(self) -> str:
@@ -95,22 +96,23 @@ class Wapi(object):
 		"""
 		response, resp = {}, None
 		url: str = f"{self.url}?{query}".format(lang=self.uiLang)
-		rq = Request(url, method='GET', headers=self._headers)
+		rq = Request(url, method="GET", headers=self._headers)
 		try:
 			resp = urlopen(rq, timeout=8)
 		except Exception as e:
-			response['error'] = "HTTP error: %s [%s]" % (str(e), self.url)
+			response["error"] = "HTTP error: %s [%s]" % (str(e), self.url)
 		self.resp = resp
 		if getattr(resp, "getcode")() != 200:
-			response['error'] = "Incorrect response code %d from the server %s" % (
+			response["error"] = "Incorrect response code %d from the server %s" % (
 				getattr(resp, "getcode")(),
-				self.url)
+				self.url,
+			)
 		if resp:
-			stat['count'] = stat.get('count', 0) + 1
+			stat["count"] = stat.get("count", 0) + 1
 			try:
-				response = loads(resp.read().decode(encoding='utf-8', errors='ignore'))
+				response = loads(resp.read().decode(encoding="utf-8", errors="ignore"))
 			except Exception as e:
-				response['error'] = "JSON error: %s [%s]" % (str(e), self.url)
+				response["error"] = "JSON error: %s [%s]" % (str(e), self.url)
 		return response
 
 	def languages(self) -> Dict:
@@ -120,14 +122,15 @@ class Wapi(object):
 		"""
 		query: str = "action=query&meta=siteinfo&siprop=languages&format=json"
 		response: Dict = self.get(query)
-		return response.get('query', {}) or response
+		return response.get("query", {}) or response
 
 	def lookup(self) -> Dict:
 		query: str = "action=query&format=json&prop=extracts&uselang={lang}&titles={text}".format(
 			lang=self.langTo,
-			text=urlencode(self.text)
+			text=urlencode(self.text),
 		)
 		# prop=extracts
 		return self.get(query)
+
 
 # from globalPlugins.quickDictionary.wiktionary.api import Wapi

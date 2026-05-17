@@ -3,16 +3,18 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import List, Dict, Iterator
 import os.path
+from typing import Dict, Iterator, List
+
 from ..service import Language, Languages
 from .api import Yapi
 
 
 class ServiceLanguage(Language):
 	"""Overriding a class due to a non-compliance of the some language codes with the ISO standard."""
+
 	pass
 
 
@@ -46,7 +48,7 @@ class ServiceLanguages(Languages):
 		@return: sequence of available source languages
 		@rtype: Iterator[ServiceLanguage]
 		"""
-		for lang in list({c.split('-')[0]: c for c in self._langs}):
+		for lang in list({c.split("-")[0]: c for c in self._langs}):
 			yield ServiceLanguage(lang)
 
 	def intoList(self, lang: str) -> Iterator[ServiceLanguage]:
@@ -59,7 +61,7 @@ class ServiceLanguages(Languages):
 		if not lang:
 			return
 		for lng in self._langs:
-			llg: List[str] = lng.split('-')
+			llg: List[str] = lng.split("-")
 			if llg[0] == lang:
 				yield ServiceLanguage(llg[1])
 
@@ -81,7 +83,10 @@ class ServiceLanguages(Languages):
 		@rtype: ServiceLanguage
 		"""
 		return ServiceLanguage(
-			'en' if next(filter(lambda lg: lg.code == 'en', self.fromList()), None) else self._langs[0].split('-')[0])
+			"en"
+			if next(filter(lambda lg: lg.code == "en", self.fromList()), None)
+			else self._langs[0].split("-")[0],
+		)
 
 	@property
 	def defaultInto(self) -> ServiceLanguage:
@@ -90,10 +95,16 @@ class ServiceLanguages(Languages):
 			otherwise the first one in the list
 		@rtype: ServiceLanguage
 		"""
-		return ServiceLanguage(
-			self.locale.code) if next(
+		return (
+			ServiceLanguage(
+				self.locale.code,
+			)
+			if next(
 				filter(lambda lng: lng.code == self.locale.code, self.intoList(self.defaultFrom.code)),
-				None) else [lng for lng in self.intoList(self.defaultFrom.code)][0]
+				None,
+			)
+			else [lng for lng in self.intoList(self.defaultFrom.code)][0]
+		)
 
 	@property
 	def all(self) -> List:

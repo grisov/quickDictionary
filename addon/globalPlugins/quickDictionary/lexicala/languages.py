@@ -3,11 +3,13 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import List, Dict, Iterator
 import os.path
+from typing import Dict, Iterator, List
+
 import config
+
 from .. import addonName
 from ..service import Language, Languages
 from .api import Lapi, serviceName
@@ -23,10 +25,10 @@ class ServiceLanguage(Language):
 		@rtype: str
 		"""
 		code = {  # a detailed list of used languages can be found in the <languages.json> file
-			'br': 'pt_br',  # Brazilian Portuguese
-			'da': 'fr_ca',  # Canadian French
-			'dk': 'da',  # Danish
-			'tw': 'zh_tw',  # Traditional Chinese
+			"br": "pt_br",  # Brazilian Portuguese
+			"da": "fr_ca",  # Canadian French
+			"dk": "da",  # Danish
+			"tw": "zh_tw",  # Traditional Chinese
 		}.get(self.code, self.code)
 		return super(ServiceLanguage, self).getName(code)
 
@@ -50,7 +52,7 @@ class ServiceLanguages(Languages):
 		@return: list of source dictionaries
 		@rtype: List[Literal["global", "password", "random"]]
 		"""
-		return list(self._langs.get('resources', []))
+		return list(self._langs.get("resources", []))
 
 	@property
 	def source(self) -> str:
@@ -58,7 +60,7 @@ class ServiceLanguages(Languages):
 		@return: name of the selected source dictionary
 		@rtype: Literal["global", "password", "random"]
 		"""
-		return config.conf.get(addonName, {}).get(serviceName, {}).get('source') or self.defaultSource
+		return config.conf.get(addonName, {}).get(serviceName, {}).get("source") or self.defaultSource
 
 	@source.setter
 	def source(self, source: str) -> None:
@@ -67,7 +69,7 @@ class ServiceLanguages(Languages):
 		@type source: Literal["global", "password", "random"]
 		"""
 		if source in self.sources:
-			config.conf[addonName][serviceName]['source'] = source
+			config.conf[addonName][serviceName]["source"] = source
 
 	@property
 	def defaultSource(self) -> str:
@@ -75,8 +77,8 @@ class ServiceLanguages(Languages):
 		@return: name of source dictionary
 		@rtype: Literal["global", "password", "random"]
 		"""
-		favorite = 'password'
-		return favorite if favorite in self.sources else next(iter(self.sources), 'global')
+		favorite = "password"
+		return favorite if favorite in self.sources else next(iter(self.sources), "global")
 
 	def update(self) -> bool:
 		"""Get a list of available language pairs from a remote server and save them in an external file.
@@ -86,11 +88,11 @@ class ServiceLanguages(Languages):
 		"""
 		self.updated = False
 		langs: Dict = Lapi().languages()
-		if len(langs.get('resources', [])) >= 3:
+		if len(langs.get("resources", [])) >= 3:
 			self.updated = self.save(langs)
 		return self.updated
 
-	def fromList(self, source: str = '') -> Iterator[ServiceLanguage]:
+	def fromList(self, source: str = "") -> Iterator[ServiceLanguage]:
 		"""Sequence of available source languages.
 		@param source: source dictionary name, if not specified, the current is used
 		@type source: Literal["global", "password", "random"]
@@ -98,10 +100,10 @@ class ServiceLanguages(Languages):
 		@rtype: Iterator[ServiceLanguage]
 		"""
 		source = source or self.source
-		for lang in self._langs.get('resources', {}).get(source, {}).get('source_languages', []):
+		for lang in self._langs.get("resources", {}).get(source, {}).get("source_languages", []):
 			yield ServiceLanguage(lang)
 
-	def intoList(self, source: str = '') -> Iterator[ServiceLanguage]:
+	def intoList(self, source: str = "") -> Iterator[ServiceLanguage]:
 		"""Sequence of available target languages.
 		@param source: source dictionary name, if not specified, the current is used
 		@type source: Literal["global", "password", "random"]
@@ -109,7 +111,7 @@ class ServiceLanguages(Languages):
 		@rtype: Iterator[ServiceLanguage]
 		"""
 		source = source or self.source
-		for lang in self._langs.get('resources', {}).get(source, {}).get('target_languages', []):
+		for lang in self._langs.get("resources", {}).get(source, {}).get("target_languages", []):
 			yield ServiceLanguage(lang)
 
 	def isAvailable(self, source: str, target: str) -> bool:
@@ -121,11 +123,9 @@ class ServiceLanguages(Languages):
 		@return: whether a language pair is present in the list of available
 		@rtype: bool
 		"""
-		return (source in [
-			lang.code for lang in self.fromList()
-		]) and (target in [
-			lang.code for lang in self.intoList()
-		])
+		return (source in [lang.code for lang in self.fromList()]) and (
+			target in [lang.code for lang in self.intoList()]
+		)
 
 	@property
 	def defaultFrom(self) -> ServiceLanguage:
@@ -134,8 +134,13 @@ class ServiceLanguages(Languages):
 		@rtype: ServiceLanguage
 		"""
 		return ServiceLanguage(
-			'en' if 'en' in self._langs['resources'][self.defaultSource]['source_languages'] else next(
-				iter(self._langs['resources'][self.defaultSource]['source_languages']), ''))
+			"en"
+			if "en" in self._langs["resources"][self.defaultSource]["source_languages"]
+			else next(
+				iter(self._langs["resources"][self.defaultSource]["source_languages"]),
+				"",
+			),
+		)
 
 	@property
 	def defaultInto(self) -> ServiceLanguage:
@@ -145,8 +150,13 @@ class ServiceLanguages(Languages):
 		@rtype: ServiceLanguage
 		"""
 		return ServiceLanguage(
-			self.locale.code if self.locale.code in self._langs['resources'][self.defaultSource]['target_languages'] else next(  # noqa E501
-				iter(self._langs['resources'][self.defaultSource]['target_languages']), ''))
+			self.locale.code
+			if self.locale.code in self._langs["resources"][self.defaultSource]["target_languages"]
+			else next(  # noqa E501
+				iter(self._langs["resources"][self.defaultSource]["target_languages"]),
+				"",
+			),
+		)
 
 	@property
 	def all(self) -> List:
@@ -157,8 +167,8 @@ class ServiceLanguages(Languages):
 		if not self._all:
 			_all: List[str] = []
 			for source in self.sources:
-				_all.extend(self._langs.get('resources', {}).get(source, {}).get('source_languages', []))
-				_all.extend(self._langs.get('resources', {}).get(source, {}).get('target_languages', []))
+				_all.extend(self._langs.get("resources", {}).get(source, {}).get("source_languages", []))
+				_all.extend(self._langs.get("resources", {}).get(source, {}).get("target_languages", []))
 			self._all = [ServiceLanguage(lang) for lang in frozenset(_all)]
 		return self._all
 

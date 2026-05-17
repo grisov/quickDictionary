@@ -4,14 +4,16 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2025 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Callable, List, Dict
+from typing import Callable, Dict, List
+
 import addonHandler
 from logHandler import log
-from ..service import Translator, Parser, secrets
+
+from ..service import Parser, Translator, secrets
 from ..shared import htmlTemplate
-from .api import serviceName, Yapi
+from .api import Yapi, serviceName
 from .languages import langs
 
 try:
@@ -32,7 +34,7 @@ confspec = {
 	"username": 'string(default="")',
 	"password": "string(default=%s)" % secrets[serviceName]._password,
 	"mirror": "boolean(default=false)",
-	"switchsynth": "boolean(default=false)"
+	"switchsynth": "boolean(default=false)",
 }
 
 
@@ -44,7 +46,8 @@ class ServiceTranslator(Translator):
 		langFrom: str,
 		langTo: str,
 		text: str,
-		*args, **kwargs
+		*args,
+		**kwargs,
 	) -> None:
 		"""Initialization of the source and target language, as well as word or phrase to search in the dictionary.
 		@param langFrom: source language
@@ -72,9 +75,9 @@ class ServiceTranslator(Translator):
 			text=self.text,
 			langFrom=self.langFrom,
 			langTo=self.langTo,
-			uiLang=self.uiLang
+			uiLang=self.uiLang,
 		).lookup()
-		if self._resp.get('error'):
+		if self._resp.get("error"):
 			self._error = True
 		parser: Parser = ServiceParser(self._resp)
 		html: str = parser.to_html()
@@ -98,14 +101,14 @@ class ServiceParser(Parser):
 			if key in resp:
 				field: str = {
 					# Translators: Field name in a dictionary entry
-					'num': "<i>%s</i>: " % _("number"),
+					"num": "<i>%s</i>: " % _("number"),
 					# Translators: Field name in a dictionary entry
-					'gen': "<i>%s</i>: " % _("gender")
-				}.get(key, '') + resp[key]
+					"gen": "<i>%s</i>: " % _("gender"),
+				}.get(key, "") + resp[key]
 				attrs.append(field)
 		if attrs:
-			return " (%s)" % ', '.join(attrs)
-		return ''
+			return " (%s)" % ", ".join(attrs)
+		return ""
 
 	def to_html(self) -> str:  # noqa C901
 		"""Convert data received from a remote dictionary to HTML format.
@@ -113,60 +116,60 @@ class ServiceParser(Parser):
 		@rtype: str
 		"""
 		if not isinstance(self.resp, dict):  # incorrect response
-			return ''
-		if self.resp.get('error', ''):  # Error message
-			return '<h1>%s</h1>' % self.resp['error']
-		html: str = ''
-		for key in ['def', 'tr', 'mean', 'syn', 'ex']:
+			return ""
+		if self.resp.get("error", ""):  # Error message
+			return "<h1>%s</h1>" % self.resp["error"]
+		html: str = ""
+		for key in ["def", "tr", "mean", "syn", "ex"]:
 			if key in self.resp:
 				html += {
 					# Translators: Field name in a dictionary entry
-					'mean': "<p><i>%s</i>: " % _("mean").capitalize(),
+					"mean": "<p><i>%s</i>: " % _("mean").capitalize(),
 					# Translators: Field name in a dictionary entry
-					'syn': "<p><i>%s</i>:\n" % _("synonyms").capitalize(),
+					"syn": "<p><i>%s</i>:\n" % _("synonyms").capitalize(),
 					# Translators: Field name in a dictionary entry
-					'ex': "<p><i>%s</i>:\n" % _("examples").capitalize()
-				}.get(key, '')
-				if key == 'def':
-					if not self.resp['def']:
-						return ''
-					for elem in self.resp['def']:
-						html += '<h1>' + elem['text'] + self.attrs(elem) + '</h1>\n'
+					"ex": "<p><i>%s</i>:\n" % _("examples").capitalize(),
+				}.get(key, "")
+				if key == "def":
+					if not self.resp["def"]:
+						return ""
+					for elem in self.resp["def"]:
+						html += "<h1>" + elem["text"] + self.attrs(elem) + "</h1>\n"
 						html += ServiceParser(elem).to_html()
-						html += '\n'
-				if key == 'tr':
-					html += '<ul>\n'
-					for elem in self.resp['tr']:
-						html += '<li><b>' + elem['text'] + '</b>' + self.attrs(elem) + '\n'
+						html += "\n"
+				if key == "tr":
+					html += "<ul>\n"
+					for elem in self.resp["tr"]:
+						html += "<li><b>" + elem["text"] + "</b>" + self.attrs(elem) + "\n"
 						html += ServiceParser(elem).to_html()
-						html += '</li>\n'
-					html += '</ul>\n'
-				if key == 'mean':
+						html += "</li>\n"
+					html += "</ul>\n"
+				if key == "mean":
 					means = []
-					for elem in self.resp['mean']:
-						means.append(elem['text'] + self.attrs(elem))
-					html += ', '.join(means) + '</p>\n'
+					for elem in self.resp["mean"]:
+						means.append(elem["text"] + self.attrs(elem))
+					html += ", ".join(means) + "</p>\n"
 					del means
 					html += ServiceParser(elem).to_html()
-				if key == 'syn':
+				if key == "syn":
 					syns = []
-					for elem in self.resp['syn']:
-						syns.append(elem['text'] + self.attrs(elem))
-					html += ', '.join(syns) + '</p>\n'
+					for elem in self.resp["syn"]:
+						syns.append(elem["text"] + self.attrs(elem))
+					html += ", ".join(syns) + "</p>\n"
 					del syns
 					html += ServiceParser(elem).to_html()
-				if key == 'ex':
+				if key == "ex":
 					exs: List[str] = []
-					for elem in self.resp['ex']:
-						tmp = elem['text'] + self.attrs(elem)
-						if 'tr' in elem:
+					for elem in self.resp["ex"]:
+						tmp = elem["text"] + self.attrs(elem)
+						if "tr" in elem:
 							trs: List[str] = []
-							for extr in elem['tr']:
-								trs.append(extr['text'] + self.attrs(extr))
-							tmp += ' - ' + ', '.join(trs)
+							for extr in elem["tr"]:
+								trs.append(extr["text"] + self.attrs(extr))
+							tmp += " - " + ", ".join(trs)
 							del trs
 						exs.append(tmp)
-					html += ',\n'.join(exs) + '</p>'
+					html += ",\n".join(exs) + "</p>"
 					del exs
 		self.html = html
 		return self.html
