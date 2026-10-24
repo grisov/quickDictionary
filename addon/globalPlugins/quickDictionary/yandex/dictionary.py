@@ -6,7 +6,7 @@
 # See the file COPYING for more details.
 # Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Callable, Dict, List
+from collections.abc import Callable
 
 import addonHandler
 from logHandler import log
@@ -90,13 +90,13 @@ class ServiceParser(Parser):
 	Must contain to_html() and to_text() methods.
 	"""
 
-	def attrs(self, resp: Dict[str, str]) -> str:
+	def attrs(self, resp: dict[str, str]) -> str:
 		"""Convert to string a sequence of attributes from fields:
 		part of speech, number and gender.
 		@param resp: part of the response from server converted to dict format
-		@type resp: Dict[str, str]
+		@type resp: dict[str, str]
 		"""
-		attrs: List[str] = []
+		attrs: list[str] = []
 		for key in ["pos", "asp", "num", "gen"]:
 			if key in resp:
 				field: str = {
@@ -159,11 +159,11 @@ class ServiceParser(Parser):
 					del syns
 					html += ServiceParser(elem).to_html()
 				if key == "ex":
-					exs: List[str] = []
+					exs: list[str] = []
 					for elem in self.resp["ex"]:
 						tmp = elem["text"] + self.attrs(elem)
 						if "tr" in elem:
-							trs: List[str] = []
+							trs: list[str] = []
 							for extr in elem["tr"]:
 								trs.append(extr["text"] + self.attrs(extr))
 							tmp += " - " + ", ".join(trs)

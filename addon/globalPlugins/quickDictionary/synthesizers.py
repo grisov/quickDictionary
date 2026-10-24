@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import os
 import pickle
-from typing import Dict, Generator, Optional, Tuple
+from collections.abc import Generator
 
 import config
 from synthDriverHandler import getSynth, setSynth
@@ -24,14 +24,14 @@ class Profile(object):
 	def __init__(
 		self,
 		synthName: str = "",
-		synthConf: Dict = {},
+		synthConf: dict = {},
 		lang: str = "",
 	) -> None:
 		"""Input data needed to initialize the synthesizer profile.
 		@param synthName: short name of the voice synthesizer
 		@type synthName: str
 		@param synthConf: voice synthesizer settings
-		@type synthConf: Dict
+		@type synthConf: dict
 		@param lang: the language code to which this profile is associated
 		@type lang: str
 		"""
@@ -77,10 +77,10 @@ class Profile(object):
 		return self._name
 
 	@property
-	def conf(self) -> Dict:
+	def conf(self) -> dict:
 		"""Returns a dict with voice synthesizer settings stored in the profile.
 		@return: voice synthesizer settings
-		@rtype: Dict
+		@rtype: dict
 		"""
 		return self._conf
 
@@ -133,7 +133,7 @@ class Profiles(object):
 		# an external file that stores profile settings
 		self._path = os.path.join(config.getUserDefaultConfigPath(), "%s.pickle" % addonName)
 		# a dict of slots and profiles that match them
-		self._profs: Dict[int, Profile] = {}
+		self._profs: dict[int, Profile] = {}
 		# default synthesizer profile settings
 		self._default = Profile().update()
 		# Previous voice synthesizer before switching to another
@@ -163,7 +163,7 @@ class Profiles(object):
 		@return: a sign of the success of saving data to a file
 		@rtype: bool
 		"""
-		profs: Dict = {}
+		profs: dict = {}
 		for slot in sorted(self._profs, key=lambda slot: str(slot)):
 			if isinstance(slot, int):
 				profs[slot] = {
@@ -191,10 +191,10 @@ class Profiles(object):
 			self._profs[id] = Profile()
 		return self._profs[id]
 
-	def __iter__(self) -> Generator[Tuple[int, Profile], None, None]:
+	def __iter__(self) -> Generator[tuple[int, Profile], None, None]:
 		"""Iterate through all available profiles of synthesizers.
 		@return: iterator each item of which consists of two values - the slot number and the corresponding profile
-		@rtype: Generator[Tuple[int, Profile], None, None]
+		@rtype: Generator[tuple[int, Profile], None, None]
 		"""
 		for slot in sorted(self._profs, key=lambda s: str(s)):
 			if isinstance(slot, int) and self._profs[slot].name:
@@ -207,12 +207,12 @@ class Profiles(object):
 		"""
 		return len([p for s, p in self])
 
-	def remove(self, id: int) -> Optional[Profile]:
+	def remove(self, id: int) -> Profile | None:
 		"""Deletes the synthesizer profile by its specified ID (slot).
 		@param id: profile ID (the slot with which it is associated)
 		@type id: int
 		@return: deleted profile from collection or None if such ID is not present in collection
-		@rtype: Optional[Profile]
+		@rtype: Profile | None
 		"""
 		try:
 			return self._profs.pop(id)
@@ -243,10 +243,10 @@ class Profiles(object):
 		"""
 		return Profile().update()
 
-	def rememberCurrent(self, current: Optional[Profile] = None) -> Profile:
+	def rememberCurrent(self, current: Profile | None = None) -> Profile:
 		"""Store current or received voice as the previous synthesizer.
 		@param current: voice synthesizer profile
-		@type: Optional[Profile]
+		@type: Profile | None
 		@return: current synthesizer profile
 		@rtype: Profile
 		"""

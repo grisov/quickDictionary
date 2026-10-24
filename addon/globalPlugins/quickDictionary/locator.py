@@ -11,9 +11,10 @@ from __future__ import annotations
 
 import fnmatch
 import os
+from collections.abc import Callable
 from importlib import import_module
 from types import ModuleType
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 from wx import Panel
 
@@ -22,22 +23,22 @@ from .service import Languages, Translator
 
 def discover_services() -> None:
 	"""Discover and import all valid services."""
-	matches: List[str] = []
+	matches: list[str] = []
 	dir = "services"
 	dir_path = os.path.join(os.path.dirname(__file__), dir)
-	filenames: List[str] = [file.name for file in os.scandir(dir_path) if file.is_file()]
+	filenames: list[str] = [file.name for file in os.scandir(dir_path) if file.is_file()]
 	for filename in fnmatch.filter(filenames, "*.py"):
 		if filename != "__init__.py":
 			matches.append(os.path.join(dir_path, dir, filename))
-	rel_files: List[str] = [file[len(dir_path) + 1 :] for file in matches]
-	modules: List[str] = [rel_file.replace("/", ".").replace("\\", ".")[:-3] for rel_file in rel_files]
-	imported_mods: List[ModuleType] = [import_module(".." + module, package=__name__) for module in modules]  # noqa F841
+	rel_files: list[str] = [file[len(dir_path) + 1 :] for file in matches]
+	modules: list[str] = [rel_file.replace("/", ".").replace("\\", ".")[:-3] for rel_file in rel_files]
+	imported_mods: list[ModuleType] = [import_module(".." + module, package=__name__) for module in modules]  # noqa F841
 
 
 class Lookup(object):
 	"""Lookup, add and view all available services."""
 
-	_lookup: Dict[DictionaryService, List[DictionaryService]] = {}
+	_lookup: dict[DictionaryService, list[DictionaryService]] = {}
 
 	def add(self, service: DictionaryService, instance: DictionaryService) -> None:
 		"""Add received instance to the end of the list for the specified service.
@@ -46,31 +47,31 @@ class Lookup(object):
 		@param instance: an instance of the service that corresponds to the type specified in the first parameter
 		@type instance: DictionaryService
 		"""
-		servs: List[DictionaryService] = self._lookup.get(service, [])
+		servs: list[DictionaryService] = self._lookup.get(service, [])
 		if not servs:
 			servs = []
 			self._lookup[service] = servs
 		servs.append(instance)
 
-	def lookup_all(self, service) -> List[DictionaryService]:
+	def lookup_all(self, service) -> list[DictionaryService]:
 		"""Return all instances of the specified service.
 		@param service: user-defined service type (usually class template)
 		@type service: Type[DictionaryService]
 		@return: a list of all instances of the specified service
-		@rtype: List[DictionaryService]
+		@rtype: list[DictionaryService]
 		"""
-		servs: List[DictionaryService] = self._lookup.get(service, [])
+		servs: list[DictionaryService] = self._lookup.get(service, [])
 		servs = sorted(servs, key=lambda srv: srv.id)
 		for i in range(len(servs)):
 			servs[i].id = i
 		return servs
 
-	def lookup(self, service: DictionaryService) -> Optional[DictionaryService]:
+	def lookup(self, service: DictionaryService) -> DictionaryService | None:
 		"""Return the first instance of the specified service or None.
 		@param service: user-defined service type (usually class template)
 		@type service: Type[DictionaryService]
 		@return: the first instance of the specified service type
-		@rtype: Optional[DictionaryService]
+		@rtype: DictionaryService | None
 		"""
 		try:
 			return self.lookup_all(service)[0]
@@ -140,10 +141,10 @@ class DictionaryService(object):
 		return getattr(self[".dictionary"], "serviceSummary", "Undefined_Service_Summary")
 
 	@property
-	def confspec(self) -> Dict[str, str]:
+	def confspec(self) -> dict[str, str]:
 		"""Service configuration scheme.
 		@return: configuration scheme
-		@rtype: Dict[str, str]
+		@rtype: dict[str, str]
 		"""
 		return getattr(self[".dictionary"], "confspec", {})
 
@@ -172,10 +173,10 @@ class DictionaryService(object):
 		return getattr(self[".settings"], "ServicePanel", object)
 
 	@property
-	def stat(self) -> Dict[str, Any]:
+	def stat(self) -> dict[str, Any]:
 		"""Statistics of using the online service.
 		@return: various statistics data
-		@rtype: Dict[str, Any]
+		@rtype: dict[str, Any]
 		"""
 		return getattr(self[".api"], "stat", {})
 

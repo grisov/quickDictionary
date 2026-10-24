@@ -7,10 +7,11 @@
 
 import os.path
 import re
+from collections.abc import Callable
 from functools import lru_cache, wraps
 from threading import Thread
 from time import sleep
-from typing import Any, Callable, Dict, List
+from typing import Any
 
 import addonHandler
 import api
@@ -74,12 +75,12 @@ def hashForCache(active: int) -> int:
 	return hashes
 
 
-def waitingFor(target: Callable, args: List[Any] = []) -> None:
+def waitingFor(target: Callable, args: list[Any] = []) -> None:
 	"""Waiting for the function to complete, beeps are output while waiting.
 	@param target: function that will be started and user will hear sounds during its execution
 	@type target: Callable
 	@param args: list of arguments to be passed to the function
-	@type args: List[Any]
+	@type args: list[Any]
 	"""
 	load = Thread(target=target, args=args)
 	load.start()
@@ -185,11 +186,11 @@ def restoreSynthIfSpeechBeenCanceled() -> None:
 		profiles.rememberCurrent(previous)
 
 
-def messageWithLangDetection(msg: Dict[str, str]) -> None:
+def messageWithLangDetection(msg: dict[str, str]) -> None:
 	"""Pronounce text in a given language if enabled the setting for auto-switching languages of the synthesizer.
 	After the speech, switche to the previous synthesizer, if the corresponding option is enabled.
 	@param msg: language code and text to be spoken in the specified language
-	@type msg: Dict[str, str] -> {'lang': str, 'text': str}
+	@type msg: dict[str, str] -> {'lang': str, 'text': str}
 	"""
 	switchSynth = config.conf[addonName][services[config.conf[addonName]["active"]].name]["switchsynth"]
 	profile = next(filter(lambda x: x.lang == msg["lang"], (p for s, p in profiles)), None)

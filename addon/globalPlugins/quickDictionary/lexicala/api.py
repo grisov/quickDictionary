@@ -10,7 +10,7 @@ import ssl
 from datetime import datetime, timedelta
 from http.client import HTTPResponse
 from json import loads
-from typing import Any, Dict, List, Optional
+from typing import Any
 from urllib.parse import quote as urlencode
 from urllib.request import Request, urlopen
 
@@ -21,7 +21,7 @@ from ..service import secrets
 
 ssl._create_default_https_context = ssl._create_unverified_context
 serviceName: str = os.path.basename(os.path.dirname(__file__))
-stat: Dict[str, Any] = {}  # Object for store statistics
+stat: dict[str, Any] = {}  # Object for store statistics
 
 
 class Lapi(object):
@@ -57,7 +57,7 @@ class Lapi(object):
 		self._source = source
 		self._morph = morph
 		self._analyzed = analyzed
-		self._headers: Dict[str, str] = {
+		self._headers: dict[str, str] = {
 			"X-RapidAPI-Host": "lexicala1.p.rapidapi.com",
 			"User-Agent": "Mozilla 5.0",
 		}
@@ -104,15 +104,15 @@ class Lapi(object):
 		"""
 		return self._analyzed
 
-	def get(self, query: str) -> Dict:
+	def get(self, query: str) -> dict:
 		"""Request to the Lexicala online dictionary using transmitted query.
 		@param query: generated query URL not including domain name
 		@type query: str
 		@return: deserialized response from the online dictionary
-		@rtype: Dict
+		@rtype: dict
 		"""
-		response: Dict = {}
-		resp: Optional[HTTPResponse] = None
+		response: dict = {}
+		resp: HTTPResponse | None = None
 		url: str = self._url + query
 		rq = Request(url)
 		for name, value in self._headers.items():
@@ -141,10 +141,10 @@ class Lapi(object):
 				response["error"] = "Response code: %d" % resp.getcode()
 		return response
 
-	def search(self) -> Dict:
+	def search(self) -> dict:
 		"""Request a word search in the online dictionary.
 		@return: deserialized response from the server
-		@rtype: Dict
+		@rtype: dict
 		"""
 		query: str = (
 			"search?source={dict}&language={lang}&text={text}&morph={morph}&analyzed={analyzed}".format(
@@ -157,43 +157,43 @@ class Lapi(object):
 		)
 		return self.get(query)
 
-	def entries(self, id: str) -> Dict:
+	def entries(self, id: str) -> dict:
 		"""Request on a dictionary entry by its ID.
 		@param id: identifier of a specific dictionary entry
 		@type id: str
 		@return: deserialized response from the server
-		@rtype: Dict
+		@rtype: dict
 		"""
 		query: str = "entries/{entry_id}".format(
 			entry_id=id,
 		)
 		return self.get(query)
 
-	def senses(self, id: str) -> Dict:
+	def senses(self, id: str) -> dict:
 		"""Request on a dictionary entry for the specific sense of word by its ID.
 		@param id: identifier of a dictionary entry for the specific sense of word
 		@type id: str
 		@return: deserialized response from the server
-		@rtype: Dict
+		@rtype: dict
 		"""
 		query: str = "senses/{sense_id}".format(
 			sense_id=id,
 		)
 		return self.get(query)
 
-	def languages(self) -> Dict:
+	def languages(self) -> dict:
 		"""Request for lists of all languages available in the online dictionary.
 		@return: deserialized response from the server
-		@rtype: Dict
+		@rtype: dict
 		"""
 		return self.get("languages")
 
-	def test(self) -> Dict:
+	def test(self) -> dict:
 		"""Check the functionality of the online dictionary API.
 		Authorization is not required to fulfill this request.
 		Also, this is not counted as a separate request in the daily quota of requests.
 		@return: deserialized response from the server
-		@rtype: Dict
+		@rtype: dict
 		"""
 		return self.get("test")
 
@@ -204,7 +204,7 @@ class Lapi(object):
 		@return: datetime object
 		@rtype: datetime
 		"""
-		monthes: List[str] = [
+		monthes: list[str] = [
 			"Jan",
 			"Feb",
 			"Mar",

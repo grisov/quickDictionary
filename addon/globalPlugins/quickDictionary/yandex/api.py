@@ -8,7 +8,7 @@
 import os.path
 import ssl
 from json import loads
-from typing import Any, Dict
+from typing import Any
 from urllib.parse import quote as urlencode
 from urllib.request import Request, urlopen
 
@@ -19,7 +19,7 @@ from ..service import secrets
 
 ssl._create_default_https_context = ssl._create_unverified_context
 serviceName: str = os.path.basename(os.path.dirname(__file__))
-stat: Dict[str, Any] = {}  # Object for store statistics
+stat: dict[str, Any] = {}  # Object for store statistics
 
 
 class Yapi(object):
@@ -48,7 +48,7 @@ class Yapi(object):
 		self._langFrom = langFrom
 		self._langTo = langTo
 		self._uiLang = uiLang
-		self._headers: Dict[str, str] = {
+		self._headers: dict[str, str] = {
 			"User-Agent": "Mozilla 5.0",
 		}
 
@@ -116,12 +116,12 @@ class Yapi(object):
 		"""
 		return secrets[serviceName].decode(config.conf[addonName][serviceName]["password"])
 
-	def get(self, query: str) -> Dict:
+	def get(self, query: str) -> dict:
 		"""Request to the Yandex online dictionary using transmitted query.
 		@param query: generated query URL not including domain name
 		@type query: str
 		@return: deserialized response from the online dictionary
-		@rtype: Dict
+		@rtype: dict
 		"""
 		response, resp = {}, None
 		servers = [self.directUrl, self.mirrorUrl]
@@ -147,10 +147,10 @@ class Yapi(object):
 				response["error"] = "JSON error: %s [%s]" % (str(e), server)
 		return response
 
-	def lookup(self) -> Dict:
+	def lookup(self) -> dict:
 		"""Get a dictionary article according to the specified parameters.
 		@return: deserialized response from the online dictionary
-		@rtype: Dict
+		@rtype: dict
 		"""
 		urlTemplate: str = "/api/v1/dicservice.json/lookup?{key}lang={lang}&text={text}{ui}"
 		lang: str = "{lang1}-{lang2}".format(lang1=self.langFrom, lang2=self.langTo)
@@ -162,10 +162,10 @@ class Yapi(object):
 		)
 		return self.get(query)
 
-	def languages(self) -> Dict:
+	def languages(self) -> dict:
 		"""Request for list of all languages available in the online dictionary.
 		@return: deserialized response from the server
-		@rtype: Dict
+		@rtype: dict
 		"""
 		urlTemplate: str = "/api/v1/dicservice.json/getLangs?key={key}"
 		query: str = urlTemplate.format(key=self.token)

@@ -5,7 +5,7 @@
 # See the file COPYING for more details.
 # Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Callable, Optional
+from collections.abc import Callable
 
 import addonHandler
 import config
@@ -31,7 +31,7 @@ class QDSettingsPanel(SettingsPanel):
 
 	title: str = addonSummary
 
-	def __init__(self, parent: Optional[wx._core.Window]) -> None:
+	def __init__(self, parent: wx._core.Window | None) -> None:
 		"""Initializing the add-on settings panel object."""
 		super(QDSettingsPanel, self).__init__(parent)
 
@@ -96,14 +96,14 @@ class ServicePanel(wx.Panel):
 	def __init__(
 		self,
 		active: int,
-		parent: Optional[wx._core.Window] = None,
+		parent: wx._core.Window | None = None,
 		id: int = wx.ID_ANY,
 	) -> None:
 		"""Create a panel to display in the add-on settings dialog.
 		@param active: index of the selected service
 		@type active: int
 		@param parent: parent WX window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx._core.Window | None
 		@param id: identifier of the graphic element
 		@type id: int
 		"""
@@ -258,7 +258,7 @@ class ServicesDialog(wx.Dialog):
 
 	def __init__(
 		self,
-		parent: Optional[wx._core.Window],
+		parent: wx._core.Window | None,
 		id: int,
 		title: str,
 		*args,
@@ -266,7 +266,7 @@ class ServicesDialog(wx.Dialog):
 	) -> None:
 		"""Create a dialog box for selecting an available online service.
 		@param parent: parent top level window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx._core.Window | None
 		@param id: identifier of the window
 		@type id: int
 		@param title: title of the window
@@ -339,12 +339,12 @@ class ChangeProfileDialog(wx.Dialog):
 
 	def __init__(
 		self,
-		parent: Optional[wx._core.Window],
+		parent: wx._core.Window | None,
 		slot: int,
 	) -> None:
 		"""Layout of dialog box elements.
 		@param parent: parent top level window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx._core.Window | None
 		@param slot: the number of the slot in which the current profile is saved
 		@type slot: int
 		"""
@@ -401,10 +401,10 @@ class ChangeProfileDialog(wx.Dialog):
 class CreateProfileDialog(wx.Dialog):
 	"""Request to create new voice synthesizer profile."""
 
-	def __init__(self, parent: Optional[wx._core.Window]) -> None:
+	def __init__(self, parent: wx._core.Window | None) -> None:
 		"""Layout of dialog box elements.
 		@param parent: parent top level window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx._core.Window | None
 		"""
 		# Translators: The title of the modal dialog box
 		super(CreateProfileDialog, self).__init__(parent, title=_("Create a new voice synthesizer profile"))
@@ -457,7 +457,7 @@ class SynthesizersDialog(wx.Dialog):
 
 	def __init__(
 		self,
-		parent: Optional[wx._core.Window],
+		parent: wx._core.Window | None,
 		id: int,
 		title: str,
 		*args,
@@ -465,7 +465,7 @@ class SynthesizersDialog(wx.Dialog):
 	) -> None:
 		"""Create a dialog box for manipulating voice synthesizers profiles.
 		@param parent: parent top level window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx._core.Window | None
 		@param id: identifier of the window
 		@type id: int
 		@param title: title of the window
@@ -647,7 +647,7 @@ class EditableInputDialog(wx.Dialog):
 
 	def __init__(
 		self,
-		parent: Optional[wx._core.Window],
+		parent: wx._core.Window | None,
 		id: int,
 		title: str,
 		text: str,
@@ -656,7 +656,7 @@ class EditableInputDialog(wx.Dialog):
 	) -> None:
 		"""Create a dialog box for edit source text before sending it for translation.
 		@param parent: parent top level window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx._core.Window | None
 		@param id: identifier of the window
 		@type id: int
 		@param title: title of the window

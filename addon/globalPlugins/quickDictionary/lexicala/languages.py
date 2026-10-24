@@ -6,7 +6,7 @@
 # Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 import os.path
-from typing import Dict, Iterator, List
+from collections.abc import Iterator
 
 import config
 
@@ -47,10 +47,10 @@ class ServiceLanguages(Languages):
 		self._Language = ServiceLanguage
 
 	@property
-	def sources(self) -> List[str]:
+	def sources(self) -> list[str]:
 		"""List of source dictionary names available in the online service.
 		@return: list of source dictionaries
-		@rtype: List[Literal["global", "password", "random"]]
+		@rtype: list[Literal["global", "password", "random"]]
 		"""
 		return list(self._langs.get("resources", []))
 
@@ -87,7 +87,7 @@ class ServiceLanguages(Languages):
 		@rtype: bool
 		"""
 		self.updated = False
-		langs: Dict = Lapi().languages()
+		langs: dict = Lapi().languages()
 		if len(langs.get("resources", [])) >= 3:
 			self.updated = self.save(langs)
 		return self.updated
@@ -159,13 +159,13 @@ class ServiceLanguages(Languages):
 		)
 
 	@property
-	def all(self) -> List:
+	def all(self) -> list:
 		"""Full list of all supported source and target languages.
 		@return: list of all supported languages
-		@rtype: List[ServiceLanguage]
+		@rtype: list[ServiceLanguage]
 		"""
 		if not self._all:
-			_all: List[str] = []
+			_all: list[str] = []
 			for source in self.sources:
 				_all.extend(self._langs.get("resources", {}).get(source, {}).get("source_languages", []))
 				_all.extend(self._langs.get("resources", {}).get(source, {}).get("target_languages", []))

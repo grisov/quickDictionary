@@ -5,7 +5,7 @@
 # See the file COPYING for more details.
 # Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
-from typing import Callable, Iterator, Optional
+from collections.abc import Callable, Iterator
 
 import addonHandler
 import config
@@ -31,13 +31,13 @@ class ServicePanel(wx.Panel):
 
 	def __init__(
 		self,
-		parent: Optional[wx.Window] = None,
+		parent: wx.Window | None = None,
 		id: int = wx.ID_ANY,
 	) -> None:
 		"""Create a settings panel for a specific service.
 		Populate the service panel with settings controls.
 		@param parent:
-		@type parent: Optional[wx.Window]
+		@type parent: wx.Window | None
 		@param id:
 		@type id: int
 		"""

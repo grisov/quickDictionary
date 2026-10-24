@@ -22,9 +22,9 @@ import re
 import zipfile
 import zlib
 from abc import ABCMeta, abstractmethod
+from collections.abc import Callable, Iterator
 from locale import getdefaultlocale
 from threading import Thread
-from typing import Callable, Dict, Iterator, List, Union
 
 import addonHandler
 from languageHandler import getLanguageDescription
@@ -86,7 +86,7 @@ class Language(metaclass=ABCMeta):
 		"""
 		self._lang: str = code
 		# additional languages, where key is a two-character code and value is name of the language
-		self._names: Dict[str, str] = langNames
+		self._names: dict[str, str] = langNames
 
 	@property
 	def code(self) -> str:
@@ -133,16 +133,16 @@ class Languages(metaclass=ABCMeta):
 		"""
 		self._Language = Language  # an object that represents one language
 		self.updated: bool = False
-		self._all: List[Language] = []
+		self._all: list[Language] = []
 		self._file = file
-		self._langs: Dict = self.load()
+		self._langs: dict = self.load()
 
-	def load(self) -> Dict:
+	def load(self) -> dict:
 		"""Load a collection of available language pairs from an external json file.
 		@return: collection of language pairs available in the dictionary
-		@rtype: Union[List, Dict] (depends on the service)
+		@rtype: list | dict (depends on the service)
 		"""
-		data: Dict = {}
+		data: dict = {}
 		try:
 			with open(self._file, "r", encoding="utf-8") as f:
 				data = json.load(f)
@@ -150,10 +150,10 @@ class Languages(metaclass=ABCMeta):
 			log.exception(e)
 		return data.get("data", {})
 
-	def save(self, data: Union[List, Dict]) -> bool:
+	def save(self, data: list | dict) -> bool:
 		"""Save a collection of available languages to an external file.
 		@param data: collection of available languages
-		@type data: Union[List, Dict]
+		@type data: list | dict
 		"""
 		try:
 			with open(self._file, "w") as f:
@@ -256,10 +256,10 @@ class Languages(metaclass=ABCMeta):
 
 	@property
 	@abstractmethod
-	def all(self) -> List[Language]:
+	def all(self) -> list[Language]:
 		"""Full list of all supported source and target languages.
 		@return: list of all supported languages
-		@rtype: List[Language]
+		@rtype: list[Language]
 		"""
 		raise NotImplementedError("This property must be overridden in the child class!")
 
@@ -288,7 +288,7 @@ class Translator(Thread):
 		self._langFrom = langFrom
 		self._langTo = langTo
 		self._text = text
-		self._resp: Dict = {}
+		self._resp: dict = {}
 		self._html: str = ""
 		self._plaintext: str = ""
 		self._error: bool = False
@@ -318,10 +318,10 @@ class Translator(Thread):
 		return self._text
 
 	@property
-	def resp(self) -> Dict:
+	def resp(self) -> dict:
 		"""Get deserialized response from the server.
 		@return: deserealized response
-		@rtype: Dict
+		@rtype: dict
 		"""
 		return self._resp
 
@@ -369,12 +369,12 @@ class Parser(metaclass=ABCMeta):
 	The child class must override the to_html() method.
 	"""
 
-	def __init__(self, response: Dict) -> None:
+	def __init__(self, response: dict) -> None:
 		"""Input deserialized data for further analysis and conversion to other formats.
 		@param response: deserialized response from the online dictionary
-		@type response: Dict
+		@type response: dict
 		"""
-		self.resp: Dict = response
+		self.resp: dict = response
 		self.html: str = ""
 
 	@abstractmethod
@@ -493,10 +493,10 @@ class Secret(object):
 		except Exception:
 			return ""
 
-	def toDict(self) -> Dict[str, str]:
+	def toDict(self) -> dict[str, str]:
 		"""Convert a set of values stored in an object to a dict type.
 		@return: dict, which contains the values of all fields of the current object
-		@rtype: Dict[str, str]
+		@rtype: dict[str, str]
 		"""
 		return {
 			"service": self._service,
@@ -505,11 +505,11 @@ class Secret(object):
 			"url": self._url,
 		}
 
-	def fromDict(self, rec: Dict[str, str]) -> Secret:
+	def fromDict(self, rec: dict[str, str]) -> Secret:
 		"""Initialize the fields of the current object from the obtained parameter.
 		The update occurs only when the name of the service in the corresponding field coincides with the current.
 		@param rec: dict object with required keys
-		@type rec: Dict[str, str]
+		@type rec: dict[str, str]
 		@return: updated object with the obtained data
 		@rtype: Secret
 		"""
@@ -536,7 +536,7 @@ class Secrets(object):
 		"""
 		self._path: str = os.path.join(dir, file)
 		self._file: str = file + ".json"
-		self._secrets: Dict[str, Secret] = {}
+		self._secrets: dict[str, Secret] = {}
 		self.load()
 
 	def load(self) -> Secrets:
@@ -544,7 +544,7 @@ class Secrets(object):
 		@return: updated object with loaded credentials
 		@rtype: Secrets
 		"""
-		data: Dict[str, Dict[str, str]] = {}
+		data: dict[str, dict[str, str]] = {}
 		try:
 			with zipfile.ZipFile(self._path + ".zip", mode="r") as zipArchive:
 				with zipArchive.open(
@@ -575,10 +575,10 @@ class Secrets(object):
 		return self
 
 	@property
-	def services(self) -> List[str]:
+	def services(self) -> list[str]:
 		"""List of names of all services for which credentials are available.
 		@return: list of service names, determined by the module "locator"
-		@rtype: List[str]
+		@rtype: list[str]
 		"""
 		return list(self._secrets)
 

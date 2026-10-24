@@ -6,7 +6,7 @@
 # Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 import os.path
-from typing import Dict, Iterator, List
+from collections.abc import Iterator
 
 from ..service import Language, Languages
 from .api import Yapi
@@ -38,7 +38,7 @@ class ServiceLanguages(Languages):
 		@rtype: bool
 		"""
 		self.updated = False
-		langs: Dict = Yapi().languages()
+		langs: dict = Yapi().languages()
 		if len(langs) > 10:
 			self.updated = self.save(langs)
 		return self.updated
@@ -61,7 +61,7 @@ class ServiceLanguages(Languages):
 		if not lang:
 			return
 		for lng in self._langs:
-			llg: List[str] = lng.split("-")
+			llg: list[str] = lng.split("-")
 			if llg[0] == lang:
 				yield ServiceLanguage(llg[1])
 
@@ -107,10 +107,10 @@ class ServiceLanguages(Languages):
 		)
 
 	@property
-	def all(self) -> List:
+	def all(self) -> list:
 		"""Full list of all supported source and target languages.
 		@return: list of all supported languages
-		@rtype: List[ServiceLanguage]
+		@rtype: list[ServiceLanguage]
 		"""
 		if not self._all:
 			self._all = [lang for lang in self.fromList()]
