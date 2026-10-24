@@ -9,7 +9,6 @@
 
 from __future__ import annotations
 
-import fnmatch
 import os
 from collections.abc import Callable
 from importlib import import_module
@@ -22,25 +21,20 @@ from .service import Languages, Translator
 
 
 def discover_services() -> None:
-	"""Discover and import all valid services."""
-	matches: list[str] = []
-	dir = "services"
-	dir_path = os.path.join(os.path.dirname(__file__), dir)
-	filenames: list[str] = [file.name for file in os.scandir(dir_path) if file.is_file()]
-	for filename in fnmatch.filter(filenames, "*.py"):
-		if filename != "__init__.py":
-			matches.append(os.path.join(dir_path, dir, filename))
-	rel_files: list[str] = [file[len(dir_path) + 1 :] for file in matches]
-	modules: list[str] = [rel_file.replace("/", ".").replace("\\", ".")[:-3] for rel_file in rel_files]
-	imported_mods: list[ModuleType] = [import_module(".." + module, package=__name__) for module in modules]  # noqa F841
+	"""Discover and import all valid services: each module in the services folder registers its service."""
+	servicesDir = os.path.join(os.path.dirname(__file__), "services")
+	for entry in os.scandir(servicesDir):
+		name, extension = os.path.splitext(entry.name)
+		if entry.is_file() and extension == ".py" and name != "__init__":
+			_ = import_module(f".services.{name}", package=__package__)
 
 
 class Lookup(object):
 	"""Lookup, add and view all available services."""
 
-	_lookup: dict[DictionaryService, list[DictionaryService]] = {}
+	_lookup: dict[type[DictionaryService], list[DictionaryService]] = {}
 
-	def add(self, service: DictionaryService, instance: DictionaryService) -> None:
+	def add(self, service: type[DictionaryService], instance: DictionaryService) -> None:
 		"""Add received instance to the end of the list for the specified service.
 		@param service: user-defined service type (usually class template)
 		@type service: Type[DictionaryService]
@@ -53,7 +47,7 @@ class Lookup(object):
 			self._lookup[service] = servs
 		servs.append(instance)
 
-	def lookup_all(self, service) -> list[DictionaryService]:
+	def lookup_all(self, service: type[DictionaryService]) -> list[DictionaryService]:
 		"""Return all instances of the specified service.
 		@param service: user-defined service type (usually class template)
 		@type service: Type[DictionaryService]
@@ -66,7 +60,7 @@ class Lookup(object):
 			servs[i].id = i
 		return servs
 
-	def lookup(self, service: DictionaryService) -> DictionaryService | None:
+	def lookup(self, service: type[DictionaryService]) -> DictionaryService | None:
 		"""Return the first instance of the specified service or None.
 		@param service: user-defined service type (usually class template)
 		@type service: Type[DictionaryService]
@@ -84,12 +78,18 @@ class Lookup(object):
 global_lookup = Lookup()
 
 
-def service_provider(*services) -> Callable:
+def service_provider(
+	*services: type[DictionaryService],
+) -> Callable[[type[DictionaryService]], type[DictionaryService]]:
 	"""This is a class decorator that declares a class to provide a set of services.
 	It is expected that the class has a no-arg constructor and will be instantiated as a singleton.
+	@param services: the types of the services that the class provides
+	@type services: type[DictionaryService]
+	@return: the class decorator
+	@rtype: Callable[[type[DictionaryService]], type[DictionaryService]]
 	"""
 
-	def real_decorator(clazz):
+	def real_decorator(clazz: type[DictionaryService]) -> type[DictionaryService]:
 		instance = clazz()
 		for service in services:
 			global_lookup.add(service, instance)
@@ -107,11 +107,11 @@ class DictionaryService(object):
 	# The value must be assigned in the corresponding service description object
 	# Typical value:
 	# __package__ = __name__.replace('.' + os.path.basename(os.path.dirname(__file__)), '')
-	__package__: str
+	__package__: str = ""
 
 	# Used to set the sort order of a list of services
 	# The value must be assigned in the corresponding service description object
-	id: int
+	id: int = 0
 
 	def __getitem__(self, name: str) -> ModuleType:
 		"""Get the instance of the imported module by the specified name.
@@ -149,10 +149,10 @@ class DictionaryService(object):
 		return getattr(self[".dictionary"], "confspec", {})
 
 	@property
-	def translator(self) -> Translator:
+	def translator(self) -> type[Translator]:
 		"""A link to the class used by the service to receive translations from the online dictionary.
 		@return: specific Translator class used by the service
-		@rtype: <service_name>.dictionary.ServiceTranslator
+		@rtype: type[<service_name>.dictionary.ServiceTranslator]
 		"""
 		return getattr(self[".dictionary"], "ServiceTranslator")
 
@@ -160,7 +160,7 @@ class DictionaryService(object):
 	def langs(self) -> Languages:
 		"""An instance of the Languages class to interact with lists of languages available in the online service.
 		@return: an instance of the service specific class to interact with the list of available languages
-		@rtyp: <service_name>.languages.ServiceLanguages
+		@rtype: <service_name>.languages.ServiceLanguages
 		"""
 		return getattr(self[".languages"], "langs")
 
