@@ -165,12 +165,12 @@ class DictionaryService(object):
 		return getattr(self[".languages"], "langs")
 
 	@property
-	def panel(self) -> Panel:
+	def panel(self) -> type[Panel]:
 		"""A link to the class that represents the settings panel of the selected service.
 		@return: link to the service specific settings panel
-		@rtype: <service_name>.settings.ServicePanel
+		@rtype: type[<service_name>.settings.ServicePanel]
 		"""
-		return getattr(self[".settings"], "ServicePanel", object)
+		return getattr(self[".settings"], "ServicePanel")
 
 	@property
 	def stat(self) -> dict[str, Any]:

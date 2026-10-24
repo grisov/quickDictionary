@@ -5,10 +5,19 @@
 # See the file COPYING for more details.
 # Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
+# wxPython has incomplete type annotations and the GUI helpers of NVDA have none, so the types returned
+# by most GUI calls in this file are unknown to the type checker, and many wx methods return values
+# that are not needed here (e.g. whether a control has been enabled). Only these rules are relaxed for this file.
+# pyright: reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false
+# pyright: reportUnusedCallResult=false
+# The event handlers bound with lambdas get the events of wx, which have no known types in lambdas
+# pyright: reportUnknownLambdaType=false
+
 from collections.abc import Callable, Iterator
 
 import addonHandler
 import wx
+import wx.adv
 from gui import guiHelper
 from logHandler import log
 
@@ -29,18 +38,18 @@ class ServicePanel(wx.Panel):
 
 	def __init__(
 		self,
-		parent: wx.Window | None = None,
+		parent: wx.Window,
 		id: int = wx.ID_ANY,
 	) -> None:
 		"""Create a settings panel for a specific service.
 		Populate the service panel with settings controls.
 		@param parent:
-		@type parent: wx.Window | None
+		@type parent: wx.Window
 		@param id:
 		@type id: int
 		"""
-		super(ServicePanel, self).__init__(parent, id)
-		addonHelper = guiHelper.BoxSizerHelper(self, orientation=wx.VERTICAL)
+		super().__init__(parent, id)
+		addonHelper = guiHelper.BoxSizerHelper(self, orientation=wx.VERTICAL)  # pyright: ignore[reportArgumentType]
 		self.SetSizer(addonHelper.sizer)
 		self.sourceChoice = addonHelper.addLabeledControl(
 			# Translators: A setting in addon settings dialog.
@@ -60,7 +69,7 @@ class ServicePanel(wx.Panel):
 				style=wx.ALIGN_LEFT,
 			),
 		)
-		languageHelper = guiHelper.BoxSizerHelper(self, orientation=wx.HORIZONTAL)
+		languageHelper = guiHelper.BoxSizerHelper(self, orientation=wx.HORIZONTAL)  # pyright: ignore[reportArgumentType]
 		self.fromChoice = languageHelper.addLabeledControl(
 			# Translators: A setting in addon settings dialog.
 			_("&Source language:"),
@@ -117,7 +126,7 @@ class ServicePanel(wx.Panel):
 
 		# Fields for input user credentials and link to registration
 		secret = secrets[serviceName]
-		authHelper = guiHelper.BoxSizerHelper(self, orientation=wx.HORIZONTAL)
+		authHelper = guiHelper.BoxSizerHelper(self, orientation=wx.HORIZONTAL)  # pyright: ignore[reportArgumentType]
 		self.usernameInput = authHelper.addLabeledControl(
 			# Translators: A setting in addon settings dialog.
 			_("&Username:"),
