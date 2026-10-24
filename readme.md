@@ -3,7 +3,7 @@
 * Author: Oleksandr Gryshchenko
 * Version: 2.2
 * NVDA compatibility: 2026.1 and beyond
-* Download [stable version][1]
+* Installation: through the NVDA Add-on Store ([stable version][1])
 
 Welcome to NVDA Quick Dictionary addon, which will allow you to quickly get a dictionary article with the translation of a word or phrase into your chosen language by pressing a key combination. There are few basic keyboard shortcuts and they are all intuitive and convenient so you will remember them quickly.
 
@@ -101,4 +101,4 @@ These can be installed with pip:
 1. Open a command line, change to the root of this repo
 2. Run the **scons** command. The created add-on, if there were no errors, is placed in the current directory.
 
-[1]: https://addons.nvda-project.org/files/get.php?file=quickdictionary
+[1]: https://addonstore.nvaccess.org/?channel=stable&addonId=quickDictionary

@@ -4,7 +4,7 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Oleksandr Gryshchenko <grisov.nvaccess@mailgw.com>
 
 from collections.abc import Callable
 from typing import Any, override

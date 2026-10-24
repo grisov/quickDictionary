@@ -4,7 +4,7 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Oleksandr Gryshchenko <grisov.nvaccess@mailgw.com>
 
 # The deserialized response of the server has no known types: its branches may be dicts, lists or strings,
 # so after the checks of their types, the types of their items remain unknown. Only these rules are relaxed.

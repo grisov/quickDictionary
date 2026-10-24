@@ -22,10 +22,10 @@ addon_info = AddonInfo(
 	# Translators: Long description to be shown for this add-on on add-on information from add-on store
 	addon_description=_("""Online Dictionary add-on for quick translation selected words or phrases."""),
 	# version
-	addon_version="2.2.3",
+	addon_version="2.2.4",
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version to be shown in the add-on store
-	addon_changelog=_("""The add-on has been tested for compatibility with NVDA 2026.1."""),
+	addon_changelog=_("""Updated to the latest add-on template, the translations are managed in Crowdin, and the code has been updated for Python 3.13."""),
 	# Author(s)
 	addon_author="Oleksandr Gryshchenko <grisov.nvaccess@mailgw.com>",
 	# URL for the add-on documentation support
@@ -37,7 +37,7 @@ addon_info = AddonInfo(
 	# Minimum NVDA version supported (e.g. "2019.3.0", minor version is optional)
 	addon_minimumNVDAVersion="2026.1",
 	# Last NVDA version supported/tested (e.g. "2024.4.0", ideally more recent than minimum version)
-	addon_lastTestedNVDAVersion="2026.1",
+	addon_lastTestedNVDAVersion="2026.3",
 	# Add-on update channel (default is None, denoting stable releases,
 	# and for development releases, use "dev".)
 	# Do not change unless you know what you are doing!
