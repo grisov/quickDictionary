@@ -17,7 +17,11 @@ from urllib.request import Request, urlopen
 from ..configuration import getAddonConfig
 from ..service import secrets
 
-ssl._create_default_https_context = ssl._create_unverified_context
+# The certificates of the server of the dictionary are not verified, as before, but only for the requests
+# of this service: changing the default context of ssl would turn the verification off for all of NVDA
+_sslContext = ssl.create_default_context()
+_sslContext.check_hostname = False
+_sslContext.verify_mode = ssl.CERT_NONE
 serviceName: str = os.path.basename(os.path.dirname(__file__))
 stat: dict[str, Any] = {}  # Object for store statistics
 
@@ -49,6 +53,7 @@ class Lapi(object):
 			and disregards diacritics and case (uppercase/lowercase)
 		@type analyzed: bool
 		"""
+		super().__init__()
 		self._url: str = "https://lexicala1.p.rapidapi.com/"
 		self._text = text
 		self._lang = lang
@@ -102,14 +107,14 @@ class Lapi(object):
 		"""
 		return self._analyzed
 
-	def get(self, query: str) -> dict:
+	def get(self, query: str) -> dict[str, Any]:
 		"""Request to the Lexicala online dictionary using transmitted query.
 		@param query: generated query URL not including domain name
 		@type query: str
 		@return: deserialized response from the online dictionary
-		@rtype: dict
+		@rtype: dict[str, Any]
 		"""
-		response: dict = {}
+		response: dict[str, Any] = {}
 		resp: HTTPResponse | None = None
 		url: str = self._url + query
 		rq = Request(url)
@@ -120,7 +125,7 @@ class Lapi(object):
 			secrets[serviceName].decode(getAddonConfig()[serviceName]["password"]),
 		)
 		try:
-			resp = urlopen(rq, timeout=8)
+			resp = urlopen(rq, timeout=8, context=_sslContext)
 		except Exception as e:
 			# e.getcode()==429 -> "To date, the number of allowed queries to the dictionary is exhausted!"
 			response["error"] = "HTTP error: %s" % str(e)
@@ -129,20 +134,20 @@ class Lapi(object):
 			stat["remain"] = resp.getheader("X-RateLimit-requests-Remaining", 0)
 			stat["count"] = int(resp.getheader("X-RateLimit-requests-Limit", 0)) - int(stat["remain"])
 			stat["delta"] = datetime.now() - self.parseDate(resp.getheader("date", ""))
-			if resp.getcode() == 200:
+			if resp.status == 200:
 				text: str = resp.read().decode(encoding="utf-8", errors="ignore")
 				try:
 					response = loads(text)
 				except Exception as e:
 					response["error"] = "JSON error: %s" % str(e)
 			else:
-				response["error"] = "Response code: %d" % resp.getcode()
+				response["error"] = "Response code: %d" % resp.status
 		return response
 
-	def search(self) -> dict:
+	def search(self) -> dict[str, Any]:
 		"""Request a word search in the online dictionary.
 		@return: deserialized response from the server
-		@rtype: dict
+		@rtype: dict[str, Any]
 		"""
 		query: str = (
 			"search?source={dict}&language={lang}&text={text}&morph={morph}&analyzed={analyzed}".format(
@@ -155,43 +160,43 @@ class Lapi(object):
 		)
 		return self.get(query)
 
-	def entries(self, id: str) -> dict:
+	def entries(self, id: str) -> dict[str, Any]:
 		"""Request on a dictionary entry by its ID.
 		@param id: identifier of a specific dictionary entry
 		@type id: str
 		@return: deserialized response from the server
-		@rtype: dict
+		@rtype: dict[str, Any]
 		"""
 		query: str = "entries/{entry_id}".format(
 			entry_id=id,
 		)
 		return self.get(query)
 
-	def senses(self, id: str) -> dict:
+	def senses(self, id: str) -> dict[str, Any]:
 		"""Request on a dictionary entry for the specific sense of word by its ID.
 		@param id: identifier of a dictionary entry for the specific sense of word
 		@type id: str
 		@return: deserialized response from the server
-		@rtype: dict
+		@rtype: dict[str, Any]
 		"""
 		query: str = "senses/{sense_id}".format(
 			sense_id=id,
 		)
 		return self.get(query)
 
-	def languages(self) -> dict:
+	def languages(self) -> dict[str, Any]:
 		"""Request for lists of all languages available in the online dictionary.
 		@return: deserialized response from the server
-		@rtype: dict
+		@rtype: dict[str, Any]
 		"""
 		return self.get("languages")
 
-	def test(self) -> dict:
+	def test(self) -> dict[str, Any]:
 		"""Check the functionality of the online dictionary API.
 		Authorization is not required to fulfill this request.
 		Also, this is not counted as a separate request in the daily quota of requests.
 		@return: deserialized response from the server
-		@rtype: dict
+		@rtype: dict[str, Any]
 		"""
 		return self.get("test")
 

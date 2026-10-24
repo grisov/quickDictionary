@@ -7,6 +7,7 @@
 # Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
 from collections.abc import Callable
+from typing import Any, override
 
 import addonHandler
 from logHandler import log
@@ -32,7 +33,8 @@ confspec = {
 	"autoswap": "boolean(default=false)",
 	"copytoclip": "boolean(default=false)",
 	"username": 'string(default="")',
-	"password": "string(default=%s)" % secrets[serviceName]._password,
+	# The masked access token of the add-on, used when the user has not entered their own one
+	"password": "string(default=%s)" % secrets[serviceName].toDict()["password"],
 	"mirror": "boolean(default=false)",
 	"switchsynth": "boolean(default=false)",
 }
@@ -46,8 +48,8 @@ class ServiceTranslator(Translator):
 		langFrom: str,
 		langTo: str,
 		text: str,
-		*args,
-		**kwargs,
+		*args: Any,
+		**kwargs: Any,
 	) -> None:
 		"""Initialization of the source and target language, as well as word or phrase to search in the dictionary.
 		@param langFrom: source language
@@ -57,7 +59,7 @@ class ServiceTranslator(Translator):
 		@param text: a word or phrase to look up in a dictionary
 		@type text: str
 		"""
-		super(ServiceTranslator, self).__init__(langFrom, langTo, text, *args, **kwargs)
+		super().__init__(langFrom, langTo, text, *args, **kwargs)
 
 	@property
 	def uiLang(self) -> str:
@@ -67,6 +69,7 @@ class ServiceTranslator(Translator):
 		"""
 		return self._langTo or langs.locale.code
 
+	@override
 	def run(self) -> None:
 		"""Query the remote dictionary and save the processed response.
 		Should run in a separate thread to avoid blocking.
@@ -110,13 +113,12 @@ class ServiceParser(Parser):
 			return " (%s)" % ", ".join(attrs)
 		return ""
 
+	@override
 	def to_html(self) -> str:  # noqa C901
 		"""Convert data received from a remote dictionary to HTML format.
 		@return: converted to HTML deserialized response from server
 		@rtype: str
 		"""
-		if not isinstance(self.resp, dict):  # incorrect response
-			return ""
 		if self.resp.get("error", ""):  # Error message
 			return "<h1>%s</h1>" % self.resp["error"]
 		html: str = ""
@@ -145,19 +147,23 @@ class ServiceParser(Parser):
 						html += "</li>\n"
 					html += "</ul>\n"
 				if key == "mean":
-					means = []
+					means: list[str] = []
 					for elem in self.resp["mean"]:
 						means.append(elem["text"] + self.attrs(elem))
 					html += ", ".join(means) + "</p>\n"
 					del means
-					html += ServiceParser(elem).to_html()
+					# The nested fields of the last meaning, if there is any meaning
+					if self.resp["mean"]:
+						html += ServiceParser(self.resp["mean"][-1]).to_html()
 				if key == "syn":
-					syns = []
+					syns: list[str] = []
 					for elem in self.resp["syn"]:
 						syns.append(elem["text"] + self.attrs(elem))
 					html += ", ".join(syns) + "</p>\n"
 					del syns
-					html += ServiceParser(elem).to_html()
+					# The nested fields of the last synonym, if there is any synonym
+					if self.resp["syn"]:
+						html += ServiceParser(self.resp["syn"][-1]).to_html()
 				if key == "ex":
 					exs: list[str] = []
 					for elem in self.resp["ex"]:
