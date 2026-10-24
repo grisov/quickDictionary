@@ -1,0 +1,757 @@
+<?xml version="1.0"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0" srcLang="en">
+<file id="readme.md" original="https://raw.githubusercontent.com/grisov/quickDictionary/c198a0c8c570b9206685b38e1db1eecab7d072e5/readme.md">
+<skeleton>
+# $(ID:7a6306ae-f1db-404b-aeab-60deefc2080a)
+
+* $(ID:25e623ad-4584-4ac7-a1d8-c0e55fc196e9)
+* $(ID:d178c28c-6421-486a-9461-7f05d6474cf6)
+* $(ID:af4409bc-e9a9-4c53-b37a-0821f68aa324)
+* $(ID:def93aa0-29fa-4ddd-a2c9-9e0dadcf21af)
+
+$(ID:959c7a78-f3a5-4f50-b0b1-4b7627bd6b3a)
+
+$(ID:05f8166d-7c5b-4a8c-a387-6f0744c9cad5)
+
+$(ID:204a0c93-06cb-4ce6-8530-f77fee9a4f8e)
+
+$(ID:ad7ed715-6c34-4100-8dc7-03a51af0c788)
+
+$(ID:54cb51e4-7adf-4873-8419-73b755b7fb6f)
+
+## $(ID:a488ce80-9cb2-47ea-b51a-2449569f513e)
+$(ID:63ef6fa7-c12d-49d6-9764-d22c37c5a695)
+
+$(ID:d72e8861-3670-4718-868d-a6630ea84b18)
+
+## $(ID:9827e6fc-3dc5-444e-9cba-cea63910ae6c)
+$(ID:d1cdae5f-f94a-4e92-a21a-161dcd9c7cce)
+
+## $(ID:2bc4ead6-2607-4611-8669-a9b4eab478d9)
+$(ID:dc9c6c67-f73c-40c2-a804-862964682c7c)
+
+* $(ID:41ac6302-1652-44ed-8029-078107d7fca4)
+* $(ID:0f0ad450-f1ad-43bb-8620-16f307460bf9)
+* $(ID:7485ddce-c475-4a91-880a-761cf15fc21d)
+* $(ID:4af56d68-3372-44f1-87db-ba215069a241)
+* $(ID:4015ac97-f98f-4436-b247-343a28c062d4)
+* $(ID:6d38daee-d6a2-4fdc-b11c-19377f01d3f9)
+* $(ID:0e66e391-885a-4420-ae01-c2bb0e120745)
+* $(ID:36647ecf-d7f2-4209-8e57-113d4b3ee365)
+* $(ID:67843cdb-f299-4023-9397-afd6b5b1a90a)
+* $(ID:68aacfad-ec4b-4c1b-88e8-e62c2fb29a24)
+
+$(ID:c60ab061-c4e7-427a-96da-3950348bbba7)
+
+* $(ID:80516c83-5e62-48f3-868e-daef6ed5e14f)
+* $(ID:f6c5d2d6-6b71-45f3-988b-aea76f16a775)
+* $(ID:ca5332da-c8a4-473a-8bbe-e7a6a6f88482)
+* $(ID:30fd10e1-89f4-4325-8455-9d50a00e1ca2)
+* $(ID:3de46254-b573-4d26-adc4-d4ead91eebd6)
+* $(ID:9a618329-5b2d-4c73-9668-0eb8946bfe0e)
+* $(ID:8606b53c-cb56-471a-bdbf-3ea791c0a6d0)
+
+$(ID:fa67130a-0feb-4cd7-8f50-d28dc7b1ee4e)
+
+## $(ID:ab4d8ab7-06a7-4c39-a7a4-17bf6b3b1d12)
+$(ID:fffbd410-4ba8-42f6-9aed-26d08a8e2afc)
+
+* $(ID:431d6932-4dd2-42f2-b100-428b0752720f)
+* $(ID:6c6366e2-bea4-4922-a23a-8e2fd95b83be)
+
+## $(ID:70d35baf-39a9-43c1-841c-5a1fb07bba55)
+$(ID:8ea7756a-b7fd-4963-8a32-5b8cddb8bf3f)
+
+## $(ID:cce61e4c-4ac0-406a-8d43-584a63268823)
+$(ID:e4276ca5-8a68-4391-8cc7-0c31cefc3d2e)
+
+* $(ID:ea99bbf2-b94c-4892-b4c6-0a4e089d232d)
+* $(ID:7ea73a76-7cc5-481c-b028-d3982bbe703b)
+
+$(ID:1e4609b9-4808-4fea-9540-f4ec9e780859)
+
+* $(ID:66a788e2-da1e-4fe7-a8c5-68a3d3b35534)
+* $(ID:9e865f14-b76b-410d-99db-1d7bcb6d7ffa)
+
+## $(ID:1b5ee84e-130f-4cbd-b778-733c6c9f26c9)
+
+### $(ID:ade41143-2865-4cef-9edb-b073c42a1d1a)
+* $(ID:5b1c564c-ae10-4649-9c99-1e763f64ddb3)
+
+### $(ID:4fa2ef11-6024-48b5-b98b-59c057f0225b)
+* $(ID:90899128-fb28-4023-86dd-960af3f36145)
+* $(ID:81dd69d3-a87a-4990-afb5-367d0f7ccda8)
+
+### $(ID:2a7560bb-21b8-441a-8e1a-b443b5e39550)
+* $(ID:71bf4ce7-b07a-4dca-9b4f-6f48e98c537b)
+* $(ID:1647d6d9-e1f6-4f52-b078-f128c469a616)
+* $(ID:bd392453-0fdb-48eb-a082-3d2c43be4888)
+* $(ID:3454eb60-597d-4bcc-bc16-7bf3ed4f33b0)
+* $(ID:e77f65ce-486b-4cef-ad78-28c8978f7df9)
+* $(ID:d344eddf-bae3-4e92-828d-8e6769287902)
+* $(ID:fba78334-3aba-484f-9759-8fe7d1b8a30d)
+
+## $(ID:8d9d3f00-9007-4d19-a349-5358909a834a)
+$(ID:fdb92512-5b65-45ad-821f-704aff98627b)
+
+### $(ID:e2b6a7f1-86e6-4967-8e2b-df28c7041069)
+$(ID:2dfe3f6f-d172-400b-9231-7038a91c9fae)
+
+$(ID:66e062a0-0340-4e24-977b-2cc578cdf2f5)
+$(ID:2ca4669e-3a19-4a3d-ad98-03d71add53ce)
+$(ID:e3387cfc-56e4-4b92-bd0f-5b7aee2d2d5f)
+
+### $(ID:aad361b4-6567-4c01-a2fb-c46aff6ce258)
+1. $(ID:41c4820e-9754-43ec-8e95-839eac715312)
+2. $(ID:aba0432e-45c3-47ba-8f5a-aa2688aaeef3)
+
+$(ID:0db8f06e-4856-41fa-aa0e-38e55e7de127)
+
+</skeleton>
+<unit id="7a6306ae-f1db-404b-aeab-60deefc2080a">
+<notes>
+<note appliesTo="source">line: 2</note>
+<note appliesTo="source">prefix: # </note>
+</notes>
+<segment>
+<source>NVDA Quick Dictionary</source>
+</segment>
+</unit>
+<unit id="25e623ad-4584-4ac7-a1d8-c0e55fc196e9">
+<notes>
+<note appliesTo="source">line: 4</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>Author: Oleksandr Gryshchenko</source>
+</segment>
+</unit>
+<unit id="d178c28c-6421-486a-9461-7f05d6474cf6">
+<notes>
+<note appliesTo="source">line: 5</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>Version: 2.2</source>
+</segment>
+</unit>
+<unit id="af4409bc-e9a9-4c53-b37a-0821f68aa324">
+<notes>
+<note appliesTo="source">line: 6</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>NVDA compatibility: 2026.1 and beyond</source>
+</segment>
+</unit>
+<unit id="def93aa0-29fa-4ddd-a2c9-9e0dadcf21af">
+<notes>
+<note appliesTo="source">line: 7</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>Installation: through the NVDA Add-on Store ([stable version][1])</source>
+</segment>
+</unit>
+<unit id="959c7a78-f3a5-4f50-b0b1-4b7627bd6b3a">
+<notes>
+<note appliesTo="source">line: 9</note>
+</notes>
+<segment>
+<source>Welcome to NVDA Quick Dictionary addon, which will allow you to quickly get a dictionary article with the translation of a word or phrase into your chosen language by pressing a key combination. There are few basic keyboard shortcuts and they are all intuitive and convenient so you will remember them quickly.</source>
+</segment>
+</unit>
+<unit id="05f8166d-7c5b-4a8c-a387-6f0744c9cad5">
+<notes>
+<note appliesTo="source">line: 11</note>
+</notes>
+<segment>
+<source>Dictionary articles contain detailed information about a word, such as part of speech, gender, plural or singular, translation options, list of meanings, synonyms and detailed examples. Such information will be useful for people who are learning foreign languages, or seek to use in communication all the richness and diversity of their own language.</source>
+</segment>
+</unit>
+<unit id="204a0c93-06cb-4ce6-8530-f77fee9a4f8e">
+<notes>
+<note appliesTo="source">line: 13</note>
+</notes>
+<segment>
+<source>The add-on supports several online dictionary services. You can select the desired remote dictionary in the appropriate dialog box or by using keyboard shortcuts. Each available service has its own settings panel.</source>
+</segment>
+</unit>
+<unit id="ad7ed715-6c34-4100-8dc7-03a51af0c788">
+<notes>
+<note appliesTo="source">line: 15</note>
+</notes>
+<segment>
+<source>There are also advanced opportunities for working with profiles of the voice synthesizers. You can associate a voice synthesizer profile with a specific language, after that translations into this language will be automatically voiced by the selected synthesizer.</source>
+</segment>
+</unit>
+<unit id="54cb51e4-7adf-4873-8419-73b755b7fb6f">
+<notes>
+<note appliesTo="source">line: 17</note>
+</notes>
+<segment>
+<source>Below are all the features of the add-on and keyboard shortcuts to control them. By default all functions are called using two-layer commands. But for any of these methods you can always assign convenient for you keyboard shortcuts. You can do it in the NVDA "Preferences" -&gt; "Input gestures..." dialog.</source>
+</segment>
+</unit>
+<unit id="a488ce80-9cb2-47ea-b51a-2449569f513e">
+<notes>
+<note appliesTo="source">line: 19</note>
+<note appliesTo="source">prefix: ## </note>
+</notes>
+<segment>
+<source>Receiving a dictionary article</source>
+</segment>
+</unit>
+<unit id="63ef6fa7-c12d-49d6-9764-d22c37c5a695">
+<notes>
+<note appliesTo="source">line: 20</note>
+</notes>
+<segment>
+<source>In order to get an article from the dictionary, you must first select the word you are interested in or copy it to the clipboard. Then just press NVDA+Y twice.</source>
+</segment>
+</unit>
+<unit id="d72e8861-3670-4718-868d-a6630ea84b18">
+<notes>
+<note appliesTo="source">line: 22</note>
+</notes>
+<segment>
+<source>There is also another way to get a dictionary entry: pressing NVDA+Y once switches the keyboard to add-on control mode, then just use the D key.</source>
+</segment>
+</unit>
+<unit id="9827e6fc-3dc5-444e-9cba-cea63910ae6c">
+<notes>
+<note appliesTo="source">line: 24</note>
+<note appliesTo="source">prefix: ## </note>
+</notes>
+<segment>
+<source>Add-on control mode</source>
+</segment>
+</unit>
+<unit id="d1cdae5f-f94a-4e92-a21a-161dcd9c7cce">
+<notes>
+<note appliesTo="source">line: 25</note>
+</notes>
+<segment>
+<source>To access all the features of the add-on, you need to switch to add-on control mode, you can do this by pressing NVDA+Y once. You will hear a short low beep and will be able to use the other commands described below. When you press a key that is not used in the add-on, you will hear another signal notifying you of an erroneous command and the add-on control mode will be automatically turned off.</source>
+</segment>
+</unit>
+<unit id="2bc4ead6-2607-4611-8669-a9b4eab478d9">
+<notes>
+<note appliesTo="source">line: 27</note>
+<note appliesTo="source">prefix: ## </note>
+</notes>
+<segment>
+<source>Add-on commands list</source>
+</segment>
+</unit>
+<unit id="dc9c6c67-f73c-40c2-a804-862964682c7c">
+<notes>
+<note appliesTo="source">line: 28</note>
+</notes>
+<segment>
+<source>Basic dictionary commands:</source>
+</segment>
+</unit>
+<unit id="41ac6302-1652-44ed-8029-078107d7fca4">
+<notes>
+<note appliesTo="source">line: 30</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>D - announce a dictionary entry for a selected word or phrase (same as NVDA+Y);</source>
+</segment>
+</unit>
+<unit id="0f0ad450-f1ad-43bb-8620-16f307460bf9">
+<notes>
+<note appliesTo="source">line: 31</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>W - show dictionary entry in a separate browseable window;</source>
+</segment>
+</unit>
+<unit id="7485ddce-c475-4a91-880a-761cf15fc21d">
+<notes>
+<note appliesTo="source">line: 32</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>S - swap languages and get Quick Dictionary translation;</source>
+</segment>
+</unit>
+<unit id="4af56d68-3372-44f1-87db-ba215069a241">
+<notes>
+<note appliesTo="source">line: 33</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>A - announce the current source and target languages;</source>
+</segment>
+</unit>
+<unit id="4015ac97-f98f-4436-b247-343a28c062d4">
+<notes>
+<note appliesTo="source">line: 34</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>C - copy last dictionary entry to the clipboard;</source>
+</segment>
+</unit>
+<unit id="6d38daee-d6a2-4fdc-b11c-19377f01d3f9">
+<notes>
+<note appliesTo="source">line: 35</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>E - edit text before sending;</source>
+</segment>
+</unit>
+<unit id="0e66e391-885a-4420-ae01-c2bb0e120745">
+<notes>
+<note appliesTo="source">line: 36</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>U - download from online dictionary and save the current list of available languages;</source>
+</segment>
+</unit>
+<unit id="36647ecf-d7f2-4209-8e57-113d4b3ee365">
+<notes>
+<note appliesTo="source">line: 37</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>function keys - select online dictionary service;</source>
+</segment>
+</unit>
+<unit id="67843cdb-f299-4023-9397-afd6b5b1a90a">
+<notes>
+<note appliesTo="source">line: 38</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>Q - statistics on the using the online service;</source>
+</segment>
+</unit>
+<unit id="68aacfad-ec4b-4c1b-88e8-e62c2fb29a24">
+<notes>
+<note appliesTo="source">line: 39</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>F - choose online service.</source>
+</segment>
+</unit>
+<unit id="c60ab061-c4e7-427a-96da-3950348bbba7">
+<notes>
+<note appliesTo="source">line: 41</note>
+</notes>
+<segment>
+<source>Voice synthesizers profiles management:</source>
+</segment>
+</unit>
+<unit id="80516c83-5e62-48f3-868e-daef6ed5e14f">
+<notes>
+<note appliesTo="source">line: 43</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>from 1 to 9 - selection of the voice synthesizer profile;</source>
+</segment>
+</unit>
+<unit id="f6c5d2d6-6b71-45f3-988b-aea76f16a775">
+<notes>
+<note appliesTo="source">line: 44</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>G - announce the selected profile of voice synthesizers;</source>
+</segment>
+</unit>
+<unit id="ca5332da-c8a4-473a-8bbe-e7a6a6f88482">
+<notes>
+<note appliesTo="source">line: 45</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>B - back to previous voice synthesizer;</source>
+</segment>
+</unit>
+<unit id="30fd10e1-89f4-4325-8455-9d50a00e1ca2">
+<notes>
+<note appliesTo="source">line: 46</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>R - restore default voice synthesizer;</source>
+</segment>
+</unit>
+<unit id="3de46254-b573-4d26-adc4-d4ead91eebd6">
+<notes>
+<note appliesTo="source">line: 47</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>Del - delete the selected voice synthesizer profile;</source>
+</segment>
+</unit>
+<unit id="9a618329-5b2d-4c73-9668-0eb8946bfe0e">
+<notes>
+<note appliesTo="source">line: 48</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>V - save configured voice synthesizer profile;</source>
+</segment>
+</unit>
+<unit id="8606b53c-cb56-471a-bdbf-3ea791c0a6d0">
+<notes>
+<note appliesTo="source">line: 49</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>P - display a list of all customized voice synthesizers profiles.</source>
+</segment>
+</unit>
+<unit id="fa67130a-0feb-4cd7-8f50-d28dc7b1ee4e">
+<notes>
+<note appliesTo="source">line: 51</note>
+</notes>
+<segment>
+<source>Press O to open add-on settings dialog.</source>
+</segment>
+</unit>
+<unit id="ab4d8ab7-06a7-4c39-a7a4-17bf6b3b1d12">
+<notes>
+<note appliesTo="source">line: 53</note>
+<note appliesTo="source">prefix: ## </note>
+</notes>
+<segment>
+<source>Help on add-on commands</source>
+</segment>
+</unit>
+<unit id="fffbd410-4ba8-42f6-9aed-26d08a8e2afc">
+<notes>
+<note appliesTo="source">line: 54</note>
+</notes>
+<segment>
+<source>You can see a list of all the commands used in the add-on as follows:</source>
+</segment>
+</unit>
+<unit id="431d6932-4dd2-42f2-b100-428b0752720f">
+<notes>
+<note appliesTo="source">line: 56</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>Via the NVDA menu - by pressing NVDA+N, go to the submenu "Tools", then - "Quick Dictionary" and activate the menu item "Help on add-on commands".</source>
+</segment>
+</unit>
+<unit id="6c6366e2-bea4-4922-a23a-8e2fd95b83be">
+<notes>
+<note appliesTo="source">line: 57</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>Press the H key in add-on control mode (NVDA+Y).</source>
+</segment>
+</unit>
+<unit id="70d35baf-39a9-43c1-841c-5a1fb07bba55">
+<notes>
+<note appliesTo="source">line: 59</note>
+<note appliesTo="source">prefix: ## </note>
+</notes>
+<segment>
+<source>Add-on help</source>
+</segment>
+</unit>
+<unit id="8ea7756a-b7fd-4963-8a32-5b8cddb8bf3f">
+<notes>
+<note appliesTo="source">line: 60</note>
+</notes>
+<segment>
+<source>To open the add-on help - press NVDA+N, go to the "Tools" submenu, then - "Quick Dictionary" and activate the menu item "Help".</source>
+</segment>
+</unit>
+<unit id="cce61e4c-4ac0-406a-8d43-584a63268823">
+<notes>
+<note appliesTo="source">line: 62</note>
+<note appliesTo="source">prefix: ## </note>
+</notes>
+<segment>
+<source>Contributions</source>
+</segment>
+</unit>
+<unit id="e4276ca5-8a68-4391-8cc7-0c31cefc3d2e">
+<notes>
+<note appliesTo="source">line: 63</note>
+</notes>
+<segment>
+<source>We are very grateful to everyone who made the effort to develop, translate and maintain this add-on:</source>
+</segment>
+</unit>
+<unit id="ea99bbf2-b94c-4892-b4c6-0a4e089d232d">
+<notes>
+<note appliesTo="source">line: 65</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>Cagri Dogan - Turkish translation;</source>
+</segment>
+</unit>
+<unit id="7ea73a76-7cc5-481c-b028-d3982bbe703b">
+<notes>
+<note appliesTo="source">line: 66</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>Wafiqtaher - Arabic translation.</source>
+</segment>
+</unit>
+<unit id="1e4609b9-4808-4fea-9540-f4ec9e780859">
+<notes>
+<note appliesTo="source">line: 68</note>
+</notes>
+<segment>
+<source>Several good solutions from other developments were used in the Quick Dictionary add-on. Thanks to the authors of the following add-ons:</source>
+</segment>
+</unit>
+<unit id="66a788e2-da1e-4fe7-a8c5-68a3d3b35534">
+<notes>
+<note appliesTo="source">line: 70</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>Instant Translate - Alexy Sadovoy, Beqa Gozalishvili, Mesar Hameed, Alberto Buffolino and other NVDA contributors.</source>
+</segment>
+</unit>
+<unit id="9e865f14-b76b-410d-99db-1d7bcb6d7ffa">
+<notes>
+<note appliesTo="source">line: 71</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>To work with voice synthesizers profiles were used ideas from the Switch Synth add-on (thanks to Tyler Spivey).</source>
+</segment>
+</unit>
+<unit id="1b5ee84e-130f-4cbd-b778-733c6c9f26c9">
+<notes>
+<note appliesTo="source">line: 73</note>
+<note appliesTo="source">prefix: ## </note>
+</notes>
+<segment>
+<source>Change log</source>
+</segment>
+</unit>
+<unit id="ade41143-2865-4cef-9edb-b073c42a1d1a">
+<notes>
+<note appliesTo="source">line: 75</note>
+<note appliesTo="source">prefix: ### </note>
+</notes>
+<segment>
+<source>Version 2.2.3</source>
+</segment>
+</unit>
+<unit id="5b1c564c-ae10-4649-9c99-1e763f64ddb3">
+<notes>
+<note appliesTo="source">line: 76</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>the add-on has been tested for compatibility with NVDA 2026.1;</source>
+</segment>
+</unit>
+<unit id="4fa2ef11-6024-48b5-b98b-59c057f0225b">
+<notes>
+<note appliesTo="source">line: 78</note>
+<note appliesTo="source">prefix: ### </note>
+</notes>
+<segment>
+<source>Version 2.2</source>
+</segment>
+</unit>
+<unit id="90899128-fb28-4023-86dd-960af3f36145">
+<notes>
+<note appliesTo="source">line: 79</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>the add-on has been tested for compatibility with NVDA 2023.1;</source>
+</segment>
+</unit>
+<unit id="81dd69d3-a87a-4990-afb5-367d0f7ccda8">
+<notes>
+<note appliesTo="source">line: 80</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>fixed interaction with new API of the Lexicala service.</source>
+</segment>
+</unit>
+<unit id="2a7560bb-21b8-441a-8e1a-b443b5e39550">
+<notes>
+<note appliesTo="source">line: 82</note>
+<note appliesTo="source">prefix: ### </note>
+</notes>
+<segment>
+<source>Version 2.1.5</source>
+</segment>
+</unit>
+<unit id="71bf4ce7-b07a-4dca-9b4f-6f48e98c537b">
+<notes>
+<note appliesTo="source">line: 83</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>the add-on has been tested for compatibility with NVDA 2022.1;</source>
+</segment>
+</unit>
+<unit id="1647d6d9-e1f6-4f52-b078-f128c469a616">
+<notes>
+<note appliesTo="source">line: 84</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>the source code is significantly optimized and added MyPy type hints;</source>
+</segment>
+</unit>
+<unit id="bd392453-0fdb-48eb-a082-3d2c43be4888">
+<notes>
+<note appliesTo="source">line: 85</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>the add-on is adapted to support Python versions 3.7 and 3.8;</source>
+</segment>
+</unit>
+<unit id="3454eb60-597d-4bcc-bc16-7bf3ed4f33b0">
+<notes>
+<note appliesTo="source">line: 86</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>fixed formatting errors in Markdown files;</source>
+</segment>
+</unit>
+<unit id="e77f65ce-486b-4cef-ad78-28c8978f7df9">
+<notes>
+<note appliesTo="source">line: 87</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>added a dialog to edit the text before sending to remote service;</source>
+</segment>
+</unit>
+<unit id="d344eddf-bae3-4e92-828d-8e6769287902">
+<notes>
+<note appliesTo="source">line: 88</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>separated add-on help page from ReadMe;</source>
+</segment>
+</unit>
+<unit id="fba78334-3aba-484f-9759-8fe7d1b8a30d">
+<notes>
+<note appliesTo="source">line: 89</note>
+<note appliesTo="source">prefix: * </note>
+</notes>
+<segment>
+<source>Turkish translation added (thanks to Cagri Dogan).</source>
+</segment>
+</unit>
+<unit id="8d9d3f00-9007-4d19-a349-5358909a834a">
+<notes>
+<note appliesTo="source">line: 91</note>
+<note appliesTo="source">prefix: ## </note>
+</notes>
+<segment>
+<source>Altering NVDA QuickDictionary</source>
+</segment>
+</unit>
+<unit id="fdb92512-5b65-45ad-821f-704aff98627b">
+<notes>
+<note appliesTo="source">line: 92</note>
+</notes>
+<segment>
+<source>You may clone this repo to make alteration to NVDA Quick Dictionary.</source>
+</segment>
+</unit>
+<unit id="e2b6a7f1-86e6-4967-8e2b-df28c7041069">
+<notes>
+<note appliesTo="source">line: 94</note>
+<note appliesTo="source">prefix: ### </note>
+</notes>
+<segment>
+<source>Third Party dependencies</source>
+</segment>
+</unit>
+<unit id="2dfe3f6f-d172-400b-9231-7038a91c9fae">
+<notes>
+<note appliesTo="source">line: 95</note>
+</notes>
+<segment>
+<source>These can be installed with pip:</source>
+</segment>
+</unit>
+<unit id="66e062a0-0340-4e24-977b-2cc578cdf2f5">
+<notes>
+<note appliesTo="source">line: 97</note>
+</notes>
+<segment>
+<source>- markdown</source>
+</segment>
+</unit>
+<unit id="2ca4669e-3a19-4a3d-ad98-03d71add53ce">
+<notes>
+<note appliesTo="source">line: 98</note>
+</notes>
+<segment>
+<source>- scons</source>
+</segment>
+</unit>
+<unit id="e3387cfc-56e4-4b92-bd0f-5b7aee2d2d5f">
+<notes>
+<note appliesTo="source">line: 99</note>
+</notes>
+<segment>
+<source>- python-gettext</source>
+</segment>
+</unit>
+<unit id="aad361b4-6567-4c01-a2fb-c46aff6ce258">
+<notes>
+<note appliesTo="source">line: 101</note>
+<note appliesTo="source">prefix: ### </note>
+</notes>
+<segment>
+<source>To package the add-on for distribution:</source>
+</segment>
+</unit>
+<unit id="41c4820e-9754-43ec-8e95-839eac715312">
+<notes>
+<note appliesTo="source">line: 102</note>
+<note appliesTo="source">prefix: 1. </note>
+</notes>
+<segment>
+<source>Open a command line, change to the root of this repo</source>
+</segment>
+</unit>
+<unit id="aba0432e-45c3-47ba-8f5a-aa2688aaeef3">
+<notes>
+<note appliesTo="source">line: 103</note>
+<note appliesTo="source">prefix: 2. </note>
+</notes>
+<segment>
+<source>Run the **scons** command. The created add-on, if there were no errors, is placed in the current directory.</source>
+</segment>
+</unit>
+<unit id="0db8f06e-4856-41fa-aa0e-38e55e7de127">
+<notes>
+<note appliesTo="source">line: 105</note>
+</notes>
+<segment>
+<source>[1]: https://addonstore.nvaccess.org/?channel=stable&amp;addonId=quickDictionary</source>
+</segment>
+</unit>
+</file>
+</xliff>
