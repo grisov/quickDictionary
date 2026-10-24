@@ -14,9 +14,7 @@ from typing import Any
 from urllib.parse import quote as urlencode
 from urllib.request import Request, urlopen
 
-import config
-
-from .. import addonName
+from ..configuration import getAddonConfig
 from ..service import secrets
 
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -119,7 +117,7 @@ class Lapi(object):
 			rq.add_header(name, value)
 		rq.add_header(
 			"X-RapidAPI-Key",
-			secrets[serviceName].decode(config.conf[addonName][serviceName]["password"]),
+			secrets[serviceName].decode(getAddonConfig()[serviceName]["password"]),
 		)
 		try:
 			resp = urlopen(rq, timeout=8)

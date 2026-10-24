@@ -8,14 +8,13 @@
 from collections.abc import Callable
 
 import addonHandler
-import config
 import gui
 import wx
 from gui.nvdaControls import AutoWidthColumnListCtrl
 from gui.settingsDialogs import SettingsPanel
 from logHandler import log
 
-from . import addonName, addonSummary
+from .configuration import addonSummary, getAddonConfig
 from .locator import services
 from .synthesizers import profiles
 
@@ -42,7 +41,7 @@ class QDSettingsPanel(SettingsPanel):
 		@type sizer: wx._core.Sizer
 		"""
 		self._sizer = sizer
-		self._active: int = config.conf[addonName]["active"]
+		self._active: int = getAddonConfig()["active"]
 		servSizer = wx.BoxSizer(wx.HORIZONTAL)
 		# Translators: A setting in addon settings dialog.
 		servLabel = wx.StaticText(self, label=_("Select &online service:"))
@@ -84,7 +83,7 @@ class QDSettingsPanel(SettingsPanel):
 		"""Update Configuration when clicking OK.
 		Overrides the corresponding abstract method of the SettingsPanel class.
 		"""
-		config.conf[addonName]["active"] = self._active
+		getAddonConfig()["active"] = self._active
 		self._panel.save()
 
 
@@ -123,7 +122,7 @@ class ServicePanel(wx.Panel):
 			label=_("Switch between &voice synthesizers for selected languages"),
 		)  # noqa E501
 		sizer.Add(self._switchSynthChk)
-		self._switchSynthChk.SetValue(config.conf[addonName][services[self._active].name]["switchsynth"])
+		self._switchSynthChk.SetValue(getAddonConfig()[services[self._active].name]["switchsynth"])
 		self._switchSynthChk.Bind(wx.EVT_CHECKBOX, self.onSwitchSynth)
 
 		# Display a list of voice synthesizers and the choice of languages with which they are associated
@@ -246,7 +245,7 @@ class ServicePanel(wx.Panel):
 	def save(self) -> None:
 		"""Save the state of the panel settings."""
 		self._servPanel.save()
-		config.conf[addonName][services[self._active].name]["switchsynth"] = self._switchSynthChk.GetValue()
+		getAddonConfig()[services[self._active].name]["switchsynth"] = self._switchSynthChk.GetValue()
 		if self._switchSynthChk.GetValue():
 			for slot, profile in profiles:
 				profiles[slot].lang = self._choices[slot]
@@ -305,8 +304,8 @@ class ServicesDialog(wx.Dialog):
 		for i in range(len(services)):
 			self.servicesList.Append((i + 1, services[i].summary, len(services[i].langs.all)))
 		self.servicesList.SetFocus()
-		self.servicesList.Focus(config.conf[addonName]["active"])
-		self.servicesList.Select(config.conf[addonName]["active"])
+		self.servicesList.Focus(getAddonConfig()["active"])
+		self.servicesList.Select(getAddonConfig()["active"])
 
 		# Binding dialog box elements to handler methods
 		self.servicesList.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.onSelectService)
@@ -321,7 +320,7 @@ class ServicesDialog(wx.Dialog):
 		key: int = event.GetKeyCode() - ord("1")
 		event.Skip()
 		if key in range(min(len(services), 12)):
-			config.conf[addonName]["active"] = key
+			getAddonConfig()["active"] = key
 			self.Close()
 
 	def onSelectService(self, event: wx._core.PyEvent) -> None:
@@ -330,7 +329,7 @@ class ServicesDialog(wx.Dialog):
 		@type event: wx._core.PyEvent
 		"""
 		event.Skip()
-		config.conf[addonName]["active"] = self.servicesList.GetFocusedItem()
+		getAddonConfig()["active"] = self.servicesList.GetFocusedItem()
 		self.Close()
 
 
@@ -557,7 +556,7 @@ class SynthesizersDialog(wx.Dialog):
 
 	def fillInList(self) -> None:
 		"""Display a list of saved synthesizers profiles in the ListCtrl widget."""
-		langs = services[config.conf[addonName]["active"]].langs
+		langs = services[getAddonConfig()["active"]].langs
 		self.synthsList.DeleteAllItems()
 		for slot, profile in profiles:
 			self.synthsList.Append((slot, profile.title, langs[profile.lang].name))

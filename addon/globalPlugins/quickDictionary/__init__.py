@@ -23,24 +23,25 @@ from queueHandler import eventQueue, queueFunction
 from scriptHandler import script
 from tones import beep
 
-from .locator import services  # noqa E402
-from .service import Translator  # noqa E402
+from .configuration import addonName, addonSummary, getAddonConfig, getDocFilePath, getNvdaConfig
+from .locator import services
+from .service import Translator
 from .settings import (
 	EditableInputDialog,
-	QDSettingsPanel,  # noqa E402
+	QDSettingsPanel,
 	ServicesDialog,
 	SynthesizersDialog,
 )
 from .shared import (
 	finally_,
 	getSelectedText,
-	hashForCache,  # noqa E402
+	hashForCache,
 	htmlTemplate,
 	messageWithLangDetection,
 	translateWithCaching,
 	waitingFor,
 )
-from .synthesizers import profiles  # noqa E402
+from .synthesizers import profiles
 
 try:
 	addonHandler.initTranslation()
@@ -52,13 +53,6 @@ _: Callable[[str], str]
 _libDir = os.path.join(os.path.dirname(__file__), "lib")
 if _libDir not in sys.path:
 	sys.path.append(_libDir)
-
-_addonDir = os.path.join(os.path.dirname(__file__), "..", "..")
-if isinstance(_addonDir, bytes):
-	_addonDir = _addonDir.decode("mbcs")
-_curAddon = addonHandler.Addon(_addonDir)
-addonName: str = _curAddon.manifest["name"]
-addonSummary: str = _curAddon.manifest["summary"]
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
@@ -75,9 +69,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		confspec = {
 			"active": "integer(default=0,min=0,max=9)",
 		}
-		config.conf.spec[addonName] = confspec
+		getNvdaConfig().spec[addonName] = confspec
 		for service in services:
-			config.conf.spec[addonName][service.name] = service.confspec
+			getNvdaConfig().spec[addonName][service.name] = service.confspec
 		gui.settingsDialogs.NVDASettingsDialog.categoryClasses.append(QDSettingsPanel)
 		# to use the second layer of keyboard shortcuts
 		self._toggleGestures: bool = False
@@ -86,7 +80,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		# to use speech synthesizers profiles
 		self._slot: int = 1
 		# to switch between services
-		self._gate: int = config.conf[addonName]["active"] + 1
+		self._gate: int = getAddonConfig()["active"] + 1
 		# storing information about the state of the cache
 		self._cacheInfo: str = ""
 		# Sequence of messages
@@ -121,11 +115,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		# Translators: the name of a submenu item (also used as dialog title).
 		cmdHelpItem = subMenu.Append(wx.ID_ANY, _("help on add-on commands").capitalize())
 		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonHelpPage(), cmdHelpItem)
-		helpFile = _curAddon.getDocFilePath().replace("readme.html", "index.html")
+		helpFile = getDocFilePath().replace("readme.html", "index.html")
 		# If there is no localized file - open the English version
 		if not os.path.isfile(helpFile):
 			locale = helpFile.split("\\")[-2]
-			helpFile = _curAddon.getDocFilePath().replace("\\%s\\readme.html" % locale, "\\en\\index.html")
+			helpFile = getDocFilePath().replace("\\%s\\readme.html" % locale, "\\en\\index.html")
 		if os.path.isfile(helpFile):
 			# Translators: the name of a submenu item
 			helpItem = subMenu.Append(wx.ID_ANY, _("He&lp"))
@@ -146,7 +140,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: usually two-character language code
 		@rtype: str
 		"""
-		return config.conf[addonName][services[config.conf[addonName]["active"]].name]["from"]
+		return getAddonConfig()[services[getAddonConfig()["active"]].name]["from"]
 
 	@source.setter
 	def source(self, lang: str) -> None:
@@ -154,7 +148,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param lang: usually two-character language code
 		@type lang: str
 		"""
-		config.conf[addonName][services[config.conf[addonName]["active"]].name]["from"] = lang
+		getAddonConfig()[services[getAddonConfig()["active"]].name]["from"] = lang
 
 	@property
 	def target(self) -> str:
@@ -162,7 +156,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: usually two-character language code
 		@rtype: str
 		"""
-		return config.conf[addonName][services[config.conf[addonName]["active"]].name]["into"]
+		return getAddonConfig()[services[getAddonConfig()["active"]].name]["into"]
 
 	@target.setter
 	def target(self, lang: str) -> None:
@@ -170,7 +164,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param lang: usually two-character language code
 		@type lang: str
 		"""
-		config.conf[addonName][services[config.conf[addonName]["active"]].name]["into"] = lang
+		getAddonConfig()[services[getAddonConfig()["active"]].name]["into"] = lang
 
 	@property
 	def isCopyToClipboard(self) -> bool:
@@ -178,7 +172,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: value stored in the add-on configuration
 		@rtype: bool
 		"""
-		return config.conf[addonName][services[config.conf[addonName]["active"]].name]["copytoclip"]
+		return getAddonConfig()[services[getAddonConfig()["active"]].name]["copytoclip"]
 
 	@property
 	def isAutoSwap(self) -> bool:
@@ -186,7 +180,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: value stored in the add-on configuration
 		@rtype: bool
 		"""
-		return config.conf[addonName][services[config.conf[addonName]["active"]].name]["autoswap"]
+		return getAddonConfig()[services[getAddonConfig()["active"]].name]["autoswap"]
 
 	@property
 	def isSwitchSynth(self) -> bool:
@@ -194,7 +188,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: value stored in the add-on configuration
 		@rtype: bool
 		"""
-		return config.conf[addonName]["switchsynth"]
+		return getAddonConfig()["switchsynth"]
 
 	@override
 	def terminate(self) -> None:
@@ -318,7 +312,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		langs = services[config.conf[addonName]["active"]].langs
+		langs = services[getAddonConfig()["active"]].langs
 		ui.message(
 			# Translators: message presented to announce the current source and target languages.
 			_("Translate: from {langFrom} to {langInto}").format(
@@ -334,7 +328,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		langs = services[config.conf[addonName]["active"]].langs
+		langs = services[getAddonConfig()["active"]].langs
 		if langs.isAvailable(self.target, self.source):
 			self.source, self.target = self.target, self.source
 			# Translators: Notification that languages have been swapped
@@ -367,7 +361,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			# Translators: Notification that no dictionary entries have been received in the current session
 			ui.message(_("There is no dictionary queries"))
 			return
-		service = services[getattr(self._lastTranslator, "id", config.conf[addonName]["active"])]
+		service = services[getattr(self._lastTranslator, "id", getAddonConfig()["active"])]
 		api.copyToClip(self._lastTranslator.plaintext, notify=True)
 		ui.message(
 			"%s - %s"
@@ -392,7 +386,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			"""Download current list of available languages from the remote server and save them to a local file.
 			Wait for the request to complete and return a prepared response.
 			"""
-			langs = services[config.conf[addonName]["active"]].langs
+			langs = services[getAddonConfig()["active"]].langs
 			waitingFor(langs.update)
 			if langs.updated:
 				# Translators: Notification when downloading from the online dictionary list of available languages
@@ -412,16 +406,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		service = services[config.conf[addonName]["active"]]
+		service = services[getAddonConfig()["active"]]
 		ui.message(service.summary)
 		# Translators: Information about the online service
 		ui.message(_("supports {number} languages").format(number=len(service.langs.all)))
-		if config.conf[addonName][service.name].get("source"):
+		if getAddonConfig()[service.name].get("source"):
 			ui.message(
 				# Translators: The name of the field displayed in the statistics and in the settings panel
 				"{title} - {source}".format(
 					title=_("&Dictionary:").replace("&", ""),
-					source=config.conf[addonName][service.name]["source"],
+					source=getAddonConfig()[service.name]["source"],
 				),
 			)
 		if not service.stat:
@@ -465,7 +459,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return
 		from json import dumps
 
-		service = services[getattr(self._lastTranslator, "id", config.conf[addonName]["active"])]
+		service = services[getattr(self._lastTranslator, "id", getAddonConfig()["active"])]
 		ui.browseableMessage(
 			message=dumps(self._lastTranslator.resp, skipkeys=True, ensure_ascii=False, indent=4),
 			# Translators: The title of the window that displays the desiralized response from the server
@@ -686,7 +680,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@type gesture: InputGesture
 		"""
 		self._gate = min(int(gesture.mainKeyName.lower().replace("f", "")), len(services))
-		config.conf[addonName]["active"] = self._gate - 1
+		getAddonConfig()["active"] = self._gate - 1
 		ui.message(": ".join([gesture.displayName, services[self._gate - 1].summary]))
 
 	# Translators: Method description included in the add-on help message and NVDA input gestures dialog
@@ -714,7 +708,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param isHtml: a sign of whether it is necessary to display the result of work in the form of HTML page
 		@type isHtml: bool
 		"""
-		active = config.conf[addonName]["active"]
+		active = getAddonConfig()["active"]
 		langs = services[active].langs
 		pairs = [(self.source, self.target)]
 		if self.isAutoSwap:
@@ -743,7 +737,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				title="%s-%s" % (langs[translator.langFrom].name, langs[translator.langTo].name),
 				isHtml=isHtml,
 				closeButton=False,
-				copyButton=not config.conf[addonName][services[active].name]["copytoclip"],
+				copyButton=not getAddonConfig()[services[active].name]["copytoclip"],
 			)
 		else:
 			self._messages.append(

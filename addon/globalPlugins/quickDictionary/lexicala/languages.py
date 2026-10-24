@@ -8,9 +8,7 @@
 import os.path
 from collections.abc import Iterator
 
-import config
-
-from .. import addonName
+from ..configuration import addonName, getAddonConfig, getNvdaConfig
 from ..service import Language, Languages
 from .api import Lapi, serviceName
 
@@ -60,7 +58,7 @@ class ServiceLanguages(Languages):
 		@return: name of the selected source dictionary
 		@rtype: Literal["global", "password", "random"]
 		"""
-		return config.conf.get(addonName, {}).get(serviceName, {}).get("source") or self.defaultSource
+		return getNvdaConfig().get(addonName, {}).get(serviceName, {}).get("source") or self.defaultSource
 
 	@source.setter
 	def source(self, source: str) -> None:
@@ -69,7 +67,7 @@ class ServiceLanguages(Languages):
 		@type source: Literal["global", "password", "random"]
 		"""
 		if source in self.sources:
-			config.conf[addonName][serviceName]["source"] = source
+			getAddonConfig()[serviceName]["source"] = source
 
 	@property
 	def defaultSource(self) -> str:

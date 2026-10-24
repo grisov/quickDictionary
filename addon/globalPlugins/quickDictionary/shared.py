@@ -16,7 +16,6 @@ from typing import Any
 import addonHandler
 import api
 import braille
-import config
 import speech
 import ui
 import versionInfo
@@ -25,7 +24,7 @@ from speech.commands import CallbackCommand, LangChangeCommand
 from textInfos import POSITION_SELECTION
 from tones import beep
 
-from . import addonName
+from .configuration import getAddonConfig, getNvdaConfig
 from .locator import services
 from .service import Translator
 from .synthesizers import profiles
@@ -54,7 +53,7 @@ def translateWithCaching(langFrom: str, langInto: str, text: str, hashForCache: 
 	@return: object containing the prepared response from the remote dictionary
 	@rtype: Translator
 	"""
-	translator = services[config.conf[addonName]["active"]].translator(langFrom, langInto, text)
+	translator = services[getAddonConfig()["active"]].translator(langFrom, langInto, text)
 	translator.start()
 	i = 0
 	while translator.is_alive():
@@ -70,7 +69,7 @@ def translateWithCaching(langFrom: str, langInto: str, text: str, hashForCache: 
 def hashForCache(active: int) -> int:
 	"""Hash sum of the values of all service parameters that must be taken into account when caching requests."""
 	hashes: int = active
-	for opt, value in config.conf[addonName][services[active].name].items():
+	for opt, value in getAddonConfig()[services[active].name].items():
 		hashes += hash(value)
 	return hashes
 
@@ -192,13 +191,13 @@ def messageWithLangDetection(msg: dict[str, str]) -> None:
 	@param msg: language code and text to be spoken in the specified language
 	@type msg: dict[str, str] -> {'lang': str, 'text': str}
 	"""
-	switchSynth = config.conf[addonName][services[config.conf[addonName]["active"]].name]["switchsynth"]
+	switchSynth = getAddonConfig()[services[getAddonConfig()["active"]].name]["switchsynth"]
 	profile = next(filter(lambda x: x.lang == msg["lang"], (p for s, p in profiles)), None)
 	if switchSynth and profile:
 		profiles.rememberCurrent()
 		profile.set()
 	speechSequence = []
-	if config.conf["speech"]["autoLanguageSwitching"]:
+	if getNvdaConfig()["speech"]["autoLanguageSwitching"]:
 		speechSequence.append(LangChangeCommand(msg["lang"]))
 	if switchSynth and profile:
 		speechSequence.append(CallbackCommand(callback=Thread(target=restoreSynthIfSpeechBeenCanceled).start))

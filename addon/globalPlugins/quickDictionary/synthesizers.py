@@ -15,7 +15,7 @@ from collections.abc import Generator
 import config
 from synthDriverHandler import getSynth, setSynth
 
-from . import addonName
+from .configuration import addonName, getNvdaConfig
 
 
 class Profile(object):
@@ -48,9 +48,9 @@ class Profile(object):
 		"""
 		state = False
 		try:
-			config.conf.profiles[0]["speech"][self._name].clear()
-			config.conf.profiles[0]["speech"][self._name].update(self._conf)
-			config.conf["speech"][self._name]._cache.clear()
+			getNvdaConfig().profiles[0]["speech"][self._name].clear()
+			getNvdaConfig().profiles[0]["speech"][self._name].update(self._conf)
+			getNvdaConfig()["speech"][self._name]._cache.clear()
 			state = setSynth(self._name)
 			getSynth().saveSettings()
 		except KeyError:
@@ -64,7 +64,7 @@ class Profile(object):
 		@rtype: Profile
 		"""
 		self._name = getSynth().name
-		self._conf = dict(config.conf["speech"][getSynth().name].items())
+		self._conf = dict(getNvdaConfig()["speech"][getSynth().name].items())
 		self._lang = self._lang or ""
 		return self
 

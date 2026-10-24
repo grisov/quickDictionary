@@ -30,7 +30,7 @@ import addonHandler
 from languageHandler import getLanguageDescription
 from logHandler import log
 
-from . import addonName
+from .configuration import addonName
 
 try:
 	addonHandler.initTranslation()

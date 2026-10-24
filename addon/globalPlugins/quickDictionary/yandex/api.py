@@ -12,9 +12,7 @@ from typing import Any
 from urllib.parse import quote as urlencode
 from urllib.request import Request, urlopen
 
-import config
-
-from .. import addonName
+from ..configuration import getAddonConfig
 from ..service import secrets
 
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -90,7 +88,7 @@ class Yapi(object):
 		@return: the order of the servers used when connecting
 		@rtype: bool
 		"""
-		return config.conf[addonName][serviceName]["mirror"]
+		return getAddonConfig()[serviceName]["mirror"]
 
 	@property
 	def directUrl(self) -> str:
@@ -114,7 +112,7 @@ class Yapi(object):
 		@return: access token
 		@rtype: str
 		"""
-		return secrets[serviceName].decode(config.conf[addonName][serviceName]["password"])
+		return secrets[serviceName].decode(getAddonConfig()[serviceName]["password"])
 
 	def get(self, query: str) -> dict:
 		"""Request to the Yandex online dictionary using transmitted query.

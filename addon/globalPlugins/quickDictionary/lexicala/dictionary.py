@@ -10,10 +10,9 @@ from collections.abc import Callable
 from typing import Any
 
 import addonHandler
-import config
 from logHandler import log
 
-from .. import addonName
+from ..configuration import getAddonConfig
 from ..service import Parser, Translator, secrets
 from ..shared import htmlTemplate
 from .api import Lapi, serviceName
@@ -64,7 +63,7 @@ class ServiceTranslator(Translator):
 		@return: source language code
 		@rtype: str
 		"""
-		return config.conf[addonName][serviceName]["source"]
+		return getAddonConfig()[serviceName]["source"]
 
 	@property
 	def morph(self) -> bool:
@@ -72,7 +71,7 @@ class ServiceTranslator(Translator):
 		@return: parameter of searching in the remote dictionary
 		@rtype: bool
 		"""
-		return config.conf[addonName][serviceName]["morph"]
+		return getAddonConfig()[serviceName]["morph"]
 
 	@property
 	def analyzed(self) -> bool:
@@ -80,7 +79,7 @@ class ServiceTranslator(Translator):
 		@return: parameter of searching in the remote dictionary
 		@rtype: bool
 		"""
-		return config.conf[addonName][serviceName]["analyzed"]
+		return getAddonConfig()[serviceName]["analyzed"]
 
 	def run(self) -> None:
 		"""Query the remote dictionary and save the processed response.
@@ -357,7 +356,7 @@ class ServiceParser(Parser):
 		rsp: dict = resp.get("translations", {})
 		if not rsp:
 			return ""
-		if config.conf[addonName][serviceName]["all"]:
+		if getAddonConfig()[serviceName]["all"]:
 			trs: list[str] = []
 			trsl: str = ""
 			for lng, cnt in rsp.items():
