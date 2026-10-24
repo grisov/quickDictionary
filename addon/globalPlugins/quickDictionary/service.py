@@ -25,6 +25,7 @@ from abc import ABCMeta, abstractmethod
 from collections.abc import Callable, Iterator
 from locale import getdefaultlocale
 from threading import Thread
+from typing import Any, override
 
 import addonHandler
 from languageHandler import getLanguageDescription
@@ -84,6 +85,7 @@ class Language(metaclass=ABCMeta):
 		@param code: usually two-character language code
 		@type code: str
 		"""
+		super().__init__()
 		self._lang: str = code
 		# additional languages, where key is a two-character code and value is name of the language
 		self._names: dict[str, str] = langNames
@@ -131,35 +133,39 @@ class Languages(metaclass=ABCMeta):
 		@param file: external file containing a list of available source and target languages
 		@type file: str
 		"""
+		super().__init__()
 		self._Language = Language  # an object that represents one language
 		self.updated: bool = False
 		self._all: list[Language] = []
 		self._file = file
-		self._langs: dict = self.load()
+		# The structure of the list of languages depends on the service
+		self._langs: Any = self.load()
 
-	def load(self) -> dict:
+	def load(self) -> Any:
 		"""Load a collection of available language pairs from an external json file.
 		@return: collection of language pairs available in the dictionary
 		@rtype: list | dict (depends on the service)
 		"""
-		data: dict = {}
+		data: dict[str, Any] = {}
 		try:
 			with open(self._file, "r", encoding="utf-8") as f:
 				data = json.load(f)
-		except Exception as e:
-			log.exception(e)
+		except Exception:
+			log.error(f"Unable to load the languages from {self._file}", exc_info=True)
 		return data.get("data", {})
 
-	def save(self, data: list | dict) -> bool:
+	def save(self, data: Any) -> bool:
 		"""Save a collection of available languages to an external file.
 		@param data: collection of available languages
-		@type data: list | dict
+		@type data: list | dict (depends on the service)
+		@return: whether the languages have been saved
+		@rtype: bool
 		"""
 		try:
 			with open(self._file, "w") as f:
-				f.write(json.dumps({"data": data}, skipkeys=True, ensure_ascii=False, indent=4))
-		except Exception as e:
-			log.exception(e)
+				_ = f.write(json.dumps({"data": data}, skipkeys=True, ensure_ascii=False, indent=4))
+		except Exception:
+			log.error(f"Unable to save the languages to {self._file}", exc_info=True)
 			return False
 		return True
 
@@ -272,8 +278,8 @@ class Translator(Thread):
 		langFrom: str,
 		langTo: str,
 		text: str,
-		*args,
-		**kwargs,
+		*args: Any,
+		**kwargs: Any,
 	) -> None:
 		"""Initialization of the source and target languages,
 		as well as the word or phrase to search in the remote dictionary.
@@ -288,7 +294,7 @@ class Translator(Thread):
 		self._langFrom = langFrom
 		self._langTo = langTo
 		self._text = text
-		self._resp: dict = {}
+		self._resp: dict[str, Any] = {}
 		self._html: str = ""
 		self._plaintext: str = ""
 		self._error: bool = False
@@ -318,10 +324,10 @@ class Translator(Thread):
 		return self._text
 
 	@property
-	def resp(self) -> dict:
+	def resp(self) -> dict[str, Any]:
 		"""Get deserialized response from the server.
-		@return: deserealized response
-		@rtype: dict
+		@return: deserialized response
+		@rtype: dict[str, Any]
 		"""
 		return self._resp
 
@@ -349,6 +355,7 @@ class Translator(Thread):
 		"""
 		return self._error
 
+	@override
 	def __hash__(self) -> int:
 		"""Make the class hashable with a constant hash value.
 		This is necessary for the caching performed by the decorator functools.lru_cache to work correctly.
@@ -357,6 +364,7 @@ class Translator(Thread):
 		"""
 		return 0
 
+	@override
 	def run(self) -> None:
 		"""Query the remote dictionary and save the processed response.
 		Should run in a separate thread to avoid blocking.
@@ -369,12 +377,13 @@ class Parser(metaclass=ABCMeta):
 	The child class must override the to_html() method.
 	"""
 
-	def __init__(self, response: dict) -> None:
+	def __init__(self, response: dict[str, Any]) -> None:
 		"""Input deserialized data for further analysis and conversion to other formats.
 		@param response: deserialized response from the online dictionary
-		@type response: dict
+		@type response: dict[str, Any]
 		"""
-		self.resp: dict = response
+		super().__init__()
+		self.resp: dict[str, Any] = response
 		self.html: str = ""
 
 	@abstractmethod
@@ -408,10 +417,12 @@ class Secret(object):
 		@param service: online dictionary service name, determined by the module "locator"
 		@type service: str
 		"""
+		super().__init__()
 		self._service: str = service
 		self._url: str = ""
-		self.username: str = ""
-		self.password: str = ""
+		# The username and the password are kept masked
+		self._username: str = self.encode("")
+		self._password: str = self.encode("")
 
 	@property
 	def service(self) -> str:
@@ -525,19 +536,20 @@ class Secrets(object):
 
 	def __init__(
 		self,
-		dir: str = os.path.dirname(__file__),
+		dir: str = "",
 		file: str = "qd",
 	) -> None:
 		"""Initialize all required values.
-		@param dir: the directory where the credential file is stored
+		@param dir: the directory where the credential file is stored, the folder of the add-on by default
 		@type dir: str
 		@param file: file name without extension, json-file will be stored in the zip archive of the same name
 		@type file: str
 		"""
-		self._path: str = os.path.join(dir, file)
+		super().__init__()
+		self._path: str = os.path.join(dir or os.path.dirname(__file__), file)
 		self._file: str = file + ".json"
 		self._secrets: dict[str, Secret] = {}
-		self.load()
+		_ = self.load()
 
 	def load(self) -> Secrets:
 		"""Load credentials from an archived file.
@@ -564,14 +576,12 @@ class Secrets(object):
 		@return: current updated object
 		@rtype: Secrets
 		"""
-		data = {}
-		for service in self._secrets:
-			data[service] = self._secrets[service].toDict()
+		data = {service: secret.toDict() for service, secret in self._secrets.items()}
 		try:
 			with open(self._path + ".json", "w", encoding="utf-8") as f:
-				f.write(json.dumps(data, skipkeys=True, ensure_ascii=False, indent=4))
-		except Exception as e:
-			log.error(str(e), self._path + "json")
+				_ = f.write(json.dumps(data, skipkeys=True, ensure_ascii=False, indent=4))
+		except Exception:
+			log.error(f"Unable to save {self._path}.json", exc_info=True)
 		return self
 
 	@property
