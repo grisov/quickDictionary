@@ -24,7 +24,7 @@ from gui.settingsDialogs import SettingsPanel
 from logHandler import log
 
 from .configuration import addonSummary, getAddonConfig
-from .locator import services
+from .locator import getActiveService, services
 from .service import Language
 from .synthesizers import profiles
 
@@ -133,7 +133,7 @@ class ServicePanel(wx.Panel):
 		self._switchSynthChk = wx.CheckBox(
 			self,
 			label=_("Switch between &voice synthesizers for selected languages"),
-		)  # noqa E501
+		)
 		sizer.Add(self._switchSynthChk)
 		self._switchSynthChk.SetValue(getAddonConfig()[services[self._active].name]["switchsynth"])
 		self._switchSynthChk.Bind(wx.EVT_CHECKBOX, self.onSwitchSynth)
@@ -169,7 +169,7 @@ class ServicePanel(wx.Panel):
 				synthWarning,
 				proportion=wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL,
 				flag=wx.EXPAND,
-			)  # noqa E501
+			)
 		else:
 			synthSizer.SetCols(2)
 			synthSizer.SetRows(len(profiles))
@@ -570,7 +570,7 @@ class SynthesizersDialog(wx.Dialog):
 
 	def fillInList(self) -> None:
 		"""Display a list of saved synthesizers profiles in the ListCtrl widget."""
-		langs = services[getAddonConfig()["active"]].langs
+		langs = getActiveService().langs
 		self.synthsList.DeleteAllItems()
 		for slot, profile in profiles:
 			self.synthsList.Append((slot, profile.title, langs[profile.lang].name))
@@ -616,7 +616,7 @@ class SynthesizersDialog(wx.Dialog):
 			_("Voice synthesizer profile saved successfully")
 			if profiles.save()
 			else _("Profiles list could not be saved")
-		)  # noqa E501
+		)
 		# Translators: The title of the messageBox that appears after saving the list of voice synthesizers profiles
 		gui.messageBox(message=message, caption=_("Saving voice synthesizers profiles list"), parent=self)
 

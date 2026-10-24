@@ -165,7 +165,7 @@ class ServiceLanguages(Languages):
 		return ServiceLanguage(
 			self.locale.code
 			if self.locale.code in self._langs["resources"][self.defaultSource]["target_languages"]
-			else next(  # noqa E501
+			else next(
 				iter(self._langs["resources"][self.defaultSource]["target_languages"]),
 				"",
 			),

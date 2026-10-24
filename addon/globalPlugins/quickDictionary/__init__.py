@@ -3,28 +3,30 @@
 # See the file COPYING for more details.
 # Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
 
+# The menu items are bound to lambdas, which get the events of wx without known types
+# pyright: reportUnknownLambdaType=false
+
 import os.path
-import sys
 from collections.abc import Callable
 from threading import Thread
-from typing import Any, override
+from typing import Any, cast, override
 
 import addonHandler
 import api
 import config
 import globalPluginHandler
 import gui
+import queueHandler
 import ui
 import wx
 from globalVars import appArgs
 from inputCore import InputGesture
 from logHandler import log
-from queueHandler import eventQueue, queueFunction
 from scriptHandler import script
 from tones import beep
 
 from .configuration import addonName, addonSummary, getAddonConfig, getDocFilePath, getNvdaConfig
-from .locator import services
+from .locator import DictionaryService, getActiveService, services
 from .service import Translator
 from .settings import (
 	EditableInputDialog,
@@ -48,11 +50,6 @@ try:
 except addonHandler.AddonError:
 	log.warning("Unable to init translations. This may be because the addon is running from NVDA scratchpad.")
 _: Callable[[str], str]
-
-# Adding a directory with third-party modules
-_libDir = os.path.join(os.path.dirname(__file__), "lib")
-if _libDir not in sys.path:
-	sys.path.append(_libDir)
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
@@ -89,32 +86,35 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def createSubMenu(self) -> None:
 		"""Build a submenu in the "tools" menu."""
-		self.menu = gui.mainFrame.sysTrayIcon.toolsMenu
+		# gui.mainFrame is None only until the GUI of NVDA has been initialized, before the plugins are loaded,
+		# and wx.EvtHandler.Bind has incomplete type annotations
+		sysTrayIcon = cast(Any, gui.mainFrame).sysTrayIcon
+		self.menu: wx.Menu = sysTrayIcon.toolsMenu
 		subMenu = wx.Menu()
 		self.mainItem = self.menu.AppendSubMenu(subMenu, addonSummary)
 		# Translators: the name of a submenu item (also used as method description).
 		preEditItem = subMenu.Append(wx.ID_ANY, _("edit text before sending").capitalize() + "...")
-		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.preEditDialog(), preEditItem)
+		sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.preEditDialog(), preEditItem)
 		# Translators: the name of a submenu item (also used as method description).
 		chooseServiceItem = subMenu.Append(wx.ID_ANY, _("choose online service").capitalize() + "...")
-		gui.mainFrame.sysTrayIcon.Bind(
+		sysTrayIcon.Bind(
 			wx.EVT_MENU,
 			lambda event: self.chooseServiceDialog(),
 			chooseServiceItem,
 		)
 		# Translators: the name of a submenu item (also used as dialog title).
 		synthsProfilesItem = subMenu.Append(wx.ID_ANY, _("Voice synthesizers profiles") + "...")
-		gui.mainFrame.sysTrayIcon.Bind(
+		sysTrayIcon.Bind(
 			wx.EVT_MENU,
 			lambda event: self.synthsProfilesDialog(),
 			synthsProfilesItem,
 		)
 		# Translators: the name of a submenu item
 		settingsItem = subMenu.Append(wx.ID_ANY, _("&Options..."))
-		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonSettingsDialog(), settingsItem)
+		sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonSettingsDialog(), settingsItem)
 		# Translators: the name of a submenu item (also used as dialog title).
 		cmdHelpItem = subMenu.Append(wx.ID_ANY, _("help on add-on commands").capitalize())
-		gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonHelpPage(), cmdHelpItem)
+		sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.addonHelpPage(), cmdHelpItem)
 		helpFile = getDocFilePath().replace("readme.html", "index.html")
 		# If there is no localized file - open the English version
 		if not os.path.isfile(helpFile):
@@ -123,7 +123,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if os.path.isfile(helpFile):
 			# Translators: the name of a submenu item
 			helpItem = subMenu.Append(wx.ID_ANY, _("He&lp"))
-			gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.openHelp(helpFile), helpItem)
+			sysTrayIcon.Bind(wx.EVT_MENU, lambda event: self.openHelp(helpFile), helpItem)
 
 	def openHelp(self, helpFile: str) -> None:
 		"""Open the add-on help page in the default browser.
@@ -132,7 +132,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""
 		import webbrowser
 
-		webbrowser.open(helpFile)
+		_ = webbrowser.open(helpFile)
 
 	@property
 	def source(self) -> str:
@@ -140,7 +140,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: usually two-character language code
 		@rtype: str
 		"""
-		return getAddonConfig()[services[getAddonConfig()["active"]].name]["from"]
+		return getAddonConfig()[getActiveService().name]["from"]
 
 	@source.setter
 	def source(self, lang: str) -> None:
@@ -148,7 +148,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param lang: usually two-character language code
 		@type lang: str
 		"""
-		getAddonConfig()[services[getAddonConfig()["active"]].name]["from"] = lang
+		getAddonConfig()[getActiveService().name]["from"] = lang
 
 	@property
 	def target(self) -> str:
@@ -156,7 +156,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: usually two-character language code
 		@rtype: str
 		"""
-		return getAddonConfig()[services[getAddonConfig()["active"]].name]["into"]
+		return getAddonConfig()[getActiveService().name]["into"]
 
 	@target.setter
 	def target(self, lang: str) -> None:
@@ -164,7 +164,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param lang: usually two-character language code
 		@type lang: str
 		"""
-		getAddonConfig()[services[getAddonConfig()["active"]].name]["into"] = lang
+		getAddonConfig()[getActiveService().name]["into"] = lang
 
 	@property
 	def isCopyToClipboard(self) -> bool:
@@ -172,7 +172,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: value stored in the add-on configuration
 		@rtype: bool
 		"""
-		return getAddonConfig()[services[getAddonConfig()["active"]].name]["copytoclip"]
+		return getAddonConfig()[getActiveService().name]["copytoclip"]
 
 	@property
 	def isAutoSwap(self) -> bool:
@@ -180,39 +180,33 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@return: value stored in the add-on configuration
 		@rtype: bool
 		"""
-		return getAddonConfig()[services[getAddonConfig()["active"]].name]["autoswap"]
-
-	@property
-	def isSwitchSynth(self) -> bool:
-		"""Property indicate whether to switch the synthesizer when sounding the dictionary entry.
-		@return: value stored in the add-on configuration
-		@rtype: bool
-		"""
-		return getAddonConfig()["switchsynth"]
+		return getAddonConfig()[getActiveService().name]["autoswap"]
 
 	@override
 	def terminate(self) -> None:
 		"""This will be called when NVDA is finished with this global plugin."""
 		try:
 			gui.settingsDialogs.NVDASettingsDialog.categoryClasses.remove(QDSettingsPanel)
-		except IndexError:
+		except ValueError:
 			log.warning("Can't remove %s Settings panel from NVDA settings dialogs", addonSummary)
 		try:
-			self.menu.Remove(self.mainItem)
+			_ = self.menu.Remove(self.mainItem)
 		except (RuntimeError, AttributeError):
 			log.warning("Can't remove %s submenu from NVDA menu", addonSummary)
 		super().terminate()
 
-	def getScript(self, gesture: InputGesture) -> Callable:
+	@override
+	def getScript(self, gesture: InputGesture) -> Callable[..., Any] | None:
 		"""Retrieve the script bound to a given gesture.
 		@param gesture: the input gesture in question
 		@type gesture: InputGesture
 		@return: the necessary method or method that handles the error
-		@rtype: Callable
+		@rtype: Callable[..., Any] | None
 		"""
+		# ScriptableObject.getScript of NVDA has incomplete type annotations
+		script: Callable[..., Any] | None = cast(Any, super()).getScript(gesture)
 		if not self._toggleGestures:
-			return globalPluginHandler.GlobalPlugin.getScript(self, gesture)
-		script = globalPluginHandler.GlobalPlugin.getScript(self, gesture)
+			return script
 		if not script:
 			script = finally_(self.script_error, self.finish)
 		return finally_(script, self.finish)
@@ -221,9 +215,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""Switching back to original gestures."""
 		self._toggleGestures = False
 		self.clearGestureBindings()
-		self.bindGestures(self.__gestures)
+		# ScriptableObject.bindGestures of NVDA has no type annotations
+		cast(Any, self).bindGestures(self.__gestures)
 
-	@script(description=None)
 	def script_error(self, gesture: InputGesture) -> None:
 		"""Call when the wrong gestures are using in add-on control mode.
 		@param gesture: the input gesture in question
@@ -242,7 +236,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if self._toggleGestures:
 			self.script_error(gesture)
 			return
-		self.bindGestures(self.__addonGestures)
+		cast(Any, self).bindGestures(self.__addonGestures)
 		self._toggleGestures = True
 		beep(200, 10)
 
@@ -251,7 +245,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		description="D - %s"
 		% _("announce the dictionary entry for the currently selected word or phrase (the same as %s)")
 		% "NVDA+Y",
-	)  # noqa E501
+	)
 	def script_dictionaryAnnounce(self, gesture: InputGesture) -> None:
 		"""Receive and read a dictionary entry for the selected text or text from the clipboard.
 		@param gesture: gesture assigned to this method
@@ -288,7 +282,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def preEditDialog(self) -> None:
 		"""Dialog for pre-editing text before sending it for translation."""
 
-		def resultHandler(result: int, dlg: wx.Dialog) -> None:
+		def resultHandler(result: int, dlg: EditableInputDialog) -> None:
 			"""Processing data obtained from the dialog."""
 			if result == wx.ID_OK:
 				if not dlg.text:
@@ -312,7 +306,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		langs = services[getAddonConfig()["active"]].langs
+		langs = getActiveService().langs
 		ui.message(
 			# Translators: message presented to announce the current source and target languages.
 			_("Translate: from {langFrom} to {langInto}").format(
@@ -328,7 +322,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		langs = services[getAddonConfig()["active"]].langs
+		langs = getActiveService().langs
 		if langs.isAvailable(self.target, self.source):
 			self.source, self.target = self.target, self.source
 			# Translators: Notification that languages have been swapped
@@ -361,8 +355,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			# Translators: Notification that no dictionary entries have been received in the current session
 			ui.message(_("There is no dictionary queries"))
 			return
-		service = services[getattr(self._lastTranslator, "id", getAddonConfig()["active"])]
-		api.copyToClip(self._lastTranslator.plaintext, notify=True)
+		service = self.lastService()
+		_result = api.copyToClip(self._lastTranslator.plaintext, notify=True)
 		ui.message(
 			"%s - %s"
 			% (
@@ -375,7 +369,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	@script(
 		description="U - %s"
 		% _("download from online dictionary and save the current list of available languages"),
-	)  # noqa E501
+	)
 	def script_updateLanguages(self, gesture: InputGesture) -> None:
 		"""Download a list of available languages from the online dictionary and save them to a local file.
 		@param gesture: gesture assigned to this method
@@ -386,7 +380,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			"""Download current list of available languages from the remote server and save them to a local file.
 			Wait for the request to complete and return a prepared response.
 			"""
-			langs = services[getAddonConfig()["active"]].langs
+			langs = getActiveService().langs
 			waitingFor(langs.update)
 			if langs.updated:
 				# Translators: Notification when downloading from the online dictionary list of available languages
@@ -406,7 +400,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		service = services[getAddonConfig()["active"]]
+		service = getActiveService()
 		ui.message(service.summary)
 		# Translators: Information about the online service
 		ui.message(_("supports {number} languages").format(number=len(service.langs.all)))
@@ -459,7 +453,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return
 		from json import dumps
 
-		service = services[getattr(self._lastTranslator, "id", getAddonConfig()["active"])]
+		service = self.lastService()
 		ui.browseableMessage(
 			message=dumps(self._lastTranslator.resp, skipkeys=True, ensure_ascii=False, indent=4),
 			# Translators: The title of the window that displays the desiralized response from the server
@@ -512,8 +506,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			lines.append("<li>%s</li>" % method)
 		lines += [
 			"</ul>",
-			"<br>",  # noqa ET113
-			# Translators: Message in the add-on short help  # noqa ET128
+			"<br>",
+			# Translators: Message in the add-on short help
 			"<h2>%s</h2>" % _("Voice synthesizers profiles management:"),
 			'<ul type="disc">',
 		]
@@ -537,7 +531,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"for any of the listed features you can customize the keyboard shortcut in NVDA input gestures dialog",
 			),
 		]:
-			lines.append("<p>%s.</p>" % line.capitalize())
+			lines.append("<p>%s.</p>" % (line or "").capitalize())
 		ui.browseableMessage(
 			message=htmlTemplate.format(body="".join(lines)),
 			# Translators: The title of the window with help information about the add-on commands
@@ -558,8 +552,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""Display the add-on settings dialog.
 		Called using keyboard commands and menu items.
 		"""
+		# gui.mainFrame is None only until the GUI of NVDA has been initialized
 		wx.CallAfter(
-			gui.mainFrame.popupSettingsDialog,
+			cast(Any, gui.mainFrame).popupSettingsDialog,
 			gui.settingsDialogs.NVDASettingsDialog,
 			QDSettingsPanel,
 		)
@@ -576,9 +571,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		self._slot = int(gesture.mainKeyName[-1])
-		profiles.rememberCurrent()
-		profiles[self._slot].set()
+		# The gestures of the profiles are keyboard gestures, which have the name of the main key
+		self._slot = int(cast(Any, gesture).mainKeyName[-1])
+		_result = profiles.rememberCurrent()
+		_result = profiles[self._slot].set()
 		# Translators: Message when selecting a voice synthesizer profile
 		ui.message(
 			_("Profile {slot} selected: {title}").format(slot=self._slot, title=profiles[self._slot].title),
@@ -628,8 +624,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@type gesture: InputGesture
 		"""
 		slot, self._slot = self._slot, 1
-		profiles.remove(slot)
-		profiles.restorePrevious()
+		_result = profiles.remove(slot)
+		_result = profiles.restorePrevious()
 		# Translators: Message when deleting a profile
 		ui.message(_("Profile %d successfully deleted") % slot)
 
@@ -640,7 +636,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		profiles.rememberCurrent()
+		_ = profiles.rememberCurrent()
 		profile = profiles.restoreDefault()
 		ui.message(profile.title)
 
@@ -653,7 +649,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""
 		current = profiles.getCurrent()
 		profile = profiles.restorePrevious()
-		profiles.rememberCurrent(current)
+		_ = profiles.rememberCurrent(current)
 		ui.message(profile.title)
 
 	# Translators: Method description is displayed in the NVDA gestures dialog
@@ -663,8 +659,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		profiles[self._slot].update()
-		profiles.save()
+		_result = profiles[self._slot].update()
+		_result = profiles.save()
 		# Translators: Announcing after saving synthesizer profile
 		ui.message(_("Voice synthesizer profile saved successfully"))
 
@@ -679,7 +675,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param gesture: gesture assigned to this method
 		@type gesture: InputGesture
 		"""
-		self._gate = min(int(gesture.mainKeyName.lower().replace("f", "")), len(services))
+		# The gestures of the services are keyboard gestures, which have the name of the main key
+		self._gate = min(int(cast(Any, gesture).mainKeyName.lower().replace("f", "")), len(services))
 		getAddonConfig()["active"] = self._gate - 1
 		ui.message(": ".join([gesture.displayName, services[self._gate - 1].summary]))
 
@@ -700,6 +697,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		sd = ServicesDialog(parent=gui.mainFrame, id=wx.ID_ANY, title=_("choose online service").capitalize())
 		gui.runScriptModalDialog(sd)
 
+	def lastService(self) -> DictionaryService:
+		"""Get the online service of the last dictionary entry, or the selected one.
+		@return: the online dictionary service
+		@rtype: DictionaryService
+		"""
+		active: int = getattr(self._lastTranslator, "id", getAddonConfig()["active"])
+		return services[active]
+
 	def translate(self, text: str, isHtml: bool = False) -> None:
 		"""Retrieve the dictionary entry for the given word or phrase and display/announce the result.
 		This method must always be called in a separate thread so as not to block NVDA.
@@ -708,12 +713,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		@param isHtml: a sign of whether it is necessary to display the result of work in the form of HTML page
 		@type isHtml: bool
 		"""
-		active = getAddonConfig()["active"]
+		active: int = getAddonConfig()["active"]
 		langs = services[active].langs
 		pairs = [(self.source, self.target)]
 		if self.isAutoSwap:
 			if langs.isAvailable(self.target, self.source):
 				pairs.append((self.target, self.source))
+		translator: Translator | None = None
 		for lFrom, lInto in pairs:
 			translator = translateWithCaching(lFrom, lInto, text, hashForCache(active))
 			if translator.error:
@@ -723,12 +729,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			)  # - to check the current status of queries cache
 			if translator.plaintext:
 				break
-		else:
-			if not translator.plaintext:
-				# Translators: Notification of missing dictionary entry for current request
-				ui.message(_("No results"))
-				self._messages.clear()
-				return
+		if translator is None or not translator.plaintext:
+			# Translators: Notification of missing dictionary entry for current request
+			ui.message(_("No results"))
+			self._messages.clear()
+			return
 		self._lastTranslator = translator
 		setattr(self._lastTranslator, "id", active)
 		if isHtml:
@@ -746,13 +751,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._messages.append(translator.plaintext)
 			message = "...".join(self._messages)
 			self._messages.clear()
-			queueFunction(
-				eventQueue,
+			# queueHandler of NVDA has incomplete type annotations
+			cast(Any, queueHandler).queueFunction(
+				cast(Any, queueHandler).eventQueue,
 				messageWithLangDetection,
 				{"text": message, "lang": translator.langTo},
 			)
 		if self.isCopyToClipboard:
-			api.copyToClip(translator.plaintext, notify=True)
+			_result = api.copyToClip(translator.plaintext, notify=True)
 
 	__addonGestures = {
 		# Dictionary

@@ -11,6 +11,7 @@ from __future__ import annotations
 import os
 import pickle
 from collections.abc import Generator
+from typing import Any, cast
 
 import config
 from synthDriverHandler import getSynth, setSynth
@@ -24,19 +25,21 @@ class Profile(object):
 	def __init__(
 		self,
 		synthName: str = "",
-		synthConf: dict = {},
+		synthConf: dict[str, Any] | None = None,
 		lang: str = "",
 	) -> None:
 		"""Input data needed to initialize the synthesizer profile.
 		@param synthName: short name of the voice synthesizer
 		@type synthName: str
-		@param synthConf: voice synthesizer settings
-		@type synthConf: dict
+		@param synthConf: voice synthesizer settings, empty by default
+		@type synthConf: dict[str, Any] | None
 		@param lang: the language code to which this profile is associated
 		@type lang: str
 		"""
+		super().__init__()
 		self._name = synthName
-		self._conf = synthConf
+		# Each profile has its own settings, not a dict shared by all profiles as a default value would be
+		self._conf: dict[str, Any] = synthConf if synthConf is not None else {}
 		self._lang = lang
 		# Whether the switch to this synthesizer was performed and whether it was successful
 		self._status = False
@@ -52,7 +55,8 @@ class Profile(object):
 			getNvdaConfig().profiles[0]["speech"][self._name].update(self._conf)
 			getNvdaConfig()["speech"][self._name]._cache.clear()
 			state = setSynth(self._name)
-			getSynth().saveSettings()
+			# The synthesizer is None only if no synthesizer could be initialized
+			cast(Any, getSynth()).saveSettings()
 		except KeyError:
 			pass
 		self._status = state
@@ -63,8 +67,10 @@ class Profile(object):
 		@return: updated voice synthesizer profile
 		@rtype: Profile
 		"""
-		self._name = getSynth().name
-		self._conf = dict(getNvdaConfig()["speech"][getSynth().name].items())
+		# The synthesizer is None only if no synthesizer could be initialized
+		synth: Any = getSynth()
+		self._name = synth.name
+		self._conf = dict(getNvdaConfig()["speech"][synth.name].items())
 		self._lang = self._lang or ""
 		return self
 
@@ -77,10 +83,10 @@ class Profile(object):
 		return self._name
 
 	@property
-	def conf(self) -> dict:
+	def conf(self) -> dict[str, Any]:
 		"""Returns a dict with voice synthesizer settings stored in the profile.
 		@return: voice synthesizer settings
-		@rtype: dict
+		@rtype: dict[str, Any]
 		"""
 		return self._conf
 
@@ -130,32 +136,39 @@ class Profiles(object):
 
 	def __init__(self) -> None:
 		"""Incoming data to initialize the object."""
+		super().__init__()
 		# an external file that stores profile settings
 		self._path = os.path.join(config.getUserDefaultConfigPath(), "%s.pickle" % addonName)
 		# a dict of slots and profiles that match them
 		self._profs: dict[int, Profile] = {}
+		# the version of the format of the file, saved with the profiles
+		self._version: int = 0
 		# default synthesizer profile settings
 		self._default = Profile().update()
 		# Previous voice synthesizer before switching to another
 		self._previous = Profile().update()
-		self.load()
+		_ = self.load()
 
 	def load(self) -> Profiles:
 		"""Loads saved profiles from an external file.
 		@return: updated Profiles object or None
 		@rtype: Profiles
 		"""
+		data: dict[Any, Any] = {}
 		try:
 			with open(self._path, "rb") as f:
 				data = pickle.load(f)
 		except Exception:
-			data = {}
+			pass
 		if "version" not in data:
 			data = {"version": 0}
-		self._profs = dict(
-			(key, Profile(val["name"], val["conf"], val["lang"])) if isinstance(key, int) else (key, val)
+		# The slots of the profiles are numbers, the other keys are the data of the file
+		self._version = data["version"]
+		self._profs = {
+			key: Profile(val["name"], val["conf"], val["lang"])
 			for key, val in data.items()
-		)  # noqa E501
+			if isinstance(key, int)
+		}
 		return self
 
 	def save(self) -> bool:
@@ -163,16 +176,13 @@ class Profiles(object):
 		@return: a sign of the success of saving data to a file
 		@rtype: bool
 		"""
-		profs: dict = {}
+		profs: dict[int | str, Any] = {"version": self._version}
 		for slot in sorted(self._profs, key=lambda slot: str(slot)):
-			if isinstance(slot, int):
-				profs[slot] = {
-					"name": self._profs[slot].name,
-					"conf": self._profs[slot].conf,
-					"lang": self._profs[slot].lang,
-				}
-			else:
-				profs[slot] = self._profs[slot]
+			profs[slot] = {
+				"name": self._profs[slot].name,
+				"conf": self._profs[slot].conf,
+				"lang": self._profs[slot].lang,
+			}
 		try:
 			with open(self._path, "wb") as f:
 				pickle.dump(profs, f)
@@ -197,7 +207,7 @@ class Profiles(object):
 		@rtype: Generator[tuple[int, Profile], None, None]
 		"""
 		for slot in sorted(self._profs, key=lambda s: str(s)):
-			if isinstance(slot, int) and self._profs[slot].name:
+			if self._profs[slot].name:
 				yield slot, self._profs[slot]
 
 	def __len__(self) -> int:
@@ -205,7 +215,7 @@ class Profiles(object):
 		@return: the number of profiles saved in the collection
 		@rtype: int
 		"""
-		return len([p for s, p in self])
+		return len([profile for _slot, profile in self])
 
 	def remove(self, id: int) -> Profile | None:
 		"""Deletes the synthesizer profile by its specified ID (slot).
@@ -233,7 +243,7 @@ class Profiles(object):
 		@return: the default synthesizer profile that was saved earlier
 		@rtype: Profile
 		"""
-		self._default.set()
+		_ = self._default.set()
 		return self._default
 
 	def getCurrent(self) -> Profile:
@@ -258,7 +268,7 @@ class Profiles(object):
 		@return: profile of the previous voice synthesizer
 		@rtype: Profile
 		"""
-		self._previous.set()
+		_ = self._previous.set()
 		return self._previous
 
 

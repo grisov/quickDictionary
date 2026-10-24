@@ -114,7 +114,7 @@ class ServiceParser(Parser):
 		return ""
 
 	@override
-	def to_html(self) -> str:  # noqa C901
+	def to_html(self) -> str:
 		"""Convert data received from a remote dictionary to HTML format.
 		@return: converted to HTML deserialized response from server
 		@rtype: str

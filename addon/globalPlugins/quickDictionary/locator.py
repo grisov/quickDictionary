@@ -17,6 +17,7 @@ from typing import Any
 
 from wx import Panel
 
+from .configuration import getAddonConfig
 from .service import Languages, Translator
 
 
@@ -183,4 +184,13 @@ class DictionaryService(object):
 
 # Discover all available services for use in the add-on
 discover_services()
-services = global_lookup.lookup_all(DictionaryService)
+services: list[DictionaryService] = global_lookup.lookup_all(DictionaryService)
+
+
+def getActiveService() -> DictionaryService:
+	"""Get the online service selected in the add-on settings.
+	@return: the selected online dictionary service
+	@rtype: DictionaryService
+	"""
+	active: int = getAddonConfig()["active"]
+	return services[active]
