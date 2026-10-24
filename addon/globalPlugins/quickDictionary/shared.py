@@ -3,29 +3,29 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Oleksandr Gryshchenko <grisov.nvaccess@mailgw.com>
 
 import os.path
 import re
+from collections.abc import Callable
 from functools import lru_cache, wraps
 from threading import Thread
 from time import sleep
-from typing import Any, Callable, Dict, List
+from typing import Any, cast
 
 import addonHandler
 import api
 import braille
-import config
 import speech
 import ui
-import versionInfo
 from logHandler import log
 from speech.commands import CallbackCommand, LangChangeCommand
+from speech.types import SpeechSequence
 from textInfos import POSITION_SELECTION
 from tones import beep
 
-from . import addonName
-from .locator import services
+from .configuration import getAddonConfig, getNvdaConfig
+from .locator import getActiveService, services
 from .service import Translator
 from .synthesizers import profiles
 
@@ -53,7 +53,7 @@ def translateWithCaching(langFrom: str, langInto: str, text: str, hashForCache: 
 	@return: object containing the prepared response from the remote dictionary
 	@rtype: Translator
 	"""
-	translator = services[config.conf[addonName]["active"]].translator(langFrom, langInto, text)
+	translator = getActiveService().translator(langFrom, langInto, text)
 	translator.start()
 	i = 0
 	while translator.is_alive():
@@ -69,17 +69,17 @@ def translateWithCaching(langFrom: str, langInto: str, text: str, hashForCache: 
 def hashForCache(active: int) -> int:
 	"""Hash sum of the values of all service parameters that must be taken into account when caching requests."""
 	hashes: int = active
-	for opt, value in config.conf[addonName][services[active].name].items():
+	for value in getAddonConfig()[services[active].name].values():
 		hashes += hash(value)
 	return hashes
 
 
-def waitingFor(target: Callable, args: List[Any] = []) -> None:
+def waitingFor(target: Callable[..., Any], args: tuple[Any, ...] = ()) -> None:
 	"""Waiting for the function to complete, beeps are output while waiting.
 	@param target: function that will be started and user will hear sounds during its execution
-	@type target: Callable
-	@param args: list of arguments to be passed to the function
-	@type args: List[Any]
+	@type target: Callable[..., Any]
+	@param args: arguments to be passed to the function
+	@type args: tuple[Any, ...]
 	"""
 	load = Thread(target=target, args=args)
 	load.start()
@@ -100,20 +100,22 @@ def getSelectedText() -> str:
 	@return: selected text, text from the clipboard, or an empty string
 	@rtype: str
 	"""
-	obj = api.getFocusObject()
-	treeInterceptor = obj.treeInterceptor
+	# The focus objects and the tree interceptors of NVDA have incomplete type annotations
+	obj: Any = api.getFocusObject()
+	treeInterceptor: Any = obj.treeInterceptor
 	if hasattr(treeInterceptor, "TextInfo") and not treeInterceptor.passThrough:
 		obj = treeInterceptor
+	info: Any = None
 	try:
 		info = obj.makeTextInfo(POSITION_SELECTION)
 	except (RuntimeError, NotImplementedError):
-		info = None
+		pass
 	if not info or info.isCollapsed or not clearText(info.text):
 		try:
 			text = api.getClipData()
 		except Exception:
 			text = ""
-		if not text or not isinstance(text, str) or not clearText(text):
+		if not text or not clearText(text):
 			# Translators: User has pressed the shortcut key for translating selected text,
 			# but no text was actually selected and clipboard is clear
 			ui.message(
@@ -121,7 +123,7 @@ def getSelectedText() -> str:
 			)
 			return ""
 		return text
-	return info.text
+	return str(info.text)
 
 
 def clearText(text: str) -> str:
@@ -136,12 +138,19 @@ def clearText(text: str) -> str:
 
 
 # Below toggle code came from Tyler Spivey's code, with enhancements by Joseph Lee
-def finally_(func: Callable, final: Callable) -> Callable:
-	"""Calls final after func, even if it fails."""
+def finally_(func: Callable[..., Any], final: Callable[[], Any]) -> Callable[..., None]:
+	"""Calls final after func, even if it fails.
+	@param func: the function to call
+	@type func: Callable[..., Any]
+	@param final: the function called after func
+	@type final: Callable[[], Any]
+	@return: the function that calls both
+	@rtype: Callable[..., None]
+	"""
 
-	def wrap(f) -> Callable:
+	def wrap(f: Callable[[], Any]) -> Callable[..., None]:
 		@wraps(f)
-		def new(*args, **kwargs) -> None:
+		def new(*args: Any, **kwargs: Any) -> None:
 			try:
 				func(*args, **kwargs)
 			finally:
@@ -160,7 +169,7 @@ htmlTemplate = "".join(
 		"<html>",
 		"<head>",
 		'<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-		"<title></title>"
+		"<title></title>",
 		'<link rel="stylesheet" type="text/css" href="%s">'
 		% os.path.join(os.path.dirname(__file__), "style.css"),
 		"</head>",
@@ -175,29 +184,25 @@ def restoreSynthIfSpeechBeenCanceled() -> None:
 	Must be run in a separate thread which will control the main process.
 	"""
 	previous = profiles.getCurrent()
-	while not getattr(
-		speech if versionInfo.version_year < 2021 else getattr(speech, "getState")(),
-		"beenCanceled",
-	):
+	while not getattr(speech.getState(), "beenCanceled", False):
 		sleep(0.1)
-	else:
-		profiles.restorePrevious()
-		profiles.rememberCurrent(previous)
+	_ = profiles.restorePrevious()
+	_ = profiles.rememberCurrent(previous)
 
 
-def messageWithLangDetection(msg: Dict[str, str]) -> None:
+def messageWithLangDetection(msg: dict[str, str]) -> None:
 	"""Pronounce text in a given language if enabled the setting for auto-switching languages of the synthesizer.
 	After the speech, switche to the previous synthesizer, if the corresponding option is enabled.
 	@param msg: language code and text to be spoken in the specified language
-	@type msg: Dict[str, str] -> {'lang': str, 'text': str}
+	@type msg: dict[str, str] -> {'lang': str, 'text': str}
 	"""
-	switchSynth = config.conf[addonName][services[config.conf[addonName]["active"]].name]["switchsynth"]
-	profile = next(filter(lambda x: x.lang == msg["lang"], (p for s, p in profiles)), None)
+	switchSynth = getAddonConfig()[getActiveService().name]["switchsynth"]
+	profile = next((p for _slot, p in profiles if p.lang == msg["lang"]), None)
 	if switchSynth and profile:
-		profiles.rememberCurrent()
-		profile.set()
-	speechSequence = []
-	if config.conf["speech"]["autoLanguageSwitching"]:
+		_ = profiles.rememberCurrent()
+		_ = profile.set()
+	speechSequence: SpeechSequence = []
+	if getNvdaConfig()["speech"]["autoLanguageSwitching"]:
 		speechSequence.append(LangChangeCommand(msg["lang"]))
 	if switchSynth and profile:
 		speechSequence.append(CallbackCommand(callback=Thread(target=restoreSynthIfSpeechBeenCanceled).start))
@@ -205,4 +210,5 @@ def messageWithLangDetection(msg: Dict[str, str]) -> None:
 	if switchSynth and profile:
 		speechSequence.append(CallbackCommand(callback=speech.cancelSpeech))
 	speech.speak(speechSequence)
-	braille.handler.message(msg["text"])
+	# braille.handler is None only until braille has been initialized
+	cast(Any, braille.handler).message(msg["text"])

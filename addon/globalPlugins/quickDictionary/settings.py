@@ -3,20 +3,29 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Oleksandr Gryshchenko <grisov.nvaccess@mailgw.com>
 
-from typing import Callable, Optional
+# wxPython has incomplete type annotations and the GUI helpers of NVDA have none, so the types returned
+# by most GUI calls in this file are unknown to the type checker, and many wx methods return values
+# that are not needed here (e.g. whether a control has been enabled). Only these rules are relaxed for this file.
+# pyright: reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false
+# pyright: reportUnusedCallResult=false
+# The event handlers bound with lambdas get the events of wx, which have no known types in lambdas
+# pyright: reportUnknownLambdaType=false
+
+from collections.abc import Callable
+from typing import Any, cast, override
 
 import addonHandler
-import config
 import gui
 import wx
 from gui.nvdaControls import AutoWidthColumnListCtrl
 from gui.settingsDialogs import SettingsPanel
 from logHandler import log
 
-from . import addonName, addonSummary
-from .locator import services
+from .configuration import addonSummary, getAddonConfig
+from .locator import getActiveService, services
+from .service import Language
 from .synthesizers import profiles
 
 try:
@@ -31,18 +40,19 @@ class QDSettingsPanel(SettingsPanel):
 
 	title: str = addonSummary
 
-	def __init__(self, parent: Optional[wx._core.Window]) -> None:
+	def __init__(self, parent: wx.Window) -> None:
 		"""Initializing the add-on settings panel object."""
-		super(QDSettingsPanel, self).__init__(parent)
+		super().__init__(parent)
 
-	def makeSettings(self, sizer: wx._core.Sizer) -> None:
+	@override
+	def makeSettings(self, sizer: wx.Sizer) -> None:
 		"""Populate the panel with settings controls.
 		Overrides the corresponding abstract method of the SettingsPanel class.
 		@param sizer: The sizer to which to add the settings controls.
-		@type sizer: wx._core.Sizer
+		@type sizer: wx.Sizer
 		"""
 		self._sizer = sizer
-		self._active: int = config.conf[addonName]["active"]
+		self._active: int = getAddonConfig()["active"]
 		servSizer = wx.BoxSizer(wx.HORIZONTAL)
 		# Translators: A setting in addon settings dialog.
 		servLabel = wx.StaticText(self, label=_("Select &online service:"))
@@ -62,10 +72,10 @@ class QDSettingsPanel(SettingsPanel):
 		sizer.Add(self._container)
 		sizer.Fit(self)
 
-	def onSelectService(self, event: wx._core.PyEvent) -> None:
+	def onSelectService(self, event: wx.PyEvent) -> None:
 		"""Executed when switching between services.
 		@param event: event binder object that specifies the selection of an item in the wx.Choice object
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		serv = self._servChoice.GetClientData(self._servChoice.GetSelection())
 		self._active = serv.id
@@ -74,17 +84,12 @@ class QDSettingsPanel(SettingsPanel):
 		self._panel = ServicePanel(self._active, parent=self._container)
 		self._sizer.Fit(self)
 
-	def postInit(self) -> None:
-		"""Set system focus to service selection dropdown list.
-		Overrides the corresponding abstract method of the SettingsPanel class.
-		"""
-		self._servChoice.SetFocus()
-
+	@override
 	def onSave(self) -> None:
 		"""Update Configuration when clicking OK.
 		Overrides the corresponding abstract method of the SettingsPanel class.
 		"""
-		config.conf[addonName]["active"] = self._active
+		getAddonConfig()["active"] = self._active
 		self._panel.save()
 
 
@@ -96,24 +101,31 @@ class ServicePanel(wx.Panel):
 	def __init__(
 		self,
 		active: int,
-		parent: Optional[wx._core.Window] = None,
+		parent: wx.Window,
 		id: int = wx.ID_ANY,
 	) -> None:
 		"""Create a panel to display in the add-on settings dialog.
 		@param active: index of the selected service
 		@type active: int
 		@param parent: parent WX window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx.Window
 		@param id: identifier of the graphic element
 		@type id: int
 		"""
-		super(ServicePanel, self).__init__(parent, id)
+		super().__init__(parent, id)
 		self._active: int = active
+		# The language choices of the voice synthesizers profiles by their slots
+		self._synthLangsChoice: dict[int, wx.Choice] = {}
+		# The languages available for the profiles, the first one is empty
+		self._langs: list[Language] = []
+		# The language codes selected for the profiles by their slots
+		self._choices: dict[int, str] = {}
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		self.SetSizer(sizer)
 		self._sizer = sizer
 		self._servContainer = wx.Panel(parent=self)
-		self._servPanel = services[self._active].panel(parent=self._servContainer)
+		# The settings panel of the service, a wx.Panel with the save method
+		self._servPanel: Any = services[self._active].panel(parent=self._servContainer)
 		sizer.Add(self._servContainer)
 		sizer.Fit(self)
 
@@ -121,9 +133,9 @@ class ServicePanel(wx.Panel):
 		self._switchSynthChk = wx.CheckBox(
 			self,
 			label=_("Switch between &voice synthesizers for selected languages"),
-		)  # noqa E501
+		)
 		sizer.Add(self._switchSynthChk)
-		self._switchSynthChk.SetValue(config.conf[addonName][services[self._active].name]["switchsynth"])
+		self._switchSynthChk.SetValue(getAddonConfig()[services[self._active].name]["switchsynth"])
 		self._switchSynthChk.Bind(wx.EVT_CHECKBOX, self.onSwitchSynth)
 
 		# Display a list of voice synthesizers and the choice of languages with which they are associated
@@ -136,10 +148,10 @@ class ServicePanel(wx.Panel):
 		sizer.Show(self._synthPanel, show=self._switchSynthChk.GetValue())
 		sizer.Fit(self)
 
-	def synthsGrid(self) -> wx._core.BoxSizer:
+	def synthsGrid(self) -> wx.BoxSizer:
 		"""Build a panel with a list of profiles of voice synthesizers and associated languages.
 		@return: formed BoxSizer object
-		@rtype: wx._core.BoxSizer
+		@rtype: wx.BoxSizer
 		"""
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		# Output of the list of synthesizers for language binding
@@ -150,14 +162,14 @@ class ServicePanel(wx.Panel):
 				self,
 				# Translators: A warning in addon settings dialog.
 				value=_("Please set up voice synthesizers profiles."),
-				size=(200, 30),
+				size=wx.Size(200, 30),
 				style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_NO_VSCROLL | wx.TE_CENTER | wx.TE_PROCESS_TAB,
 			)
 			synthSizer.Add(
 				synthWarning,
 				proportion=wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL,
 				flag=wx.EXPAND,
-			)  # noqa E501
+			)
 		else:
 			synthSizer.SetCols(2)
 			synthSizer.SetRows(len(profiles))
@@ -190,20 +202,20 @@ class ServicePanel(wx.Panel):
 			)
 		return sizer
 
-	def blankPanel(self) -> wx._core.BoxSizer:
+	def blankPanel(self) -> wx.BoxSizer:
 		"""Empty panel required for correct dynamic display of the hidden panel with the list of synthesizers.
 		@return: BoxSizer is filled with blank lines equal to the number of voice synthesizer profiles
-		@rtype: wx._core.BoxSizer
+		@rtype: wx.BoxSizer
 		"""
 		blankSizer = wx.BoxSizer(wx.VERTICAL)
 		blankLabel = wx.StaticText(self, label="\n" * len(profiles))
 		blankSizer.Add(blankLabel)
 		return blankSizer
 
-	def onSwitchSynth(self, event: wx._core.PyEvent) -> None:
+	def onSwitchSynth(self, event: wx.PyEvent) -> None:
 		"""Executed when enable or disable the check box for switching voice synthesizers to selected languages.
 		@param event: event binder object that specifies the check or uncheck the wx.CheckBox
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		event.Skip()
 		self._sizer.Show(self._blankSizer, show=not self._switchSynthChk.GetValue())
@@ -223,18 +235,18 @@ class ServicePanel(wx.Panel):
 			if lang.code not in [lng for s, lng in self._choices.items() if lng and s != slot]:
 				widget.Append(lang.name, lang)
 
-	def onSelectSynthLang(self, event: wx._core.PyEvent, slot: int) -> None:
+	def onSelectSynthLang(self, event: wx.PyEvent, slot: int) -> None:
 		"""Fill in the linked Choices and set the initial values.
 		Executed when select a language from a list for one of the voice synthesizers profiles.
 		@param event: event binder object that specifies the selection of an item in the wx.Choice object
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		@param slot: a number that identifies the current profile of the speech synthesizer
 		@type slot: int
 		"""
 		langs = services[self._active].langs
 		choice = self._synthLangsChoice[slot].GetClientData(self._synthLangsChoice[slot].GetSelection())
 		self._choices[slot] = choice.code
-		for sl, prof in profiles:
+		for sl, _profile in profiles:
 			if sl != slot:
 				self._synthLangsChoice[sl].Clear()
 				self.widgetMakerExclude(self._synthLangsChoice[sl], sl)
@@ -246,9 +258,9 @@ class ServicePanel(wx.Panel):
 	def save(self) -> None:
 		"""Save the state of the panel settings."""
 		self._servPanel.save()
-		config.conf[addonName][services[self._active].name]["switchsynth"] = self._switchSynthChk.GetValue()
+		getAddonConfig()[services[self._active].name]["switchsynth"] = self._switchSynthChk.GetValue()
 		if self._switchSynthChk.GetValue():
-			for slot, profile in profiles:
+			for slot, _profile in profiles:
 				profiles[slot].lang = self._choices[slot]
 			profiles.save()
 
@@ -258,15 +270,15 @@ class ServicesDialog(wx.Dialog):
 
 	def __init__(
 		self,
-		parent: Optional[wx._core.Window],
+		parent: wx.Window | None,
 		id: int,
 		title: str,
-		*args,
-		**kwargs,
+		*args: Any,
+		**kwargs: Any,
 	) -> None:
 		"""Create a dialog box for selecting an available online service.
 		@param parent: parent top level window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx.Window | None
 		@param id: identifier of the window
 		@type id: int
 		@param title: title of the window
@@ -305,32 +317,32 @@ class ServicesDialog(wx.Dialog):
 		for i in range(len(services)):
 			self.servicesList.Append((i + 1, services[i].summary, len(services[i].langs.all)))
 		self.servicesList.SetFocus()
-		self.servicesList.Focus(config.conf[addonName]["active"])
-		self.servicesList.Select(config.conf[addonName]["active"])
+		self.servicesList.Focus(getAddonConfig()["active"])
+		self.servicesList.Select(getAddonConfig()["active"])
 
 		# Binding dialog box elements to handler methods
 		self.servicesList.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.onSelectService)
 		self.okButton.Bind(wx.EVT_BUTTON, self.onSelectService)
 		self.Bind(wx.EVT_CHAR_HOOK, self.onKeyPress)
 
-	def onKeyPress(self, event: wx._core.PyEvent) -> None:
+	def onKeyPress(self, event: wx.PyEvent) -> None:
 		"""Performed when pressing keys.
 		@param event: event binder object that handles keystrokes
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		key: int = event.GetKeyCode() - ord("1")
 		event.Skip()
 		if key in range(min(len(services), 12)):
-			config.conf[addonName]["active"] = key
+			getAddonConfig()["active"] = key
 			self.Close()
 
-	def onSelectService(self, event: wx._core.PyEvent) -> None:
+	def onSelectService(self, event: wx.PyEvent) -> None:
 		"""Activation of the selected online service.
 		@param event: event binder object that handles the activation of the button or ListItem element
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		event.Skip()
-		config.conf[addonName]["active"] = self.servicesList.GetFocusedItem()
+		getAddonConfig()["active"] = self.servicesList.GetFocusedItem()
 		self.Close()
 
 
@@ -339,12 +351,12 @@ class ChangeProfileDialog(wx.Dialog):
 
 	def __init__(
 		self,
-		parent: Optional[wx._core.Window],
+		parent: wx.Window | None,
 		slot: int,
 	) -> None:
 		"""Layout of dialog box elements.
 		@param parent: parent top level window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx.Window | None
 		@param slot: the number of the slot in which the current profile is saved
 		@type slot: int
 		"""
@@ -373,12 +385,13 @@ class ChangeProfileDialog(wx.Dialog):
 		self.CentreOnScreen()
 		profiles.rememberCurrent()
 		profiles[self.slot].set()
-		wx.CallAfter(gui.mainFrame.onSpeechSettingsCommand, None)
+		# gui.mainFrame is None only until the GUI of NVDA has been initialized
+		wx.CallAfter(cast(Any, gui.mainFrame).onSpeechSettingsCommand, None)
 
-	def onSaveButton(self, event: wx._core.PyEvent) -> None:
+	def onSaveButton(self, event: wx.PyEvent) -> None:
 		"""Executed when the <Save> button in the dialog box is pressed.
 		@param event: event that occurs when a wx.Button is pressed
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		profiles[self.slot].update()
 		profiles.save()
@@ -387,10 +400,10 @@ class ChangeProfileDialog(wx.Dialog):
 		profiles.rememberCurrent(previous)
 		self.Destroy()
 
-	def onClose(self, event: wx._core.PyEvent) -> None:
+	def onClose(self, event: wx.PyEvent) -> None:
 		"""Executed when the dialog box closes.
 		@param event: event that occurs when dialog box is closes
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		previous = profiles.getCurrent()
 		profiles.restorePrevious()
@@ -401,10 +414,10 @@ class ChangeProfileDialog(wx.Dialog):
 class CreateProfileDialog(wx.Dialog):
 	"""Request to create new voice synthesizer profile."""
 
-	def __init__(self, parent: Optional[wx._core.Window]) -> None:
+	def __init__(self, parent: wx.Window | None) -> None:
 		"""Layout of dialog box elements.
 		@param parent: parent top level window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx.Window | None
 		"""
 		# Translators: The title of the modal dialog box
 		super(CreateProfileDialog, self).__init__(parent, title=_("Create a new voice synthesizer profile"))
@@ -417,7 +430,7 @@ class CreateProfileDialog(wx.Dialog):
 		self.slotChoice = wx.Choice(self, choices=[], style=wx.CB_SORT)
 		slotSizer.Add(self.slotChoice)
 		sHelper.addItem(slotSizer)
-		slots = list(set(range(1, 10)) ^ set([slot for slot, prof in profiles]))
+		slots = sorted(set(range(1, 10)) ^ {slot for slot, _profile in profiles})
 		self.slotChoice.AppendItems([str(slot) for slot in slots])
 		self.slotChoice.SetSelection(0)
 		bHelper = sHelper.addDialogDismissButtons(gui.guiHelper.ButtonHelper(wx.HORIZONTAL))
@@ -434,20 +447,20 @@ class CreateProfileDialog(wx.Dialog):
 		sizer.Fit(self)
 		self.CentreOnScreen()
 
-	def onOkButton(self, event: wx._core.PyEvent) -> None:
+	def onOkButton(self, event: wx.PyEvent) -> None:
 		"""Executed when the <OK> button in the dialog box is pressed.
 		@param event: event that occurs when a wx.Button is pressed
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		slot = int(self.slotChoice.GetStringSelection())
 		event.Skip()
 		ChangeProfileDialog(self, slot).ShowModal()
 		self.Destroy()
 
-	def onClose(self, event: wx._core.PyEvent) -> None:
+	def onClose(self, event: wx.PyEvent) -> None:
 		"""Executed when the dialog box closes.
 		@param event: event that occurs when dialog box is closes
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		self.Destroy()
 
@@ -457,15 +470,15 @@ class SynthesizersDialog(wx.Dialog):
 
 	def __init__(
 		self,
-		parent: Optional[wx._core.Window],
+		parent: wx.Window | None,
 		id: int,
 		title: str,
-		*args,
-		**kwargs,
+		*args: Any,
+		**kwargs: Any,
 	) -> None:
 		"""Create a dialog box for manipulating voice synthesizers profiles.
 		@param parent: parent top level window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx.Window | None
 		@param id: identifier of the window
 		@type id: int
 		@param title: title of the window
@@ -493,7 +506,7 @@ class SynthesizersDialog(wx.Dialog):
 			self,
 			# Translators: The message that is displayed when the configured synthesizers profiles are missing
 			value=_("Please set up voice synthesizers profiles."),
-			size=(200, 30),
+			size=wx.Size(200, 30),
 			style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_NO_VSCROLL | wx.TE_CENTER | wx.TE_PROCESS_TAB,
 		)
 		sizer.Add(self.synthsWarning, proportion=wx.ALIGN_TOP, flag=wx.EXPAND)
@@ -557,7 +570,7 @@ class SynthesizersDialog(wx.Dialog):
 
 	def fillInList(self) -> None:
 		"""Display a list of saved synthesizers profiles in the ListCtrl widget."""
-		langs = services[config.conf[addonName]["active"]].langs
+		langs = getActiveService().langs
 		self.synthsList.DeleteAllItems()
 		for slot, profile in profiles:
 			self.synthsList.Append((slot, profile.title, langs[profile.lang].name))
@@ -603,37 +616,38 @@ class SynthesizersDialog(wx.Dialog):
 			_("Voice synthesizer profile saved successfully")
 			if profiles.save()
 			else _("Profiles list could not be saved")
-		)  # noqa E501
+		)
 		# Translators: The title of the messageBox that appears after saving the list of voice synthesizers profiles
 		gui.messageBox(message=message, caption=_("Saving voice synthesizers profiles list"), parent=self)
 
-	def onKeyPress(self, event: wx._core.PyEvent) -> None:
+	def onKeyPress(self, event: wx.PyEvent) -> None:
 		"""Performed when pressing keys.
 		@param event: event binder object that handles keystrokes
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		key: int = event.GetKeyCode()
-		{
+		actions: dict[int, Callable[[], None]] = {
 			wx.WXK_F2: self.saveProfiles,
 			wx.WXK_F4: self.changeProfile,
 			wx.WXK_F5: self.refreshProfiles,
 			wx.WXK_F7: self.createProfile,
 			wx.WXK_F8: self.deleteProfile,
 			wx.WXK_DELETE: self.deleteProfile,
-		}.get(key, event.Skip)()
+		}
+		actions.get(key, event.Skip)()
 		# Activate the profile at the specified slot number
 		key = key - ord("1") + 1
-		slots = [slot for slot, profile in profiles]
+		slots = [slot for slot, _profile in profiles]
 		if key in slots:
 			item = slots.index(key)
 			self.synthsList.Focus(item)
 			self.onActivateProfile(event=event)
 
-	def onActivateProfile(self, event: wx._core.PyEvent) -> None:
+	def onActivateProfile(self, event: wx.PyEvent) -> None:
 		"""Activation of the selected voice synthesizer profile.
 		The profile slot number is passed to the external handler.
 		@param event: event binder object that handles the activation of the button or ListItem element
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		event.Skip()
 		item = int(self.synthsList.GetItem(itemIdx=self.synthsList.GetFocusedItem(), col=0).GetText())
@@ -647,16 +661,16 @@ class EditableInputDialog(wx.Dialog):
 
 	def __init__(
 		self,
-		parent: Optional[wx._core.Window],
+		parent: wx.Window | None,
 		id: int,
 		title: str,
 		text: str,
-		*args,
-		**kwargs,
+		*args: Any,
+		**kwargs: Any,
 	) -> None:
 		"""Create a dialog box for edit source text before sending it for translation.
 		@param parent: parent top level window
-		@type parent: Optional[wx._core.Window]
+		@type parent: wx.Window | None
 		@param id: identifier of the window
 		@type id: int
 		@param title: title of the window
@@ -670,7 +684,7 @@ class EditableInputDialog(wx.Dialog):
 		self.textCtrl = wx.TextCtrl(
 			self,
 			value=text,
-			size=(200, 100),
+			size=wx.Size(200, 100),
 			style=wx.TE_NOHIDESEL | wx.TE_MULTILINE | wx.HSCROLL | wx.TE_LEFT | wx.TE_BESTWRAP | wx.TE_RICH2,
 		)
 		sizer.Add(self.textCtrl)
@@ -690,10 +704,10 @@ class EditableInputDialog(wx.Dialog):
 		self.textCtrl.SetFocus()
 		self.textCtrl.SelectAll()
 
-	def onKeyPress(self, event: wx._core.PyEvent) -> None:
+	def onKeyPress(self, event: wx.PyEvent) -> None:
 		"""Performed when pressing keys.
 		@param event: event binder object that handles keystrokes
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		key: int = event.GetKeyCode()
 		if event.CmdDown():
@@ -718,10 +732,10 @@ class EditableInputDialog(wx.Dialog):
 		self.textCtrl.Clear()
 		self.textCtrl.SetValue(self.text)
 
-	def onOkButton(self, event: wx._core.PyEvent) -> None:
+	def onOkButton(self, event: wx.PyEvent) -> None:
 		"""Sending edited text to a remote service.
 		@param event: event binder object that handles the activation of the button
-		@type event: wx._core.PyEvent
+		@type event: wx.PyEvent
 		"""
 		event.Skip()
 		self.text = self.textCtrl.GetValue()

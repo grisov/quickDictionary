@@ -3,23 +3,25 @@
 # A part of the NVDA Quick Dictionary add-on
 # This file is covered by the GNU General Public License.
 # See the file COPYING for more details.
-# Copyright (C) 2020-2026 Olexandr Gryshchenko <grisov.nvaccess@mailnull.com>
+# Copyright (C) 2020-2026 Oleksandr Gryshchenko <grisov.nvaccess@mailgw.com>
 
 import os.path
 import ssl
 from json import loads
-from typing import Any, Dict
+from typing import Any
 from urllib.parse import quote as urlencode
 from urllib.request import Request, urlopen
 
-import config
-
-from .. import addonName
+from ..configuration import getAddonConfig
 from ..service import secrets
 
-ssl._create_default_https_context = ssl._create_unverified_context
+# The certificates of the servers of the dictionary are not verified, as before, but only for the requests
+# of this service: changing the default context of ssl would turn the verification off for all of NVDA
+_sslContext = ssl.create_default_context()
+_sslContext.check_hostname = False
+_sslContext.verify_mode = ssl.CERT_NONE
 serviceName: str = os.path.basename(os.path.dirname(__file__))
-stat: Dict[str, Any] = {}  # Object for store statistics
+stat: dict[str, Any] = {}  # Object for store statistics
 
 
 class Yapi(object):
@@ -42,13 +44,14 @@ class Yapi(object):
 		@param uiLang: language of user interface messages
 		@type uiLang: str
 		"""
+		super().__init__()
 		self._directUrl: str = "https://dictionary.yandex.net"
 		self._mirrorUrl: str = "https://info.alwaysdata.net"
 		self._text = text
 		self._langFrom = langFrom
 		self._langTo = langTo
 		self._uiLang = uiLang
-		self._headers: Dict[str, str] = {
+		self._headers: dict[str, str] = {
 			"User-Agent": "Mozilla 5.0",
 		}
 
@@ -90,7 +93,7 @@ class Yapi(object):
 		@return: the order of the servers used when connecting
 		@rtype: bool
 		"""
-		return config.conf[addonName][serviceName]["mirror"]
+		return getAddonConfig()[serviceName]["mirror"]
 
 	@property
 	def directUrl(self) -> str:
@@ -114,16 +117,18 @@ class Yapi(object):
 		@return: access token
 		@rtype: str
 		"""
-		return secrets[serviceName].decode(config.conf[addonName][serviceName]["password"])
+		return secrets[serviceName].decode(getAddonConfig()[serviceName]["password"])
 
-	def get(self, query: str) -> Dict:
+	def get(self, query: str) -> Any:
 		"""Request to the Yandex online dictionary using transmitted query.
 		@param query: generated query URL not including domain name
 		@type query: str
-		@return: deserialized response from the online dictionary
-		@rtype: Dict
+		@return: deserialized response from the online dictionary, a dict with the "error" key if it has failed
+		@rtype: Any
 		"""
-		response, resp = {}, None
+		response: Any = {}
+		resp = None
+		server = ""
 		servers = [self.directUrl, self.mirrorUrl]
 		if self.mirror:
 			servers.reverse()
@@ -131,12 +136,12 @@ class Yapi(object):
 			url = server + query
 			rq = Request(url, method="GET", headers=self._headers)
 			try:
-				resp = urlopen(rq, timeout=8)
+				resp = urlopen(rq, timeout=8, context=_sslContext)
 			except Exception as e:
 				response["error"] = "HTTP error: %s [%s]" % (str(e), server)
 				continue
-			if resp.getcode() != 200:
-				response["error"] = "Incorrect response code %d from the server %s" % (resp.getcode(), server)
+			if resp.status != 200:
+				response["error"] = "Incorrect response code %d from the server %s" % (resp.status, server)
 				continue
 			break
 		if resp:
@@ -147,10 +152,10 @@ class Yapi(object):
 				response["error"] = "JSON error: %s [%s]" % (str(e), server)
 		return response
 
-	def lookup(self) -> Dict:
+	def lookup(self) -> dict[str, Any]:
 		"""Get a dictionary article according to the specified parameters.
 		@return: deserialized response from the online dictionary
-		@rtype: Dict
+		@rtype: dict[str, Any]
 		"""
 		urlTemplate: str = "/api/v1/dicservice.json/lookup?{key}lang={lang}&text={text}{ui}"
 		lang: str = "{lang1}-{lang2}".format(lang1=self.langFrom, lang2=self.langTo)
@@ -162,10 +167,10 @@ class Yapi(object):
 		)
 		return self.get(query)
 
-	def languages(self) -> Dict:
+	def languages(self) -> Any:
 		"""Request for list of all languages available in the online dictionary.
-		@return: deserialized response from the server
-		@rtype: Dict
+		@return: deserialized response from the server: the list of the language pairs or a dict with an error
+		@rtype: Any
 		"""
 		urlTemplate: str = "/api/v1/dicservice.json/getLangs?key={key}"
 		query: str = urlTemplate.format(key=self.token)
