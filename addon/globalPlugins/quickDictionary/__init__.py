@@ -25,11 +25,21 @@ from tones import beep
 
 from .locator import services  # noqa E402
 from .service import Translator  # noqa E402
-from .settings import (EditableInputDialog, QDSettingsPanel,  # noqa E402
-                       ServicesDialog, SynthesizersDialog)
-from .shared import (finally_, getSelectedText, hashForCache,  # noqa E402
-                     htmlTemplate, messageWithLangDetection,
-                     translateWithCaching, waitingFor)
+from .settings import (
+	EditableInputDialog,
+	QDSettingsPanel,  # noqa E402
+	ServicesDialog,
+	SynthesizersDialog,
+)
+from .shared import (
+	finally_,
+	getSelectedText,
+	hashForCache,  # noqa E402
+	htmlTemplate,
+	messageWithLangDetection,
+	translateWithCaching,
+	waitingFor,
+)
 from .synthesizers import profiles  # noqa E402
 
 try:
